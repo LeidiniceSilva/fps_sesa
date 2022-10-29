@@ -12,7 +12,7 @@ from netCDF4 import Dataset
 from dict_inmet_stations_code import codes
 from dict_inmet_stations_name import names
 
-idx=6
+idx=12
 
 if idx == 2:
 	nc_var = 'pre'
@@ -88,13 +88,15 @@ for j in range(1, 289):
 		continue
 	if j == 236:
 		continue
+	if j == 246:
+		continue
 	if j == 268:
 		continue
 	if j == 287:
 		continue
 																																																											
 	# This load the file (date, hour, variable)
-	data = np.loadtxt(os.path.join('/home/nice/Downloads/FPS_SESA/inmet/inmet_used/', 'dados_{0}_{1}.csv'.format(codes[j], dt)), dtype='str', delimiter=',', unpack=True)
+	data = np.loadtxt(os.path.join('/home/nice/Documentos/FPS_SESA/inmet/inmet_used', 'dados_{0}_{1}.csv'.format(codes[j], dt)), dtype='str', delimiter=',', unpack=True)
 	data = data[:,1:]
 	data_values = np.where(data[idx,:] == 'null', -999., data[idx,:])
 	data_values = np.array(data_values, dtype=float)
@@ -110,7 +112,7 @@ for j in range(1, 289):
 		if i < 24:
 			print('Date organized:', data_dates[i], data_values[i])
 
-	nc_output = '/home/nice/Downloads/FPS_SESA/inmet/inmet_nc/{0}_{1}_{2}.nc'.format(nc_var, codes[j], dt)
+	nc_output = '/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/{0}_{1}_{2}.nc'.format(nc_var, codes[j], dt)
 
 	# create netcdf
 	ds = Dataset(nc_output, mode='w', format='NETCDF4_CLASSIC')

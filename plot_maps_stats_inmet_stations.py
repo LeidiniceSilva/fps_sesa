@@ -12,11 +12,6 @@ import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 
-conda_file_dir = conda.__file__
-conda_dir = conda_file_dir.split('lib')[0]
-proj_lib = os.path.join(os.path.join(conda_dir, 'share'), 'proj')
-os.environ["PROJ_LIB"] = proj_lib
-
 from matplotlib.patches import Polygon
 from mpl_toolkits.basemap import Basemap
 from dict_inmet_stations_code import codes
@@ -35,16 +30,16 @@ def basemap(xx, yy):
 	return my_map, x, y
 	
 	
-idx=11
+idx=1
 dt = 'H_2018-01-01_2021-12-31'
 xx = []		  
 yy = []
 bias = []
 corr = []
 
-dict_var = {1: ['pre', 'Pr_1h (mm d⁻¹)', 'tp'],
+dict_var = {1: ['pre', 'Pr_1h (mm d$\mathregular{^{-1}}$)', 'tp'],
             5: ['tmp', 'Tmp_1h (°C)', 't2m'],
-            11: ['uv', 'Wind_1h (m s⁻¹)', 'uv10']}	
+            11: ['uv', 'Wind_1h (m s$\mathregular{^{-1}}$)', 'uv10']}
 
 # Select lat and lon 
 for i in range(1, 289):
@@ -101,6 +96,8 @@ for i in range(1, 289):
 		continue
 	if i == 236:
 		continue
+	if i == 246:
+		continue
 	if i == 268:
 		continue
 	if i == 287:
@@ -108,65 +105,6 @@ for i in range(1, 289):
 	
 	yy.append(coord[i][0])
 	xx.append(coord[i][1])
-
-for i in range(1, 289):
-	
-	if i == 4:
-		continue
-	if i == 12:
-		continue
-	if i == 45:
-		continue
-	if i == 55:
-		continue
-	if i == 77:
-		continue
-	if i == 98:
-		continue
-	if i == 99:
-		continue
-	if i == 118:
-		continue
-	if i == 122:
-		continue
-	if i == 130:
-		continue
-	if i == 135:
-		continue
-	if i == 151:
-		continue
-	if i == 155:
-		continue
-	if i == 159:
-		continue
-	if i == 160:
-		continue
-	if i == 163:
-		continue
-	if i == 164:
-		continue
-	if i == 181:
-		continue
-	if i == 183:
-		continue
-	if i == 186:
-		continue
-	if i == 187:
-		continue
-	if i == 188:
-		continue
-	if i == 209:
-		continue
-	if i == 216:
-		continue
-	if i == 228:
-		continue
-	if i == 236:
-		continue
-	if i == 268:
-		continue
-	if i == 287:
-		continue
 
 	print('Reading inmet weather station:', i, codes[i], names[i][1])
 	# Reading inmet weather station	
@@ -189,7 +127,7 @@ for i in range(1, 289):
 			clim.append(mon_x)
 	
 	# reading era5 reanalisis
-	ds = xr.open_mfdataset('/home/nice/Downloads/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]), combine='by_coords')
+	ds = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]))
 
 	if idx == 1:
 		ds = ds.tp.sel(time=slice('2018-01-01','2021-12-31'))
@@ -258,7 +196,7 @@ cbar.ax.tick_params(labelsize=6)
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Downloads/FPS_SESA/figs'
+path_out = '/home/nice/Documentos/FPS_SESA/figs'
 name_out = 'pyplt_maps_stats_{0}_weather_station.png'.format(dict_var[idx][0])
 if not os.path.exists(path_out):
 	create_path(path_out)

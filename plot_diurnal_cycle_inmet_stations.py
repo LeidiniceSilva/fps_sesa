@@ -18,9 +18,9 @@ from dict_inmet_stations_name import names
 idx=12
 dt = 'H_2018-01-01_2021-12-31'
 
-dict_var = {2: ['pre', 'Precipitation (mm d⁻¹)', 'tp'],
+dict_var = {2: ['pre', 'Precipitation (mm d$\mathregular{^{-1}}$)', 'tp'],
             6: ['tmp', 'Temperature (°C)', 't2m'],
-            12: ['uv', 'Wind speed (m s⁻¹)', 'uv10']}	
+            12: ['uv', 'Wind speed (m s$\mathregular{^{-1}}$)', 'uv10']}	
                         
 # Getting the data 
 for i in range(1, 289):
@@ -77,6 +77,8 @@ for i in range(1, 289):
 		continue
 	if i == 236:
 		continue
+	if i == 246:
+		continue
 	if i == 268:
 		continue
 	if i == 287:
@@ -108,7 +110,7 @@ for i in range(1, 289):
 	clim_inmet = a+b
 
 	# reading era5 reanalisis
-	ds = xr.open_mfdataset('/home/nice/Downloads/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]), combine='by_coords')
+	ds = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]))
 
 	if idx == 2:
 		ds = ds.tp.sel(time=slice('2018-01-01','2021-12-31'))
@@ -150,12 +152,12 @@ for i in range(1, 289):
 	plt.xticks(time, ('00Z', '', '02Z', '', '04Z', '', '06Z', '', '08Z', '', '10Z', '', '12Z', '', '14Z', '', '16Z', '', '18Z', '', '20Z', '', '22Z', '', '24Z'))
 	plt.xlabel('Diurnal Cycle', fontsize=8, fontweight='bold')
 	plt.ylabel('{0}'.format(dict_var[idx][1]), fontsize=8, fontweight='bold')
-	plt.grid(linestyle='--')
+	plt.grid()
 	plt.legend()
 
 	print('Path out to save figure')
 	# Path out to save figure
-	path_out = '/home/nice/Downloads/FPS_SESA/figs'
+	path_out = '/home/nice/Documentos/FPS_SESA/figs'
 	name_out = 'pyplt_diurnal_cycle_{0}_{1}_{2}.png'.format(dict_var[idx][0], codes[i], names[i][0])
 	plt.savefig(os.path.join(path_out, name_out), dpi=100, bbox_inches='tight')
 	plt.close('all')

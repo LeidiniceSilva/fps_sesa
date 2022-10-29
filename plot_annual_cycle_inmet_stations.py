@@ -15,15 +15,15 @@ from dict_inmet_stations_code import codes
 from dict_inmet_stations_latlon import coord
 from dict_inmet_stations_name import names
 
-idx=11
+idx=1
 dt = 'H_2018-01-01_2021-12-31'
 
-dict_var = {1: ['pre', 'Precipitation (mm d⁻¹)', 'tp'],
+dict_var = {1: ['pre', 'Precipitation (mm d$\mathregular{^{-1}}$)', 'tp'],
             5: ['tmp', 'Temperature (°C)', 't2m'],
-            11: ['uv', 'Wind speed (m s⁻¹)', 'uv10']}	
+            11: ['uv', 'Wind speed (m s$\mathregular{^{-1}}$)', 'uv10']}	
             
 # Getting the data 
-for i in range(1, 289):
+for i in range(133, 289):
 	
 	if i == 4:
 		continue
@@ -77,6 +77,8 @@ for i in range(1, 289):
 		continue
 	if i == 236:
 		continue
+	if i == 246:
+		continue
 	if i == 268:
 		continue
 	if i == 287:
@@ -87,7 +89,7 @@ for i in range(1, 289):
 
 	print('Reading inmet weather station:', i, codes[i], names[i][1])
 	# Reading inmet weather station	
-	df = pd.read_csv(os.path.join('/home/nice/Downloads/FPS_SESA/inmet/inmet_used/', 'dados_{0}_{1}.csv'.format(codes[i], dt)), sep='[:,|_]', engine='python')
+	df = pd.read_csv(os.path.join('/home/nice/Documentos/FPS_SESA/inmet/inmet_used/', 'dados_{0}_{1}.csv'.format(codes[i], dt)), sep='[:,|_]', engine='python')
 	df['Data Medicao'] = pd.to_datetime(df['Data Medicao'], format='%Y-%m-%d %H:%M:%S', errors='ignore')
 	df_i = df.groupby(pd.Grouper(key='Data Medicao', freq='M')).mean()
 
@@ -104,9 +106,9 @@ for i in range(1, 289):
 		for mon in range(0, 12):
 			mon_x = np.nanmean(var_x[mon::12], axis=0)
 			clim.append(mon_x)
-	
+
 	# reading era5 reanalisis
-	ds = xr.open_mfdataset('/home/nice/Downloads/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]), combine='by_coords')
+	ds = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]))
 
 	if idx == 1:
 		ds = ds.tp.sel(time=slice('2018-01-01','2021-12-31'))
@@ -143,12 +145,12 @@ for i in range(1, 289):
 	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 	plt.xlabel('Annual Cycle', fontsize=8, fontweight='bold')
 	plt.ylabel('{0}'.format(dict_var[idx][1]), fontsize=8, fontweight='bold')
-	plt.grid(linestyle='--')
-	plt.legend()
-
+	plt.legend(fontsize=8)
+	plt.grid()
+	
 	print('Path out to save figure')
 	# Path out to save figure
-	path_out = '/home/nice/Downloads/FPS_SESA/figs'
+	path_out = '/home/nice/Documentos/FPS_SESA/figs'
 	name_out = 'pyplt_annual_cycle_{0}_{1}_{2}.png'.format(dict_var[idx][0], codes[i], names[i][0])
 	plt.savefig(os.path.join(path_out, name_out), dpi=100, bbox_inches='tight')
 	plt.close('all')

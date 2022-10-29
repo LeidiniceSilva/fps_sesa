@@ -71,6 +71,8 @@ for j in range(1, 289):
 		continue
 	if j == 236:
 		continue
+	if j == 246:
+		continue
 	if j == 268:
 		continue
 	if j == 287:
@@ -83,17 +85,17 @@ for j in range(1, 289):
 
 	print('Reading inmet weather station:', j, codes[j], names[j][1])
 	# Reading inmet weather station	"pr"
-	pr_input = '/home/nice/Downloads/FPS_SESA/inmet/inmet_nc/pr_{0}_{1}.nc'.format(codes[j], dt)
+	pr_input = '/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/pre_{0}_{1}.nc'.format(codes[j], dt)
 	pr_input = nc.Dataset(pr_input)
 	pre = pr_input['pre'][:]
 
 	# Reading inmet weather station	"tp"
-	tp_input = '/home/nice/Downloads/FPS_SESA/inmet/inmet_nc/tp_{0}_{1}.nc'.format(codes[j], dt)
+	tp_input = '/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/tmp_{0}_{1}.nc'.format(codes[j], dt)
 	tp_input = nc.Dataset(tp_input)
 	tmp = tp_input['tmp'][:]
 
 	# Reading inmet weather station	"uv"
-	uv_input = '/home/nice/Downloads/FPS_SESA/inmet/inmet_nc/uv_{0}_{1}.nc'.format(codes[j], dt)
+	uv_input = '/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/uv_{0}_{1}.nc'.format(codes[j], dt)
 	uv_input = nc.Dataset(uv_input)
 	uv = uv_input['uv'][:]
 	
@@ -104,38 +106,39 @@ for j in range(1, 289):
 	
 	ax = fig.add_subplot(3, 1, 1)
 	plt.plot(time, pre, linewidth=0.5, color='blue', label = 'INMET')
-	plt.title('{0} lat: {1} lon: {2}'.format(name_ii, yy, xx), fontsize=8, fontweight='bold')
-	plt.ylabel('Precipitation (mm d⁻¹)', fontsize=8, fontweight='bold')
+	plt.title(u'{0} - {1} lat: {2} lon: {3}'.format(codes[j], name_ii, yy, xx), fontsize=8, fontweight='bold')
+	plt.ylabel(u'Precipitation (mm d$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')
 	plt.setp(ax.get_xticklabels(), visible=False)
 	plt.yticks(np.arange(0, 22, 2), fontsize=8)
 	plt.ylim(-0.5, 20)
-	plt.grid(linestyle='--')
-	plt.legend(loc=1)
-	
+	plt.legend(loc=1, fontsize=8)
+	plt.grid()
+		
 	ax = fig.add_subplot(3, 1, 2)
 	plt.plot(time, tmp, linewidth=0.5, color='blue', label = 'INMET')
-	plt.title('{0} lat: {1} lon: {2}'.format(name_ii, yy, xx), fontsize=8, fontweight='bold')
-	plt.ylabel('Temperature (°C)', fontsize=8, fontweight='bold')
+	plt.title(u'{0} - {1} lat: {2} lon: {3}'.format(codes[j], name_ii, yy, xx), fontsize=8, fontweight='bold')
+	plt.ylabel(u'Temperature (°C)', fontsize=8, fontweight='bold')
 	plt.setp(ax.get_xticklabels(), visible=False)
-	plt.yticks(np.arange(0, 33, 3), fontsize=8)
-	plt.ylim(-0.5, 30)
-	plt.grid(linestyle='--')
-	plt.legend(loc=1)
+	plt.yticks(np.arange(0, 36, 3), fontsize=8)
+	plt.ylim(-0.5, 33)
+	plt.legend(loc=1, fontsize=8)
+	plt.grid()
 	
 	ax = fig.add_subplot(3, 1, 3)
 	plt.plot(time, uv, linewidth=0.5, color='blue', label = 'INMET')
-	plt.title('{0} lat: {1} lon: {2}'.format(name_ii, yy, xx), fontsize=8, fontweight='bold')
-	plt.xlabel('00h 01/01/2018 - 23h 31/12/2021', fontsize=8, fontweight='bold')
-	plt.ylabel('Wind speed (m s⁻¹)', fontsize=8, fontweight='bold')
+	plt.title(u'{0} - {1} lat: {2} lon: {3}'.format(codes[j], name_ii, yy, xx), fontsize=8, fontweight='bold')
+	plt.xlabel(u'00h 01/01/2018 - 23h 31/12/2021', fontsize=8, fontweight='bold')
+	plt.ylabel(u'Wind speed (m s$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')
 	plt.yticks(np.arange(0, 22, 2), fontsize=8)
+	plt.xticks(fontsize=8)
 	plt.ylim(-0.5, 20)
-	plt.grid(linestyle='--')
-	plt.legend(loc=1)
+	plt.legend(loc=1, fontsize=8)
+	plt.grid()
 			
 	print('Path out to save figure')
 	# Path out to save figure
-	path_out = '/home/nice/Downloads/FPS_SESA/figs'
-	name_out = 'pyplt_nc_vars_{0}_{1}_{2}.png'.format(yy, xx, name_i)
+	path_out = '/home/nice/Documentos/FPS_SESA/figs'
+	name_out = 'pyplt_nc_vars_{0}_{1}.png'.format(codes[j], name_i)
 	plt.savefig(os.path.join(path_out, name_out), dpi=100, bbox_inches='tight')
 	plt.close('all')
 	plt.cla()
