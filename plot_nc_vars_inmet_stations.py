@@ -107,7 +107,7 @@ for j in range(1, 289):
 	ax = fig.add_subplot(3, 1, 1)
 	plt.plot(time, pre, linewidth=0.5, color='blue', label = 'INMET')
 	plt.title(u'{0} - {1} lat: {2} lon: {3}'.format(codes[j], name_ii, yy, xx), fontsize=8, fontweight='bold')
-	plt.ylabel(u'Precipitation (mm d$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')
+	plt.ylabel(u'Precipitation (mm h$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')
 	plt.setp(ax.get_xticklabels(), visible=False)
 	plt.yticks(np.arange(0, 22, 2), fontsize=8)
 	plt.ylim(-0.5, 20)

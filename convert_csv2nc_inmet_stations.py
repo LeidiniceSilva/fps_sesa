@@ -9,8 +9,7 @@ import os
 import numpy as np
 
 from netCDF4 import Dataset
-from dict_inmet_stations_code import codes
-from dict_inmet_stations_name import names
+from dict_stations_inmet import inmet
 
 idx=12
 
