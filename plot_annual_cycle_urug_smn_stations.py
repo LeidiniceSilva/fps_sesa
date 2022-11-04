@@ -6,14 +6,62 @@ __date__        = "09/19/2022"
 __description__ = "This script plot time series to each inmet automatic station"
 
 import os
+import csv
 import numpy as np
 import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 
-from dict_inmet_stations_code import codes
-from dict_inmet_stations_latlon import coord
-from dict_inmet_stations_name import names
+from dict_stations_urug_smn import urug_smn
+
+csv_header = []
+
+for idx in range(0, 4):
+
+	csv_header.append(urug_smn[idx+1][0])
+	
+print(csv_header)
+	
+# Reading uruguai weather stations
+df = pd.read_csv(os.path.join('/home/nice/Documentos/FPS_SESA/uru/', 'PP_URUG_SMN_2018_2021.csv'))
+df['Date'] = pd.to_datetime(df['Date'])
+df = df.set_index('Date').resample('H').sum()
+var = df.values
+	
+with open('example.csv', 'w') as file:
+	writer = csv.writer(file)
+	writer.writerow(var)
+
+exit()
+		
+# ~ for idx in range(0, 72):
+	
+	# ~ # Reading uruguai weather stations
+	# ~ df = pd.read_csv(os.path.join('/home/nice/Documentos/FPS_SESA/uru/', 'PP_URUG_SMN_2018_2021.csv'))
+	# ~ df['Date'] = pd.to_datetime(df['Date'])
+	# ~ df = df.set_index('Date').resample('H').sum()
+	# ~ var = df_i.iloc[:,idx]
+	
+	# ~ bins = [ 1,2,3,4,5 ]
+	# ~ freq = [ 9,8,7,6,5 ]
+
+	# ~ f = open("test.csv", "w")
+
+	# ~ for i in xrange(len(bins)):
+		# ~ f.write("{} {}\n".format(bins[i], freq[i]))
+	# ~ f.close()
+	
+	# ~ with open('example.csv', 'w') as file:
+		# ~ writer = csv.writer(file)
+		# ~ writer.writerow(df_h)
+
+	# ~ exit()
+
+
+
+df['Data Medicao'] = pd.to_datetime(df['Data Medicao'], format='%Y-%m-%d %H:%M:%S', errors='ignore')
+df_i = df.groupby(pd.Grouper(key='Data Medicao', freq='M')).mean()
+
 
 idx=1
 dt = 'H_2018-01-01_2021-12-31'

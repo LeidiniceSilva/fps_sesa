@@ -9,8 +9,10 @@ import os
 import numpy as np
 
 from netCDF4 import Dataset
-from dict_inmet_stations_code import codes
-from dict_inmet_stations_name import names
+
+data = np.loadtxt(os.path.join('/home/nice/Documentos/FPS_SESA/arg/BCER', '2018-01-01_2018-01-31_EMAs.csv'), dtype='str', delimiter=',', unpack=True)
+print(data)
+exit()
 
 idx=12
 
