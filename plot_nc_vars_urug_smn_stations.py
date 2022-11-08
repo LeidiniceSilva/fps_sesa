@@ -29,7 +29,7 @@ for idx in range(1, 73):
 	time = np.arange(0.2, 35064 + 0.2)
 	
 	ax = fig.add_subplot(1, 1, 1)
-	plt.plot(time, pre, linewidth=0.5, color='blue', label = 'INMET')
+	plt.plot(time, pre, linewidth=0.5, color='blue', label = 'SMN')
 	plt.title(u'{0}'.format(urug_smn[idx][0]), fontsize=8, fontweight='bold')
 	plt.xlabel(u'00h 01/01/2018 - 23h 31/12/2021', fontsize=8, fontweight='bold')
 	plt.ylabel(u'Precipitation (mm h$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')

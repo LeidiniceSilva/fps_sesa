@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "10/17/2022"
-__description__ = "This script convert .csv to .nc from each inmet station"
+__description__ = "This script convert .csv to .nc from each INMET station"
 
 import os
 import numpy as np
@@ -95,7 +95,7 @@ for j in range(1, 289):
 		continue
 																																																											
 	# This load the file (date, hour, variable)
-	data = np.loadtxt(os.path.join('/home/nice/Documentos/FPS_SESA/inmet/inmet_used', 'dados_{0}_{1}.csv'.format(codes[j], dt)), dtype='str', delimiter=',', unpack=True)
+	data = np.loadtxt(os.path.join('/home/nice/Documentos/FPS_SESA/inmet/inmet_used', 'dados_{0}_{1}.csv'.format(inmet[j][0], dt)), dtype='str', delimiter=',', unpack=True)
 	data = data[:,1:]
 	data_values = np.where(data[idx,:] == 'null', -999., data[idx,:])
 	data_values = np.array(data_values, dtype=float)

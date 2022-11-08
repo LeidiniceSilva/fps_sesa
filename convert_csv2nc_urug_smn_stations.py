@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "10/17/2022"
-__description__ = "This script convert .csv to .nc from each inmet station"
+__description__ = "This script convert .csv to .nc from each Uruguai station"
 
 import os
 import numpy as np
@@ -52,8 +52,8 @@ for idx in range(0, 73):
 	ds.institution 	= 'SMN.'
 	ds.source 		= 'Automatic weather station.'
 	ds.history 		= 'Rewrote via python script.'
-	ds.references 	= 'https://bdmep.inmet.gov.br/.'
-	ds.comment 		= 'This script convert .csv to .nc from each uruguai weather station'
+	ds.references 	= 'https://www.smn.gob.ar/.'
+	ds.comment 		= 'This script convert .csv to .nc from each Uruguai weather station'
 		
 	ds.createDimension('time', None)
 
