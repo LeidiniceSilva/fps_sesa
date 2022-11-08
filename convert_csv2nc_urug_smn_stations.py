@@ -41,7 +41,7 @@ for idx in range(0, 73):
 		if i < 24:
 			print('Date organized:', data_dates[i], data_values[i])
 	
-	nc_output = u'/home/nice/Documentos/FPS_SESA/urug_smn/urug_smn_nc/pre_{0}_H_2018-01-01_2021-12-31.nc'.format(urug_smn[idx+1][0])
+	nc_output = '/home/nice/Documentos/FPS_SESA/urug_smn/urug_smn_nc/pre_{0}_H_2018-01-01_2021-12-31.nc'.format(urug_smn[idx+1][0])
 
 	print('Create netcdf')
 	# Create netcdf

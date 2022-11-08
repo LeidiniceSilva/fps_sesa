@@ -19,12 +19,12 @@ from dict_stations_arg_ames import arg_ames
 from dict_stations_urug_smn import urug_smn
 
 
-def import_era5_inmet(var, dt):
+def import_inmet_era5(var, dt):
 	
 	ix = []		  
-	jy = []
-	bias = []
-	corr = []
+	iy = []
+	bias_dr = []
+	corr_dr = []
 
 	# Select lat and lon 
 	for i in range(1, 289):
@@ -87,33 +87,33 @@ def import_era5_inmet(var, dt):
 			continue
 		if i == 287:
 			continue
-		
-		yy.append(inmet[i][2])
-		xx.append(inmet[i][3])
+			
+		iy.append(inmet[i][2])
+		ix.append(inmet[i][3])
 
 		print('Reading inmet weather station:', i, inmet[i][0], inmet[i][1])
 		# Reading inmet weather station	
-		ds = xr.open_dataset('/home/nice/Documentos/FPS_SESA/inmet/inmet_nc', '{0}_{1}_{2}.nc'.format(var, inmet[i][0], dt)))
-		ds_i = ds_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
-		ds_i = ds_i.groupby('time.month').mean('time')
-		values_ds_i = ds_i.values
-		clim_ds_i = values_ds_i*24
+		dr_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/' + '{0}_{1}_{2}.nc'.format(var, inmet[i][0], dt))
+		dr_i = dr_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
+		dr_i = dr_i.groupby('time.month').mean('time')
+		values_dr_i = dr_i.values
+		clim_dr_i = values_dr_i*24
 
 		# reading era5 reanalisis
-		ds = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]))
-		ds = ds.tp.sel(time=slice('2018-01-01','2021-12-31'))
-		ds = ds.sel(latitude=coord[i][0], longitude=coord[i][1], method='nearest')
-		var = ds.groupby('time.month').mean('time')
-		var_i = var.values
-		clim_i = var_i*24
+		dr_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]))
+		dr_ii = dr_ii.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		dr_ii = dr_ii.sel(latitude=inmet[i][2], longitude=inmet[i][3], method='nearest')
+		dr_ii = dr_ii.groupby('time.month').mean('time')
+		values_dr_ii = dr_ii.values
+		clim_dr_ii = values_dr_ii*24
 			
-		corr_ = np.corrcoef(clim, clim_i)[0][1]
-		corr.append(corr_)
+		corr_ = np.corrcoef(clim_dr_i, clim_dr_ii)[0][1]
+		corr_dr.append(corr_)
 
-		bias_ = np.nanmean(clim_i) - np.nanmean(clim)
-		bias.append(bias_)
-		
-	return corr, bias
+		bias_ = np.nanmean(clim_dr_ii) - np.nanmean(clim_dr_i)
+		bias_dr.append(bias_)
+
+	return iy, ix, corr_dr, bias_dr
 
 
 def import_urug_smn_era5(dt):
@@ -155,14 +155,27 @@ def import_urug_smn_era5(dt):
 	return jy, jx, corr_ds, bias_ds
 	
 	
-idx=1
-dt = 'H_2018-01-01_2021-12-31'
 dict_var = {1: ['pre', 'Pr_1h (mm d$\mathregular{^{-1}}$)', 'tp'],
 			5: ['tmp', 'Tmp_1h (°C)', 't2m'],
 			11: ['uv', 'Wind_1h (m s$\mathregular{^{-1}}$)', 'uv10']}
+idx=1
+var = dict_var[idx][0]
+dt = 'H_2018-01-01_2021-12-31'
 
-# Import latitude, longitude, correlation and bias from Uruguai			
+# Import latitude, longitude, correlation and bias from Uruguai
+iy, ix, corr_dr, bias_dr = import_inmet_era5(var, dt)			
 jy, jx, corr_ds, bias_ds = import_urug_smn_era5(dt)
+
+if idx == 1:
+	lon_xx = ix+jx
+	lat_yy = iy+jy
+	corr_tot = corr_dr + corr_ds
+	bias_tot = bias_dr + bias_ds
+else:
+	lon_xx = ix
+	lat_yy = iy
+	corr_tot = corr_dr 
+	bias_tot = bias_dr
 
 print('Plot figure')
 # Plot figure   
@@ -192,7 +205,7 @@ my_map = Basemap(projection='cyl', llcrnrlon=-75, llcrnrlat=-40., urcrnrlon=-35.
 my_map.drawmeridians(np.arange(-75.,-25.,10.), size=6, labels=[0,0,0,1], linewidth=0.5, color='black')
 my_map.drawparallels(np.arange(-40.,5.,10.), size=6, labels=[1,0,0,0], linewidth=0.5, color='black') 
 my_map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_pais/lim_pais', 'world', drawbounds=True, color='black', linewidth=0.5)
-pltfig = my_map.scatter(jx, jy, 5, bias_ds, cmap=colorv, marker='o', vmin=minb, vmax=maxb)
+pltfig = my_map.scatter(lon_xx, lat_yy, 5, bias_tot, cmap=colorv, marker='o', vmin=minb, vmax=maxb)
 plt.title('(a) Bias {0}'.format(dict_var[idx][1]), loc='left', fontsize=8)
 plt.ylabel(u'Latitude', fontsize=6, labelpad=15)
 plt.xlabel(u'Longitude', fontsize=6, labelpad=15)
@@ -204,7 +217,7 @@ my_map = Basemap(projection='cyl', llcrnrlon=-75, llcrnrlat=-40., urcrnrlon=-35.
 my_map.drawmeridians(np.arange(-75.,-25.,10.), size=6, labels=[0,0,0,1], linewidth=0.5, color='black')
 my_map.drawparallels(np.arange(-40.,5.,10.), size=6, labels=[1,0,0,0], linewidth=0.5, color='black') 
 my_map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_pais/lim_pais', 'world', drawbounds=True, color='black', linewidth=0.5)
-pltfig = my_map.scatter(jx, jy, 5, corr_ds, cmap=colorv, marker='o', vmin=minc, vmax=maxc)
+pltfig = my_map.scatter(lon_xx, lat_yy, 5, corr_tot, cmap=colorv, marker='o', vmin=minc, vmax=maxc)
 plt.title('(b) Correlation {0}'.format(dict_var[idx][1]), loc='left', fontsize=8)
 plt.xlabel(u'Longitude', fontsize=6, labelpad=15)
 cbar = plt.colorbar(pltfig, cax=fig.add_axes([0.99, 0.35, 0.019, 0.28]), extend='both')
