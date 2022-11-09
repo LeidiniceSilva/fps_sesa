@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "09/19/2022"
-__description__ = "This script plot point for each inmet automatic station over sesa domain"
+__description__ = "This script plot point for automatic station over sesa domain"
 
 import os
 import conda
@@ -15,16 +15,16 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from mpl_toolkits.basemap import Basemap
 from dict_stations_inmet import inmet
-from dict_stations_arg_ames import arg_ames
+from dict_stations_arg_emas import arg_emas
 from dict_stations_urug_smn import urug_smn
 
 
-def import_inmet_era5(var, dt):
+def import_inmet_era5(var_i, var_ii, dt):
 	
 	ix = []		  
 	iy = []
-	bias_dr = []
-	corr_dr = []
+	bias_ii = []
+	corr_ii = []
 
 	# Select lat and lon 
 	for i in range(1, 289):
@@ -91,37 +91,37 @@ def import_inmet_era5(var, dt):
 		iy.append(inmet[i][2])
 		ix.append(inmet[i][3])
 
-		print('Reading inmet weather station:', i, inmet[i][0], inmet[i][1])
+		print('Reading INMET weather station:', i, inmet[i][0], inmet[i][1])
 		# Reading inmet weather station	
-		dr_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/' + '{0}_{1}_{2}.nc'.format(var, inmet[i][0], dt))
-		dr_i = dr_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
-		dr_i = dr_i.groupby('time.month').mean('time')
-		values_dr_i = dr_i.values
-		clim_dr_i = values_dr_i*24
+		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/' + '{0}_{1}_{2}.nc'.format(var_i, inmet[i][0], dt))
+		d_i = d_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
+		d_i = d_i.groupby('time.month').mean('time')
+		values_i = d_i.values
+		clim_i = values_i*24
 
 		# reading era5 reanalisis
-		dr_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(dict_var[idx][2]))
-		dr_ii = dr_ii.tp.sel(time=slice('2018-01-01','2021-12-31'))
-		dr_ii = dr_ii.sel(latitude=inmet[i][2], longitude=inmet[i][3], method='nearest')
-		dr_ii = dr_ii.groupby('time.month').mean('time')
-		values_dr_ii = dr_ii.values
-		clim_dr_ii = values_dr_ii*24
+		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + '{0}_sesa_era5_2018-2021.nc'.format(var_ii))
+		d_ii = d_ii.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_ii = d_ii.sel(latitude=inmet[i][2], longitude=inmet[i][3], method='nearest')
+		d_ii = d_ii.groupby('time.month').mean('time')
+		values_ii = d_ii.values
+		clim_ii = values_ii*24
 			
-		corr_ = np.corrcoef(clim_dr_i, clim_dr_ii)[0][1]
-		corr_dr.append(corr_)
+		corr_i = np.corrcoef(clim_i, clim_ii)[0][1]
+		corr_ii.append(corr_i)
 
-		bias_ = np.nanmean(clim_dr_ii) - np.nanmean(clim_dr_i)
-		bias_dr.append(bias_)
+		bias_i = np.nanmean(clim_ii) - np.nanmean(clim_i)
+		bias_ii.append(bias_i)
 
-	return iy, ix, corr_dr, bias_dr
+	return iy, ix, corr_ii, bias_ii
 
 
 def import_urug_smn_era5(dt):
 	
 	jy = []
 	jx = []
-	corr_ds = []
-	bias_ds = []
+	corr_jj = []
+	bias_jj = []
 	
 	# Select lat and lon 
 	for j in range(1, 72):
@@ -132,50 +132,92 @@ def import_urug_smn_era5(dt):
 		jx.append(urug_smn[j][2])		
 
 		# Reading Uruguai weather stations
-		ds_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
-		ds_i = ds_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
-		ds_i = ds_i.groupby('time.month').mean('time')
-		values_ds_i = ds_i.values
-		clim_ds_i = values_ds_i*24
+		d_j = xr.open_dataset('/home/nice/Documentos/FPS_SESA/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
+		d_j = d_j.pre.sel(time=slice('2018-01-01','2021-12-31'))
+		d_j = d_j.groupby('time.month').mean('time')
+		values_j = d_j.values
+		clim_j = values_j*24
 		
 		# Reading ERA5 reanalisis
-		ds_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + 'tp_sesa_era5_2018-2021.nc')
-		ds_ii = ds_ii.tp.sel(time=slice('2018-01-01','2021-12-31'))
-		ds_ii = ds_ii.sel(latitude=urug_smn[j][1], longitude=urug_smn[j][2], method='nearest')
-		ds_ii = ds_ii.groupby('time.month').mean('time')
-		values_ds_ii = ds_ii.values
-		clim_ds_ii = values_ds_ii*24
+		d_jj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + 'tp_sesa_era5_2018-2021.nc')
+		d_jj = d_jj.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_jj = d_jj.sel(latitude=urug_smn[j][1], longitude=urug_smn[j][2], method='nearest')
+		d_jj = d_jj.groupby('time.month').mean('time')
+		values_jj = d_jj.values
+		clim_jj = values_jj*24
 		
-		corr_ = np.corrcoef(clim_ds_i, clim_ds_ii)[0][1]
-		corr_ds.append(corr_)
+		corr_j = np.corrcoef(clim_j, clim_jj)[0][1]
+		corr_jj.append(corr_j)
 
-		bias_ = np.nanmean(clim_ds_ii) - np.nanmean(clim_ds_i)
-		bias_ds.append(bias_)
+		bias_j = np.nanmean(clim_jj) - np.nanmean(clim_j)
+		bias_jj.append(bias_j)
 				
-	return jy, jx, corr_ds, bias_ds
+	return jy, jx, corr_jj, bias_jj
+
+
+def import_arg_emas_era5(dt):
+	
+	ky = []
+	kx = []
+	corr_kk = []
+	bias_kk = []
+	
+	# Select lat and lon 
+	for k in range(1, 88):
+		
+		print('Reading Argentina weather station:', k, arg_emas[k][0])	
+
+		ky.append(arg_emas[k][2])
+		kx.append(arg_emas[k][1])		
+
+		# Reading Argentina weather stations
+		d_k = xr.open_dataset('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas_nc/' + 'precip_{0}_{1}.nc'.format(arg_emas[k][0], dt))
+		d_k = d_k.precip.sel(time=slice('2018-01-01','2021-12-31'))
+		d_k = d_k.groupby('time.month').mean('time')
+		values_k = d_k.values
+		clim_k = values_k*24
+		
+		# Reading ERA5 reanalisis
+		d_kk = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + 'tp_sesa_era5_2018-2021.nc')
+		d_kk = d_kk.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_kk = d_kk.sel(latitude=arg_emas[k][2], longitude=arg_emas[k][1], method='nearest')
+		d_kk = d_kk.groupby('time.month').mean('time')
+		values_kk = d_kk.values
+		clim_kk = values_kk*24
+		
+		corr_k = np.corrcoef(clim_k, clim_kk)[0][1]
+		corr_kk.append(corr_k)
+
+		bias_k = np.nanmean(clim_kk) - np.nanmean(clim_k)
+		bias_kk.append(bias_k)
+				
+	return ky, kx, corr_kk, bias_kk
 	
 	
 dict_var = {1: ['pre', 'Pr_1h (mm d$\mathregular{^{-1}}$)', 'tp'],
 			5: ['tmp', 'Tmp_1h (°C)', 't2m'],
 			11: ['uv', 'Wind_1h (m s$\mathregular{^{-1}}$)', 'uv10']}
+			
 idx=1
-var = dict_var[idx][0]
+var_i = dict_var[idx][0]
+var_ii = dict_var[idx][2]
 dt = 'H_2018-01-01_2021-12-31'
 
-# Import latitude, longitude, correlation and bias from Uruguai
-iy, ix, corr_dr, bias_dr = import_inmet_era5(var, dt)			
-jy, jx, corr_ds, bias_ds = import_urug_smn_era5(dt)
+# Import latitude, longitude, correlation and bias
+iy, ix, corr_ii, bias_ii = import_inmet_era5(var_i, var_ii, dt)			
+jy, jx, corr_jj, bias_jj = import_urug_smn_era5(dt)
+ky, kx, corr_kk, bias_kk = import_arg_emas_era5(dt)
 
 if idx == 1:
-	lon_xx = ix+jx
-	lat_yy = iy+jy
-	corr_tot = corr_dr + corr_ds
-	bias_tot = bias_dr + bias_ds
+	lon_xx = ix+jx+kx
+	lat_yy = iy+jy+ky
+	corr_tot = corr_ii+corr_jj+corr_kk
+	bias_tot = bias_ii+bias_jj+bias_kk
 else:
 	lon_xx = ix
 	lat_yy = iy
-	corr_tot = corr_dr 
-	bias_tot = bias_dr
+	corr_tot = corr_ii 
+	bias_tot = bias_ii
 
 print('Plot figure')
 # Plot figure   

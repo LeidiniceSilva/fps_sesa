@@ -10,7 +10,7 @@ Dictionaries of the automatic weather station data
 
 > {station}
 
-    Code, latitude and longitude:
+    Code, longitude and latitude:
 
     where:
 
