@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "09/19/2022"
-__description__ = "This script plot time series to each inmet automatic station"
+__description__ = "This script plot time series to each Uruguai weather station"
 
 import os
 import csv
@@ -40,8 +40,8 @@ for j in range(1, 72):
 	# Plot figure
 	fig = plt.figure()
 	time = np.arange(0.5, 12 + 0.5)
-	plt.plot(time, clim_ds_i, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='black', label = 'URUG_SMN')
-	plt.plot(time, clim_ds_ii, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='blue', label = 'ERA5')
+	plt.plot(time, clim_ds_i, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='black', label='URUG_SMN')
+	plt.plot(time, clim_ds_ii, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='blue', label='ERA5')
 	plt.title('{0} (2018-2021)'.format(urug_smn[j][0]), fontsize=8, fontweight='bold')
 	plt.yticks(np.arange(0, 13, 1))
 	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))

@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "09/19/2022"
-__description__ = "This script plot time series to each inmet automatic station"
+__description__ = "This script plot time series to each Argentina weather station"
 
 import os
 import csv
@@ -19,7 +19,7 @@ dt = 'H_2018-01-01_2021-12-31'
 # Getting the data 
 for j in range(1, 88):
 	
-	print('Reading Uruguai weather station:', j, arg_emas[j][0])	
+	print('Reading Argentina weather station:', j, arg_emas[j][0])	
 
 	# Reading Argentina weather stations
 	ds_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas_nc/' + 'precip_{0}_{1}.nc'.format(arg_emas[j][0], dt))
@@ -40,8 +40,8 @@ for j in range(1, 88):
 	# Plot figure
 	fig = plt.figure()
 	time = np.arange(0.5, 12 + 0.5)
-	plt.plot(time, clim_ds_i, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='black', label = 'AMES')
-	plt.plot(time, clim_ds_ii, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='blue', label = 'ERA5')
+	plt.plot(time, clim_ds_i, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='black', label='AMES')
+	plt.plot(time, clim_ds_ii, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='blue', label='ERA5')
 	plt.title('{0} (2018-2021)'.format(arg_emas[j][0]), fontsize=8, fontweight='bold')
 	plt.yticks(np.arange(0, 13, 1))
 	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
