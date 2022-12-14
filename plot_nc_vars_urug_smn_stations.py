@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "10/17/2022"
-__description__ = "This script plot time series to each inmet automatic station"
+__description__ = "This script plot time series to each Uruguai automatic station"
 
 import os
 import numpy as np

@@ -12,11 +12,11 @@ import pandas as pd
 from netCDF4 import Dataset
 from dict_stations_arg_emas import arg_emas
 
-# ~ var = 'precip'
-# ~ nc_var = 'precip'
-# ~ unit_var = 'mm'
-# ~ name_var = 'Hourly total of precipitation'
-# ~ std_var = 'precipitation'
+var = 'precip'
+nc_var = 'precip'
+unit_var = 'mm'
+name_var = 'Hourly total of precipitation'
+std_var = 'precipitation'
 
 var = 'temp'
 nc_var = 'temp'
@@ -85,19 +85,19 @@ for i in range(1, 88):
 
 	for dt in range(0, 48):
 		
-		# ~ df = pd.read_csv(os.path.join('/home/nice/Documentos/FPS_SESA/arg_emas/BCER/', '{0}_{1}_EMAs.csv'.format(dt_i[dt], dt_f[dt])))
-		# ~ df = df.loc[df['idEstacion']==int(idx)]
-		# ~ df['fechaHora'] = pd.to_datetime(df['fechaHora'])
-		# ~ df = df.set_index('fechaHora').resample('H').mean()	# sum.() to precip and .mean() to temp
-		# ~ df.iloc[:,4].to_csv('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas/{0}_{1}_H_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
-		# ~ print('Write weather station: {0}_{1}_H_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
+		df = pd.read_csv(os.path.join('/home/nice/Documentos/FPS_SESA/arg_emas/BCER/', '{0}_{1}_EMAs.csv'.format(dt_i[dt], dt_f[dt])))
+		df = df.loc[df['idEstacion']==int(idx)]
+		df['fechaHora'] = pd.to_datetime(df['fechaHora'])
+		df = df.set_index('fechaHora').resample('H').mean()	# sum.() to precip and .mean() to temp
+		df.iloc[:,4].to_csv('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas/{0}_{1}_H_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
+		print('Write weather station: {0}_{1}_H_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
 
-		# ~ df = pd.read_csv(os.path.join('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas/', '{0}_{1}_H_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt])), index_col='fechaHora')
-		# ~ df.head()
-		# ~ df.index = pd.DatetimeIndex(df.index)
-		# ~ df = df.reindex(pd.date_range(dict_dt[dt+1][0], dict_dt[dt+1][1], freq='H'), fill_value=-999.)
-		# ~ df.iloc[:,:].to_csv('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas/{0}_{1}_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
-		# ~ print('Write weather station: {0}_{1}_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
+		df = pd.read_csv(os.path.join('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas/', '{0}_{1}_H_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt])), index_col='fechaHora')
+		df.head()
+		df.index = pd.DatetimeIndex(df.index)
+		df = df.reindex(pd.date_range(dict_dt[dt+1][0], dict_dt[dt+1][1], freq='H'), fill_value=-999.)
+		df.iloc[:,:].to_csv('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas/{0}_{1}_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
+		print('Write weather station: {0}_{1}_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt]))
 
 		data = np.loadtxt(os.path.join('/home/nice/Documentos/FPS_SESA/arg_emas/arg_emas/', '{0}_{1}_{2}_{3}_emas.csv'.format(var, idx, dt_i[dt], dt_f[dt])), dtype='str', delimiter=',', unpack=True)
 		data_i = data[:,1:]
@@ -106,10 +106,7 @@ for i in range(1, 88):
 		station_value.append(data_var_i)
 
 	data_values = np.concatenate(station_value)
-	
-	print(data_values)
-	exit()
-			
+				
 	data_dates  = []
 	for i in range(len(dt_h)):
 			

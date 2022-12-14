@@ -104,7 +104,7 @@ for j in range(1, 289):
 	plt.yticks(np.arange(0, 13, 1))
 	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 	plt.xlabel('Annual Cycle', fontsize=8, fontweight='bold')
-	plt.ylabel('Precipitation (mm d$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')
+	plt.ylabel('Precipitation (mm d⁻¹)', fontsize=8, fontweight='bold')
 	plt.legend(fontsize=8)
 	plt.grid()
 	

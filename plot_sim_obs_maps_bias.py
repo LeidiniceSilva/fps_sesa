@@ -31,18 +31,18 @@ def import_regcm(freq):
 	return lat, lon, mean
 
 
-# ~ def import_cmorph(freq):
+def import_cmorph(freq):
 	
-	# ~ path  = '/home/nice/Documentos/FPS_SESA/cmorph'
-	# ~ arq   = '{0}/tp_era5_sesa_djf_2018-2019_lonlat.nc'.format(path, freq)	
+	path  = '/home/nice/Documentos/FPS_SESA/cmorph'
+	arq   = '{0}/CMORPH_V1.0_ADJ_SESA_8km_{1}_2018-2019_lonlat.nc'.format(path, freq)	
 	
-	# ~ data  = netCDF4.Dataset(arq)
-	# ~ var   = data.variables['cmorph'][:] 
-	# ~ lat   = data.variables['lat'][:]
-	# ~ lon   = data.variables['lon'][:]
-	# ~ mean = np.nanmean(var[:][:,:,:], axis=0)
+	data  = netCDF4.Dataset(arq)
+	var   = data.variables['cmorph'][:] 
+	lat   = data.variables['lat'][:]
+	lon   = data.variables['lon'][:]
+	mean = np.nanmean(var[:][:,:,:], axis=0)
 
-	# ~ return lat, lon, mean
+	return lat, lon, mean
 	
 	
 def import_era5(freq):
@@ -89,20 +89,20 @@ lat, lon, regcm_mam = import_regcm(u'mam')
 lat, lon, regcm_jja = import_regcm(u'jja')
 lat, lon, regcm_son = import_regcm(u'son')
 
-# ~ lat, lon, cmorph_djf = import_cmorph(u'djf')
-# ~ lat, lon, cmorph_mam = import_cmorph(u'mam')
-# ~ lat, lon, cmorph_jja = import_cmorph(u'jja')
-# ~ lat, lon, cmorph_son = import_cmorph(u'son')
+lat, lon, cmorph_djf = import_cmorph(u'djf')
+lat, lon, cmorph_mam = import_cmorph(u'mam')
+lat, lon, cmorph_jja = import_cmorph(u'jja')
+lat, lon, cmorph_son = import_cmorph(u'son')
 
 lat, lon, era5_djf = import_era5(u'djf')
 lat, lon, era5_mam = import_era5(u'mam')
 lat, lon, era5_jja = import_era5(u'jja')
 lat, lon, era5_son = import_era5(u'son')
 
-# ~ diff_regcm_cmorph_djf = regcm_djf - cmorph_djf
-# ~ diff_regcm_cmorph_mam = regcm_mam - cmorph_mam
-# ~ diff_regcm_cmorph_jja = regcm_jja - cmorph_jja
-# ~ diff_regcm_cmorph_son = regcm_son - cmorph_son
+diff_regcm_cmorph_djf = regcm_djf - cmorph_djf
+diff_regcm_cmorph_mam = regcm_mam - cmorph_mam
+diff_regcm_cmorph_jja = regcm_jja - cmorph_jja
+diff_regcm_cmorph_son = regcm_son - cmorph_son
 
 diff_regcm_era5_djf = regcm_djf - era5_djf
 diff_regcm_era5_mam = regcm_mam - era5_mam
@@ -120,32 +120,32 @@ plt.title(u'(a) RegCM5-CP_4km - CMORPH', loc='left', fontsize=8, fontweight='bol
 plt.ylabel(u'Latitude', fontsize=8, labelpad=20, fontweight='bold')
 plt.text(-47, -37, 'DJF', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, diff_regcm_era5_djf, levels=lev, latlon=True, cmap=cmap, extend='both') 
-map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,1], linewidth=0.5, color='black')
+plt_map = map.contourf(xx, yy, diff_regcm_cmorph_djf, levels=lev, latlon=True, cmap=cmap, extend='both') 
+map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,0], linewidth=0.5, color='black')
 map.drawparallels(np.arange(-40.,-15.,5.), size=6, labels=[1,0,0,0], linewidth=0.5, color='black') 
 
 ax = fig.add_subplot(3, 4, 2)
 plt.title(u'(b) RegCM5-CP_4km - CMORPH', loc='left', fontsize=8, fontweight='bold')
 plt.text(-47, -37, 'MAM', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, diff_regcm_era5_mam, levels=lev, latlon=True, cmap=cmap, extend='both') 
-map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,1], linewidth=0.5, color='black')
+plt_map = map.contourf(xx, yy, diff_regcm_cmorph_mam, levels=lev, latlon=True, cmap=cmap, extend='both') 
+map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,0], linewidth=0.5, color='black')
 map.drawparallels(np.arange(-40.,-15.,5.), size=6, labels=[0,0,0,0], linewidth=0.5, color='black') 
 
 ax = fig.add_subplot(3, 4, 3)
 plt.title(u'(c) RegCM5-CP_4km - CMORPH', loc='left', fontsize=8, fontweight='bold')
 plt.text(-47, -37, 'JJA', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, diff_regcm_era5_jja, levels=lev, latlon=True, cmap=cmap, extend='both') 
-map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,1], linewidth=0.5, color='black')
+plt_map = map.contourf(xx, yy, diff_regcm_cmorph_jja, levels=lev, latlon=True, cmap=cmap, extend='both') 
+map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,0], linewidth=0.5, color='black')
 map.drawparallels(np.arange(-40.,-15.,5.), size=6, labels=[0,0,0,0], linewidth=0.5, color='black') 
 
 ax = fig.add_subplot(3, 4, 4)
 plt.title(u'(d) RegCM5-CP_4km - CMORPH', loc='left', fontsize=8, fontweight='bold')
 plt.text(-47, -37, 'SON', fontsize=8, fontweight='bold')
 map, xx, yy = basemap(lat, lon)
-plt_map = map.contourf(xx, yy, diff_regcm_era5_son, levels=lev, latlon=True, cmap=cmap, extend='both') 
-map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,1], linewidth=0.5, color='black')
+plt_map = map.contourf(xx, yy, diff_regcm_cmorph_son, levels=lev, latlon=True, cmap=cmap, extend='both') 
+map.drawmeridians(np.arange(-75.,-40.,5.), size=6, labels=[0,0,0,0], linewidth=0.5, color='black')
 map.drawparallels(np.arange(-40.,-15.,5.), size=6, labels=[0,0,0,0], linewidth=0.5, color='black') 
 
 ax = fig.add_subplot(3, 4, 5)
@@ -192,8 +192,8 @@ cbar.set_label(u'Precipitation (mm d⁻¹)', fontsize=8, fontweight='bold')
 cbar.ax.tick_params(labelsize=8)  
 
 # Path out to save figure
-path_out = '/home/nice/Downloads'
-name_out = 'pyplt_maps_bias_pr_regcm5_obs.png'
+path_out = '/home/nice/Documentos/FPS_SESA/figs'
+name_out = 'pyplt_maps_bias_regcm5_obs.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=600, bbox_inches='tight')

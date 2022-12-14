@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "10/17/2022"
-__description__ = "This script plot time series to each inmet automatic station"
+__description__ = "This script plot time series to each INMET automatic station"
 
 import os
 import numpy as np
@@ -81,7 +81,7 @@ for j in range(1, 289):
 	name_i = inmet[j][1]
 	name_ii = inmet[j][1]
 
-	print('Reading inmet weather station:', j, inmet[j][0], inmet[j][1])
+	print('Reading INMET weather station:', j, inmet[j][0], inmet[j][1])
 	# Reading inmet weather station	"pr"
 	pr_input = '/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/pre_{0}_{1}.nc'.format(inmet[j][0], dt)
 	pr_input = nc.Dataset(pr_input)

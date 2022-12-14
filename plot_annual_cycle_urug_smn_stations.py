@@ -6,7 +6,6 @@ __date__        = "09/19/2022"
 __description__ = "This script plot time series to each Uruguai weather station"
 
 import os
-import csv
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -46,7 +45,7 @@ for j in range(1, 72):
 	plt.yticks(np.arange(0, 13, 1))
 	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 	plt.xlabel('Annual Cycle', fontsize=8, fontweight='bold')
-	plt.ylabel('Precipitation (mm d$\mathregular{^{-1}}$)', fontsize=8, fontweight='bold')
+	plt.ylabel('Precipitation (mm d⁻¹)', fontsize=8, fontweight='bold')
 	plt.legend(fontsize=8)
 	plt.grid()
 	
