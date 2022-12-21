@@ -80,19 +80,19 @@ for j in range(1, 289):
 	print('Reading Inmet weather station:', j, inmet[j][0], inmet[j][1])
 
 	# Reading inmet weather station	
-	ds_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[j][0], dt))
-	ds_i = ds_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
+	ds_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/inmet/inmet_nc/' + 'uv_{0}_{1}.nc'.format(inmet[j][0], dt))
+	ds_i = ds_i.uv.sel(time=slice('2018-01-01','2021-12-31'))
 	ds_i = ds_i.groupby('time.month').mean('time')
 	values_ds_i = ds_i.values
-	clim_ds_i = values_ds_i*24
+	clim_ds_i = values_ds_i
 	
 	# reading era5 reanalisis
-	ds_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + 'tp_sesa_era5_2018-2021.nc')
-	ds_ii = ds_ii.tp.sel(time=slice('2018-01-01','2021-12-31'))
+	ds_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/era5/' + 'uv_era5_sesa_hr_2018-2021.nc')
+	ds_ii = ds_ii.u10.sel(time=slice('2018-01-01','2021-12-31'))
 	ds_ii = ds_ii.sel(latitude=inmet[j][2], longitude=inmet[j][3], method='nearest')
 	ds_ii = ds_ii.groupby('time.month').mean('time')
 	values_ds_ii = ds_ii.values
-	clim_ds_ii = values_ds_ii*24
+	clim_ds_ii = values_ds_ii
 			
 	print('Plot figure')
 	# Plot figure
@@ -101,17 +101,17 @@ for j in range(1, 289):
 	plt.plot(time, clim_ds_i, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='black', label='INMET')
 	plt.plot(time, clim_ds_ii, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='blue', label='ERA5')
 	plt.title('{0} - {1} (2018-2021)'.format(inmet[j][0], inmet[j][1]), fontsize=8, fontweight='bold')
-	plt.yticks(np.arange(0, 13, 1))
+	plt.yticks(np.arange(0, 10, 1))
 	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 	plt.xlabel('Annual Cycle', fontsize=8, fontweight='bold')
-	plt.ylabel('Precipitation (mm d⁻¹)', fontsize=8, fontweight='bold')
+	plt.ylabel('Wind speed (m s⁻¹)', fontsize=8, fontweight='bold')
 	plt.legend(fontsize=8)
 	plt.grid()
 	
 	print('Path out to save figure')
 	# Path out to save figure
-	path_out = '/home/nice/Documentos/FPS_SESA/figs'
-	name_out = 'pyplt_annual_cycle_{0}_{1}.png'.format(inmet[j][0], inmet[j][1])
+	path_out = '/home/nice/Documentos'
+	name_out = 'pyplt_annual_cycle_uv_{0}_{1}.png'.format(inmet[j][0], inmet[j][1])
 	plt.savefig(os.path.join(path_out, name_out), dpi=100, bbox_inches='tight')
 	plt.close('all')
 	plt.cla()
