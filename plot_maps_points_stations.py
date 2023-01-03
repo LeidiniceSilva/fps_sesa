@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from mpl_toolkits.basemap import Basemap
 from dict_stations_inmet import inmet
-from dict_stations_arg_ames import arg_ames
+from dict_stations_arg_emas import arg_emas
 from dict_stations_urug_smn import urug_smn
 
 # Select lat and lon 
@@ -29,8 +29,8 @@ for i in range(1, 289):
 	iy.append(inmet[i][2])
 
 for j in range(1, 88):
-	jx.append(arg_ames[j][1])
-	jy.append(arg_ames[j][2])
+	jx.append(arg_emas[j][1])
+	jy.append(arg_emas[j][2])
 
 for k in range(1, 72):
 	kx.append(urug_smn[k][2])
@@ -39,18 +39,18 @@ for k in range(1, 72):
 # Plot my map 
 fig = plt.figure()
 
-plt.title('INMET Automatic Stations')
 my_map = Basemap(projection='cyl', llcrnrlon=-90., llcrnrlat=-60., urcrnrlon=-30.,urcrnrlat=20., resolution='c')
 my_map.drawmeridians(np.arange(-90.,-20.,10.), labels=[0,0,0,1], linewidth=0.5, color='black')
 my_map.drawparallels(np.arange(-60.,30.,10.), labels=[1,0,0,0], linewidth=0.5, color='black') 
-my_map.plot(ix, iy, '.', color='b', label='INMET', markersize=2)
-my_map.plot(jx, jy, '.', color='r', label='AMES', markersize=2)
-my_map.plot(kx, ky, '.', color='g', label='SMN', markersize=2)
+my_map.plot(ix, iy, 'o', color='b', label='INMET', markersize=2)
+my_map.plot(jx, jy, 'o', color='r', label='EMAS', markersize=2)
+my_map.plot(kx, ky, 'o', color='g', label='SMN', markersize=2)
 plt.legend(loc=1, fontsize=10)
 
 path = '/home/nice/Documentos/github_projects/shp'
 my_map.readshapefile('{0}/lim_pais/lim_pais'.format(path), 'world', drawbounds=True, color='black', linewidth=0.5)
 
+plt.title('Automatic Weather Stations')
 plt.text(-68, -36, u'SESA', fontsize=10)
 plt.text(-36, -57, u'\u25B2 \nN', fontsize=10, fontweight='bold')
 
