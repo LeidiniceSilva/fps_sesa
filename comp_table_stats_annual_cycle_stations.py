@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "09/19/2022"
+__date__        = "04/01/2023"
 __description__ = "This script compte table's stats of annual cycle to weather station"
 
 import os
@@ -185,6 +185,10 @@ def import_arg_emas_era5(dt):
 	# Select lat and lon 
 	for k in range(1, 88):
 
+		if k == 2:
+			continue
+		if k == 4:
+			continue
 		if k == 9:
 			continue
 		if k == 17:
@@ -193,11 +197,23 @@ def import_arg_emas_era5(dt):
 			continue
 		if k == 26:
 			continue
+		if k == 28:
+			continue
+		if k == 31:
+			continue
+		if k == 32:
+			continue
 		if k == 43:
+			continue
+		if k == 57:
+			continue
+		if k == 67:
 			continue
 		if k == 72:
 			continue
 		if k == 76:
+			continue
+		if k == 81:
 			continue
 																				
 		name_k.append(arg_emas[k][0])
@@ -246,7 +262,7 @@ corr_tot = corr_ii+corr_jj+corr_kk
 pvalue_tot = pvalue_ii+pvalue_jj+pvalue_kk
 rmse_tot = rmse_ii+rmse_jj+rmse_kk
 
-for idx in range(0, 403):
+for idx in range(0, 396):
 	
 	print(name_tot[idx], lat_yy[idx], lon_xx[idx], corr_tot[idx], pvalue_tot[idx], rmse_tot[idx])
 	
