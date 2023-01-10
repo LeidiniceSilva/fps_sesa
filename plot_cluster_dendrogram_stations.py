@@ -107,14 +107,12 @@ def import_inmet(dt, type_cycle):
 
 		print('Reading INMET weather station:', i, inmet[i][0], inmet[i][1])
 		# Reading inmet weather station	
-					
 		if type_cycle == 'diurnal_cycle':
 			d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
 			d_i = d_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
 			d_i = d_i.groupby('time.hour').mean('time')
 			values_i = d_i.values
 			clim_i.append(values_i*24)
-			
 		else:
 			d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
 			d_i = d_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
@@ -122,7 +120,6 @@ def import_inmet(dt, type_cycle):
 			values_i = d_i.values
 			clim_i.append(values_i*24)
 			
-		
 	return iy, ix, clim_i
 
 
@@ -140,7 +137,6 @@ def import_urug_smn(dt, type_cycle):
 
 		print('Reading Uruguai weather station:', j, urug_smn[j][0])	
 		# Reading Uruguai weather stations
-
 		if type_cycle == 'diurnal_cycle':
 			d_j = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
 			d_j = d_j.pre.sel(time=slice('2018-01-01','2021-12-31'))
@@ -184,6 +180,8 @@ def import_arg_emas(dt, type_cycle):
 			continue
 		if k == 32:
 			continue
+		if k == 40:
+			continue
 		if k == 43:
 			continue
 		if k == 57:
@@ -202,7 +200,6 @@ def import_arg_emas(dt, type_cycle):
 
 		print('Reading Argentina weather station:', k, arg_emas[k][0])	
 		# Reading Argentina weather stations
-
 		if type_cycle == 'diurnal_cycle':
 			d_k = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/arg_emas/arg_emas_nc/' + 'precip_{0}_{1}.nc'.format(arg_emas[k][0], dt))
 			d_k = d_k.precip.sel(time=slice('2018-01-01','2021-12-31'))
@@ -219,11 +216,11 @@ def import_arg_emas(dt, type_cycle):
 	return ky, kx, clim_k
 	
 
-type_cycle = 'diurnal_cycle'	
+type_cycle = 'annual_cycle'	
 dt = 'H_2018-01-01_2021-12-31'
 
 print('Import latitude, longitude and database')
-# Import latitude, longitude and 
+# Import latitude, longitude and database
 iy, ix, clim_i = import_inmet(dt, type_cycle)			
 jy, jx, clim_j = import_urug_smn(dt, type_cycle)
 ky, kx, clim_k = import_arg_emas(dt, type_cycle)
@@ -232,6 +229,10 @@ lon_xx = ix+jx+kx
 lat_yy = iy+jy+ky
 clim_tot = clim_i+clim_j+clim_k
 df = pd.DataFrame(clim_tot)
+
+print(lon_xx)
+print()
+print(lat_yy)
 
 print('Calculate cluster analisis')
 # Linkage hierarchical 

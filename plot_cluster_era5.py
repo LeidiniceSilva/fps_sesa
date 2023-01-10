@@ -21,7 +21,7 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 from sklearn.cluster import AgglomerativeClustering
 
 
-def import_inmet(dt, type_cycle):
+def import_inmet(type_cycle):
 	
 	ix = []		  
 	iy = []
@@ -106,10 +106,11 @@ def import_inmet(dt, type_cycle):
 		ix.append(inmet[i][3])
 
 		print('Reading INMET weather station:', i, inmet[i][0], inmet[i][1])
-		# Reading inmet weather station	
-		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
-		d_i = d_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
-	
+		# Reading ERA5 weather station	
+		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_sesa_hr_2018-2021.nc')
+		d_i = d_i.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_i = d_i.sel(latitude=inmet[i][2], longitude=inmet[i][3], method='nearest')
+
 		if type_cycle == 'diurnal_cycle':
 			d_i = d_i.groupby('time.hour').mean('time')
 			values_i = d_i.values*24
@@ -120,9 +121,10 @@ def import_inmet(dt, type_cycle):
 			d_i = d_i.groupby('time.month').mean('time')
 			values_i = d_i.values
 			clim_i.append(values_i*24)
-		
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
-		d_ii = d_ii.pre.sel(time=slice('2018-01-01','2021-12-31'))
+					
+		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_sesa_hr_2018-2021.nc')
+		d_ii = d_ii.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_ii = d_ii.sel(latitude=inmet[i][2], longitude=inmet[i][3], method='nearest')
 		d_ii = d_ii.groupby('time.year').sum('time')
 		values_ii = d_ii.values
 		clim_ii.append(values_ii)		
@@ -130,7 +132,7 @@ def import_inmet(dt, type_cycle):
 	return iy, ix, clim_i, clim_ii
 
 
-def import_urug_smn(dt, type_cycle):
+def import_urug_smn(type_cycle):
 	
 	jy = []
 	jx = []
@@ -144,10 +146,11 @@ def import_urug_smn(dt, type_cycle):
 		jx.append(urug_smn[j][2])		
 
 		print('Reading Uruguai weather station:', j, urug_smn[j][0])	
-		# Reading Uruguai weather stations
-		d_j = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
-		d_j = d_j.pre.sel(time=slice('2018-01-01','2021-12-31'))
-			
+		# Reading ERA5 weather stations
+		d_j = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_sesa_hr_2018-2021.nc')
+		d_j = d_j.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_j = d_j.sel(latitude=urug_smn[j][1], longitude=urug_smn[j][2], method='nearest')
+
 		if type_cycle == 'diurnal_cycle':
 			d_j = d_j.groupby('time.hour').mean('time')
 			values_j = d_j.values*24
@@ -159,8 +162,9 @@ def import_urug_smn(dt, type_cycle):
 			values_j = d_j.values
 			clim_j.append(values_j*24)
 		
-		d_jj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
-		d_jj = d_jj.pre.sel(time=slice('2018-01-01','2021-12-31'))
+		d_jj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_sesa_hr_2018-2021.nc')
+		d_jj = d_jj.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_jj = d_jj.sel(latitude=urug_smn[j][1], longitude=urug_smn[j][2], method='nearest')
 		d_jj = d_jj.groupby('time.year').sum('time')
 		values_jj = d_jj.values
 		clim_jj.append(values_jj)	
@@ -168,7 +172,7 @@ def import_urug_smn(dt, type_cycle):
 	return jy, jx, clim_j, clim_jj
 
 
-def import_arg_emas(dt, type_cycle):
+def import_arg_emas(type_cycle):
 	
 	ky = []
 	kx = []
@@ -196,6 +200,8 @@ def import_arg_emas(dt, type_cycle):
 			continue
 		if k == 32:
 			continue
+		if k == 40:
+			continue
 		if k == 43:
 			continue
 		if k == 57:
@@ -213,10 +219,11 @@ def import_arg_emas(dt, type_cycle):
 		kx.append(arg_emas[k][1])		
 
 		print('Reading Argentina weather station:', k, arg_emas[k][0])	
-		# Reading Argentina weather stations
-		d_k = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/arg_emas/arg_emas_nc/' + 'precip_{0}_{1}.nc'.format(arg_emas[k][0], dt))
-		d_k = d_k.precip.sel(time=slice('2018-01-01','2021-12-31'))
-			
+		# Reading ERA5 weather stations
+		d_k = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_sesa_hr_2018-2021.nc')
+		d_k = d_k.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_k = d_k.sel(latitude=arg_emas[k][2], longitude=arg_emas[k][1], method='nearest')
+
 		if type_cycle == 'diurnal_cycle':
 			d_k = d_k.groupby('time.hour').mean('time')
 			values_k = d_k.values*24
@@ -228,8 +235,9 @@ def import_arg_emas(dt, type_cycle):
 			values_k = d_k.values
 			clim_k.append(values_k*24)
 
-		d_kk = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
-		d_kk = d_kk.pre.sel(time=slice('2018-01-01','2021-12-31'))
+		d_kk = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_sesa_hr_2018-2021.nc')
+		d_kk = d_kk.tp.sel(time=slice('2018-01-01','2021-12-31'))
+		d_kk = d_kk.sel(latitude=arg_emas[k][2], longitude=arg_emas[k][1], method='nearest')
 		d_kk = d_kk.groupby('time.year').sum('time')
 		values_kk = d_kk.values
 		clim_kk.append(values_kk)	
@@ -237,14 +245,13 @@ def import_arg_emas(dt, type_cycle):
 	return ky, kx, clim_k, clim_kk
 	
 
-type_cycle = 'diurnal_cycle'	
-dt = 'H_2018-01-01_2021-12-31'
+type_cycle = 'annual_cycle'	
 
 print('Import latitude, longitude and database')
-# Import latitude, longitude and 
-iy, ix, clim_i, clim_ii = import_inmet(dt, type_cycle)			
-jy, jx, clim_j, clim_jj = import_urug_smn(dt, type_cycle)
-ky, kx, clim_k, clim_kk = import_arg_emas(dt, type_cycle)
+# Import latitude, longitude and database
+iy, ix, clim_i, clim_ii = import_inmet(type_cycle)			
+jy, jx, clim_j, clim_jj = import_urug_smn(type_cycle)
+ky, kx, clim_k, clim_kk = import_arg_emas(type_cycle)
 
 lon_xx = ix+jx+kx
 lat_yy = iy+jy+ky
@@ -252,29 +259,29 @@ clim_tot = clim_i+clim_j+clim_k
 clim_tot_i = clim_ii+clim_jj+clim_kk
 
 if type_cycle == 'diurnal_cycle':
-	list_hc = [2, 2, 2, 0, 2, 2, 2, 0, 2, 0, 2, 0, 2, 2, 0, 2, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0,
-	0, 0, 0, 0, 3, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 3, 0, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 3, 0, 3, 0, 0, 0, 3, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 1, 0, 0, 0, 1, 0,
-	0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0,
-	0, 0, 1, 0, 0, 2, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2,
-	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 2, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1,
-	0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-	1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 4, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 1,
-	2, 1, 2, 2, 2, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1]
+	list_hc = [2, 4, 2, 4, 4, 2, 4, 4, 4, 4, 2, 4, 4, 4, 4, 4, 2, 4, 4, 4, 4, 4, 0, 4, 4, 0, 0, 4, 4, 0, 4, 4, 4, 2, 4, 0, 4,
+	4, 1, 4, 4, 0, 4, 4, 4, 0, 0, 4, 4, 4, 4, 1, 4, 4, 4, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 4, 1, 0, 1, 0,
+	1, 1, 0, 1, 4, 1, 4, 0, 1, 3, 1, 0, 3, 0, 0, 3, 3, 1, 1, 1, 1, 1, 1, 3, 1, 0, 3, 3, 1, 1, 3, 2, 0, 3, 3, 0, 0,
+	1, 1, 0, 0, 3, 1, 0, 0, 1, 0, 1, 3, 0, 0, 0, 1, 1, 3, 0, 3, 3, 3, 0, 0, 0, 3, 3, 3, 3, 1, 1, 3, 3, 3, 0, 3, 3,
+	3, 0, 3, 1, 2, 1, 3, 1, 3, 3, 0, 1, 3, 3, 3, 0, 3, 3, 0, 1, 3, 1, 3, 1, 3, 3, 1, 1, 1, 0, 1, 3, 0, 1, 4, 3, 1,
+	3, 3, 1, 3, 2, 1, 1, 3, 3, 3, 1, 1, 0, 1, 1, 3, 1, 1, 3, 1, 3, 1, 2, 3, 3, 3, 3, 1, 3, 4, 3, 1, 3, 3, 3, 1, 2,
+	1, 1, 3, 3, 3, 2, 3, 1, 3, 3, 1, 3, 3, 2, 1, 3, 1, 3, 1, 3, 2, 3, 1, 1, 1, 1, 3, 3, 1, 2, 3, 4, 4, 1, 4, 2, 2,
+	4, 1, 1, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 else:
-	list_hc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 
-	0, 0, 0, 0, 4, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 1, 0, 4, 0, 4, 1, 1, 1, 0, 3, 1, 4, 4, 1, 1, 3, 0, 0, 1, 1, 0, 1, 3, 4, 1, 1, 3, 0, 1, 1, 4, 1, 1, 1, 3, 
-	1, 0, 1, 3, 1, 3, 3, 4, 1, 4, 0, 1, 4, 3, 4, 3, 1, 1, 3, 0, 2, 1, 1, 3, 3, 1, 3, 1, 0, 1, 3, 1, 3, 3, 3, 2, 1, 
-	2, 3, 1, 1, 1, 3, 1, 1, 1, 3, 3, 1, 1, 1, 1, 3, 3, 2, 3, 1, 3, 2, 3, 3, 1, 3, 3, 3, 3, 4, 3, 1, 3, 3, 1, 3, 1, 
-	1, 1, 1, 3, 1, 3, 3, 3, 1, 1, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 3, 1, 1, 1, 1, 3, 1, 3, 3, 3, 1, 
-	1, 1, 1, 1, 3, 1, 1, 3, 3, 1, 3, 3, 3, 2, 3, 1, 1, 1, 3, 3, 1, 3, 1, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 2, 
-	0, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 2, 2, 2, 1, 
-	2, 0, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 2, 2, 1, 1, 2, 1, 2, 1, 0, 0, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 2, 2, 2, 
-	0, 2, 0, 1, 1, 1, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2]
+	list_hc = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1,
+	1, 1, 1, 1, 2, 1, 1, 1, 1, 4, 1, 4, 4, 1, 4, 1, 4, 1, 2, 4, 4, 1, 4, 1, 4, 4, 4, 4, 2, 4, 4, 4, 4, 4, 2, 4, 4,
+	4, 4, 2, 4, 4, 4, 4, 4, 4, 0, 4, 2, 0, 2, 2, 0, 0, 0, 4, 4, 0, 4, 4, 0, 0, 2, 0, 0, 0, 4, 0, 0, 2, 0, 0, 2, 2,
+	0, 4, 2, 2, 0, 0, 2, 2, 0, 2, 4, 0, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0,
+	0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 4, 4,
+	4, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 3,
+	1, 1, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
 
 count_i = []
 count_ii = []
@@ -337,30 +344,31 @@ cluster_iii = np.nanmean(pre_c_iii, axis=0)
 cluster_iv = np.nanmean(pre_c_iv, axis=0)
 cluster_v = np.nanmean(pre_c_v, axis=0)
 
-cluster_i_i = pre_c_i_i
-cluster_ii_i = pre_c_ii_i
-cluster_iii_i = pre_c_iii_i
-cluster_iv_i = pre_c_iv_i
-cluster_v_i = pre_c_v_i
+cluster_i_i = np.nanmean(pre_c_i_i, axis=0)
+cluster_ii_i = np.nanmean(pre_c_ii_i, axis=0)
+cluster_iii_i = np.nanmean(pre_c_iii_i, axis=0)
+cluster_iv_i = np.nanmean(pre_c_iv_i, axis=0)
+cluster_v_i = np.nanmean(pre_c_v_i, axis=0)
 
 print('Plot figure')
 # Plot figure
 fig = plt.figure()
 
 ax = fig.add_subplot(2, 1, 1)
-time = np.arange(0.5, 24 + 0.5)
+
+if type_cycle == 'diurnal_cycle':
+	time = np.arange(0.5, 24 + 0.5)
+	plt.xticks(time, ('00Z', '', '02Z', '', '04Z', '', '06Z', '', '08Z', '', '10Z', '', '12Z', '', '14Z', '', '16Z', '', '18Z', '', '20Z', '', '22Z', ''))
+else:
+	time = np.arange(0.5, 12 + 0.5)
+	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
 plt.plot(time, cluster_i, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='blue', label = 'Cluster I')
 plt.plot(time, cluster_ii, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='gray', label = 'Cluster II')
 plt.plot(time, cluster_iii, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='green', label = 'Cluster III')
 plt.plot(time, cluster_iv, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='red', label = 'Cluster IV')
 plt.plot(time, cluster_v, linewidth=1.5, linestyle='--', markersize=5, marker='.', markerfacecolor='white', color='yellow', label = 'Cluster V')
 plt.yticks(np.arange(0, 11, 1))
-
-if type_cycle == 'diurnal_cycle':
-	plt.xticks(time, ('00Z', '', '02Z', '', '04Z', '', '06Z', '', '08Z', '', '10Z', '', '12Z', '', '14Z', '', '16Z', '', '18Z', '', '20Z', '', '22Z', ''))
-else:
-	plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
-
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=10)
 plt.legend(loc=1, fontsize=10)
 	
@@ -376,7 +384,7 @@ plt.ylabel('Annual mean precipitation (mm)', fontsize=10)
 print('Path out to save figure')
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs'
-name_out = 'pyplt_stations_cluster_{0}_boxplot.png'.format(type_cycle)
+name_out = 'pyplt_era5_cluster_{0}_boxplot.png'.format(type_cycle)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.close('all')
 plt.cla()

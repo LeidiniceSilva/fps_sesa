@@ -25,6 +25,78 @@ kx = []
 ky = []
 
 for i in range(1, 289):
+
+	if i == 4:
+		continue
+	if i == 12:
+		continue
+	if i == 45:
+		continue
+	if i == 55:
+		continue
+	if i == 77:
+		continue
+	if i == 85:
+		continue
+	if i == 90:
+		continue
+	if i == 98:
+		continue
+	if i == 99:
+		continue
+	if i == 100:
+		continue
+	if i == 118:
+		continue
+	if i == 122:
+		continue
+	if i == 130:
+		continue
+	if i == 135:
+		continue
+	if i == 151:
+		continue
+	if i == 155:
+		continue
+	if i == 159:
+		continue
+	if i == 160:
+		continue
+	if i == 163:
+		continue
+	if i == 164:
+		continue
+	if i == 181:
+		continue
+	if i == 183:
+		continue
+	if i == 186:
+		continue
+	if i == 187:
+		continue
+	if i == 188:
+		continue
+	if i == 209:
+		continue
+	if i == 216:
+		continue
+	if i == 228:
+		continue
+	if i == 236:
+		continue
+	if i == 245:
+		continue
+	if i == 246:
+		continue
+	if i == 262:
+		continue
+	if i == 268:
+		continue
+	if i == 273:
+		continue
+	if i == 287:
+		continue
+			
 	ix.append(inmet[i][3])
 	iy.append(inmet[i][2])
 
@@ -33,6 +105,40 @@ for j in range(1, 88):
 	jy.append(arg_emas[j][2])
 
 for k in range(1, 72):
+
+	if k == 2:
+		continue
+	if k == 4:
+		continue
+	if k == 9:
+		continue
+	if k == 17:
+		continue
+	if k == 24:
+		continue
+	if k == 26:
+		continue
+	if k == 28:
+		continue
+	if k == 31:
+		continue
+	if k == 32:
+		continue
+	if k == 40:
+		continue
+	if k == 43:
+		continue
+	if k == 57:
+		continue
+	if k == 67:
+		continue
+	if k == 72:
+		continue
+	if k == 76:
+		continue
+	if k == 81:
+		continue
+			
 	kx.append(urug_smn[k][2])
 	ky.append(urug_smn[k][1])
 	
