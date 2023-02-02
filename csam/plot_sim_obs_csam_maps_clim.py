@@ -115,14 +115,14 @@ def import_dataset():
 
 		# Reading inmet 
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-		d_ii = d_ii.pre.sel(time=slice('2018-06-01','2021-12-31'))
+		d_ii = d_ii.pre.sel(time=slice('2019-01-01','2021-12-31'))
 		d_ii = d_ii.groupby('time.season').mean('time')
 		values_ii = d_ii.values
 		mean_ii.append(values_ii*24)
 				
 		# reading cmorph 
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/cmorph/' + 'CMORPH_V1.0_ADJ_CSAM_4km_mon_20180101-20211231.nc')
-		d_iii = d_iii.cmorph.sel(time=slice('2018-06-01','2021-12-31'))
+		d_iii = d_iii.cmorph.sel(time=slice('2019-01-01','2021-12-31'))
 		d_iii = d_iii.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		d_iii = d_iii.groupby('time.season').mean('time')
 		values_iii = d_iii.values
@@ -130,7 +130,7 @@ def import_dataset():
 
 		# reading era5 
 		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'mtpr_era5_csam_4km_mon_20180101-20211231.nc')
-		d_iv = d_iv.mtpr.sel(time=slice('2018-06-01','2021-12-31'))
+		d_iv = d_iv.mtpr.sel(time=slice('2019-01-01','2021-12-31'))
 		d_iv = d_iv.groupby('time.season').mean('time')
 		d_iv = d_iv.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		values_iv = d_iv.values

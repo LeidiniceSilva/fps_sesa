@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/01/2023"
-__description__ = "This script plot bias maps from regcm and database"
+__description__ = "This script plot correlation maps from regcm and database"
 
 import os
 import conda
@@ -21,12 +21,12 @@ def import_dataset():
 	
 	ix = []		  
 	iy = []
-	bias_i = []
-	bias_ii = []
-	bias_iii = []
+	corr_i = []
+	corr_ii = []
+	corr_iii = []
 
 	# Select lat and lon 
-	for i in range(1, 289):
+	for i in range(1, 2):
 
 		if i == 4:
 			continue
@@ -134,18 +134,22 @@ def import_dataset():
 		d_iv = d_iv.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		values_iv = d_iv.values
 		list_iv = values_iv*86400
+		
+		print(list_i)
+		
+		exit()
 
 		# calculate bias
-		mean_i = list_i - list_ii
-		bias_i.append(mean_i)
+		mean_i = np.corrcoef(list_ii, list_i)[0][1]
+		corr_i.append(mean_i)
 
-		mean_ii = list_i - list_iii
-		bias_ii.append(mean_ii)
+		mean_ii = np.corrcoef(list_iii, list_i)[0][1]
+		corr_ii.append(mean_ii)
 		
-		mean_iii = list_i - list_iv
-		bias_iii.append(mean_iii)
+		mean_iii =np.corrcoef(list_iv, list_i)[0][1]
+		corr_iii.append(mean_iii)
 				
-	return iy, ix, bias_i, bias_ii, bias_iii
+	return iy, ix, corr_i, corr_ii, corr_iii
 		
 
 def basemap():
@@ -185,73 +189,73 @@ fig = plt.figure(figsize=(6, 6))
 
 ax = fig.add_subplot(4, 3, 1)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_djf, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(a) RegCM47 - INMET DJF', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_djf, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(a) RegCM47 (INMET) DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 2)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_djf, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(b) RegCM47 - CMORPH DJF', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_djf, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(b) RegCM47 (CMORPH) DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 3)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_djf, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(c) RegCM47 - ERA5 DJF', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_djf, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(c) RegCM47 (ERA5) DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 4)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_mam, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(d) RegCM47 - INMET MAM', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_mam, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(d) RegCM47 (INMET) MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 5)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_mam, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(e) RegCM47 - CMORPH MAM', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_mam, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(e) RegCM47 (CMORPH) MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 6)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_mam, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(f) RegCM47 - ERA5 MAM', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_mam, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(f) RegCM47 (ERA5) MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 7)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_jja, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(g) RegCM47 - INMET JJA', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_jja, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(g) RegCM47 (INMET) JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 8)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_jja, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(h) RegCM47 - CMORPH JJA', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_jja, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(h) RegCM47 (CMORPH) JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 9)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_jja, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(i) RegCM47 - ERA5 JJA', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_jja, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(i) RegCM47 (ERA5) JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 10)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_son, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(j) RegCM47 - INMET SON', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_son, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(j) RegCM47 (INMET) SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 11)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_son, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(k) RegCM47 - CMORPF SON', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_son, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(k) RegCM47 (CMORPF) SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 12)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_son, cmap='BrBG', marker='o', vmin=-6, vmax=6)
-plt.title('(l) RegCM47 - ERA5 SON', loc='left', fontsize=6, fontweight='bold')
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_son, cmap='PiYG', marker='o', vmin=-1, vmax=1)
+plt.title('(l) RegCM47 (ERA5) SON', loc='left', fontsize=6, fontweight='bold')
 
 cb_ax = fig.add_axes([0.92, 0.2, 0.016, 0.6])
 cbar = fig.colorbar(pltfig, cax=cb_ax, orientation='vertical', shrink=0.5, pad=0.5, extend='both')
-cbar.set_label('Bias of precipitation (mm d⁻¹)', fontsize=6, fontweight='bold')
+cbar.set_label('Coefficient of orrelation', fontsize=6, fontweight='bold')
 cbar.ax.tick_params(labelsize=8)  
 	
 print('Path out to save figure')
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_maps_bias_pr_csam.png'
+name_out = 'pyplt_maps_corr_pr_csam.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
