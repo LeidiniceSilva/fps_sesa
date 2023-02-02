@@ -110,7 +110,7 @@ plt.legend(loc=2, fontsize=10)
 path = '/home/nice/Documentos/github_projects/shp'
 my_map.readshapefile('{0}/lim_pais/lim_pais'.format(path), 'world', drawbounds=True, color='black', linewidth=0.5)
 
-plt.title('INMET automatic weather stations over CSAM domain')
+plt.title('INMET automatic weather stations over CSAM domain', fontsize=10, fontweight='bold')
 plt.text(-74, -34, u'\u25B2 \nN', fontsize=10, fontweight='bold')
 
 # Path out to save figure
