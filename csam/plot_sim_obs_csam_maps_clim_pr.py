@@ -129,12 +129,12 @@ def import_dataset():
 		mean_iii.append(values_iii)
 
 		# reading era5 
-		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'mtpr_era5_csam_4km_mon_20180101-20211231.nc')
-		d_iv = d_iv.mtpr.sel(time=slice('2019-01-01','2021-12-31'))
+		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+		d_iv = d_iv.tp.sel(time=slice('2019-01-01','2021-12-31'))
 		d_iv = d_iv.groupby('time.season').mean('time')
 		d_iv = d_iv.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		values_iv = d_iv.values
-		mean_iv.append(values_iv*86400)
+		mean_iv.append(values_iv)
 		
 	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv
 		
@@ -179,84 +179,88 @@ print('Plot figure')
 # Plot figure   
 fig = plt.figure()
 
+color='Blues'
+v_min = 0
+v_max = 10
+	
 ax = fig.add_subplot(4, 4, 1)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_djf, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(a) RegCM47 DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 2)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_djf, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(b) INMET DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 3)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_djf, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(c) CMORPH DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 4)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_djf, cmap='Blues', marker='o', vmin=0, vmax=120)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(d) ERA5 DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 5)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_mam, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(e) RegCM47 MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 6)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_mam, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(f) INMET MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 7)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_mam, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(g) CMORPH MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 8)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_mam, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(h) ERA5 MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 9)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_jja, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(i) RegCM47 JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 10)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_jja, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(j) INMET JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 11)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_jja, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(k) CMORPH JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 12)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_jja, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(l) ERA5 JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 13)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_son, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(m) RegCM47 SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 14)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_son, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, inmet_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(n) INMET SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 15)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_son, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, cmorph_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(o) CMORPH SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 4, 16)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_son, cmap='Blues', marker='o', vmin=0, vmax=12)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, era5_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(p) ERA SON', loc='left', fontsize=6, fontweight='bold')
 	
 cb_ax = fig.add_axes([0.92, 0.2, 0.016, 0.6])

@@ -128,12 +128,12 @@ def import_dataset():
 		list_iii = values_iii
 
 		# reading era5 
-		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'mtpr_era5_csam_4km_mon_20180101-20211231.nc')
-		d_iv = d_iv.mtpr.sel(time=slice('2019-01-01','2021-12-31'))
+		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+		d_iv = d_iv.tp.sel(time=slice('2019-01-01','2021-12-31'))
 		d_iv = d_iv.groupby('time.season').mean('time')
 		d_iv = d_iv.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		values_iv = d_iv.values
-		list_iv = values_iv*86400
+		list_iv = values_iv
 
 		# calculate bias
 		mean_i = list_i - list_ii
@@ -156,7 +156,10 @@ def basemap():
 	my_map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_pais/lim_pais', 'world', drawbounds=True, color='black', linewidth=0.5)
 
 	return my_map
-	
+
+
+var = 'pr'
+
 print('Import dataset')
 # Import dataset
 iy, ix, bias_i, bias_ii, bias_iii = import_dataset()			
@@ -183,75 +186,80 @@ print('Plot figure')
 # Plot figure   
 fig = plt.figure(figsize=(6, 6))
 
+color='BrBG'
+v_min = -5
+v_max = 5
+legend = 'Bias of precipitation (mm d⁻¹)'
+
 ax = fig.add_subplot(4, 3, 1)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_djf, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(a) RegCM47 - INMET DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 2)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_djf, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(b) RegCM47 - CMORPH DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 3)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_djf, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(c) RegCM47 - ERA5 DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 4)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_mam, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(d) RegCM47 - INMET MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 5)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_mam, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(e) RegCM47 - CMORPH MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 6)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_mam, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(f) RegCM47 - ERA5 MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 7)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_jja, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(g) RegCM47 - INMET JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 8)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_jja, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(h) RegCM47 - CMORPH JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 9)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_jja, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(i) RegCM47 - ERA5 JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 10)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_son, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(j) RegCM47 - INMET SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 11)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_son, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_cmorph_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(k) RegCM47 - CMORPF SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 12)
 my_map = basemap()
-pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_son, cmap='BrBG', marker='o', vmin=-6, vmax=6)
+pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_era5_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
 plt.title('(l) RegCM47 - ERA5 SON', loc='left', fontsize=6, fontweight='bold')
 
 cb_ax = fig.add_axes([0.92, 0.2, 0.016, 0.6])
 cbar = fig.colorbar(pltfig, cax=cb_ax, orientation='vertical', shrink=0.5, pad=0.5, extend='both')
-cbar.set_label('Bias of precipitation (mm d⁻¹)', fontsize=6, fontweight='bold')
+cbar.set_label('{0}'.format(legend), fontsize=6, fontweight='bold')
 cbar.ax.tick_params(labelsize=8)  
 	
 print('Path out to save figure')
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_maps_bias_pr_csam.png'
+name_out = 'pyplt_maps_bias_{0}_csam.png'.format(var)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
