@@ -126,7 +126,6 @@ def import_dataset(var):
 			d_iii = d_iii.groupby('time.season').mean('time')
 			values_iii = d_iii.values
 			mean_iii.append(values_iii-273.15)
-		
 		else:
 			# reading regcm 
 			d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/reg4/' + 'sfcWind_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
