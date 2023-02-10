@@ -151,7 +151,7 @@ def TaylorDiagram(
 
     if colors is None:
         if cmap is None:
-            cmap = "viridis"
+            cmap = "jet"
         cm = plt.get_cmap(cmap)
         colors = cm(np.linspace(0.1, 0.9, len(stddev)))
 

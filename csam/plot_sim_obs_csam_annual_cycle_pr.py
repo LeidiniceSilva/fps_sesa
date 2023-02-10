@@ -9,7 +9,6 @@ import os
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
-import itertools
 
 from dict_csam_inmet_stations import inmet
 
