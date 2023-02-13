@@ -27,78 +27,7 @@ def import_dataset():
 	mean_iv = []
 
 	# Select lat and lon 
-	for i in range(1, 289):
-
-		if i == 4:
-			continue
-		if i == 12:
-			continue
-		if i == 45:
-			continue
-		if i == 55:
-			continue
-		if i == 77:
-			continue
-		if i == 85:
-			continue
-		if i == 90:
-			continue
-		if i == 98:
-			continue
-		if i == 99:
-			continue
-		if i == 100:
-			continue
-		if i == 118:
-			continue
-		if i == 122:
-			continue
-		if i == 130:
-			continue
-		if i == 135:
-			continue
-		if i == 151:
-			continue
-		if i == 155:
-			continue
-		if i == 159:
-			continue
-		if i == 160:
-			continue
-		if i == 163:
-			continue
-		if i == 164:
-			continue
-		if i == 181:
-			continue
-		if i == 183:
-			continue
-		if i == 186:
-			continue
-		if i == 187:
-			continue
-		if i == 188:
-			continue
-		if i == 209:
-			continue
-		if i == 216:
-			continue
-		if i == 228:
-			continue
-		if i == 236:
-			continue
-		if i == 245:
-			continue
-		if i == 246:
-			continue
-		if i == 262:
-			continue
-		if i == 268:
-			continue
-		if i == 273:
-			continue
-		if i == 287:
-			continue
+	for i in range(1, 155):
 			
 		iy.append(inmet[i][2])
 		ix.append(inmet[i][3])
@@ -147,6 +76,7 @@ def basemap():
 	my_map.readshapefile('/home/nice/Documentos/github_projects/shp/lim_pais/lim_pais', 'world', drawbounds=True, color='black', linewidth=0.5)
 
 	return my_map
+	
 	
 print('Import dataset')
 # Import dataset
