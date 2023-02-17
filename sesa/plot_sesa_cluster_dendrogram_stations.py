@@ -86,8 +86,8 @@ plt.ylabel('Euclidean distances', fontsize=12)
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_stations_dendrogram_{0}_csam.png'.format(type_cycle)
+path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+name_out = 'pyplt_stations_dendrogram_{0}_sesa.png'.format(type_cycle)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.close('all')
 plt.cla()

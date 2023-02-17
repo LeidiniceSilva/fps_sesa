@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.patches import Polygon
 from mpl_toolkits.basemap import Basemap
-from dict_csam_inmet_stations import inmet
+from dict_sesa_inmet_stations import inmet
 
 # Select lat and lon 
 ix = []		  
@@ -22,7 +22,7 @@ for i in range(1, 155):
 			
 	ix.append(inmet[i][3])
 	iy.append(inmet[i][2])
-	
+		
 # Plot my map 
 fig = plt.figure()
 
@@ -37,12 +37,12 @@ plt.legend(loc=2, fontsize=10)
 path = '/home/nice/Documentos/github_projects/shp'
 my_map.readshapefile('{0}/lim_pais/lim_pais'.format(path), 'world', drawbounds=True, color='black', linewidth=0.5)
 
-plt.title('INMET automatic weather stations over CSAM domain', fontsize=10, fontweight='bold')
+plt.title('INMET automatic weather stations over SESA domain', fontsize=10, fontweight='bold')
 plt.text(-74, -34, u'\u25B2 \nN', fontsize=10, fontweight='bold')
 
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_maps_points_station_csam.png'
+path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+name_out = 'pyplt_maps_points_station_sesa.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')

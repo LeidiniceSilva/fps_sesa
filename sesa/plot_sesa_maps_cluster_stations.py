@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "01/02/2023"
+__date__        = "02/09/2023"
 __description__ = "This script plot cluster analysis from each weather station"
 
 import os
@@ -109,13 +109,13 @@ plt.legend(loc=2, fontsize=10)
 path = '/home/nice/Documentos/github_projects/shp'
 my_map.readshapefile('{0}/lim_pais/lim_pais'.format(path), 'world', drawbounds=True, color='black', linewidth=0.5)
 
-plt.title('Cluster analysis over CSAM domain', fontsize=10, fontweight='bold')
+plt.title('Cluster analysis over SESA domain', fontsize=10, fontweight='bold')
 plt.text(-74, -34, u'\u25B2 \nN', fontsize=10, fontweight='bold')
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_stations_cluster_analysis_{0}_csam.png'.format(type_cycle)
+path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+name_out = 'pyplt_stations_cluster_analysis_{0}_sesa.png'.format(type_cycle)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.close('all')
 plt.cla()

@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"
-__description__ = "This script plot annual cycle statistics in the csam  domain"
+__description__ = "This script plot annual cycle statistics"
 
 import os
 import numpy as np

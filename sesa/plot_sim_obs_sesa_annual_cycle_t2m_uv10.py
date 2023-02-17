@@ -258,8 +258,8 @@ plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_stations_cluster_annual_cycle_{0}_csam.png'.format(var)
+path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+name_out = 'pyplt_stations_cluster_annual_cycle_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 plt.close('all')
 plt.cla()

@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "02/01/2023"
+__date__        = "02/09/2023"
 __description__ = "This script plot bias maps from regcm and database"
 
 import os
@@ -173,8 +173,8 @@ cbar.ax.tick_params(labelsize=8)
 	
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_maps_bias_{0}_csam.png'.format(var)
+path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+name_out = 'pyplt_maps_bias_{0}_sesa.png'.format(var)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')

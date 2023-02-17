@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"
-__description__ = "This script plot taylor diagram in the csam  domain"
+__description__ = "This script plot taylor diagram"
 
 import os
 import numpy as np
@@ -119,8 +119,8 @@ plt.subplots_adjust(top=0.95)
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/csam'
-name_out = 'pyplt_stations_cluster_taylor_diagram_{0}_csam.png'.format(var)
+path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+name_out = 'pyplt_stations_cluster_taylor_diagram_{0}_sesa.png'.format(var)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=600)
