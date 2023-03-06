@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"
-__description__ = "This script plot cluster analysis from each weather station"
+__description__ = "This script plot dendrogram of the INMET weather station"
 
 import os
 import conda
@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.patches import Polygon
 from mpl_toolkits.basemap import Basemap
-from dict_csam_inmet_stations import inmet
+from dict_sesa_inmet_stations import inmet
 from scipy.cluster.hierarchy import linkage, dendrogram
 from sklearn.cluster import AgglomerativeClustering
 
@@ -86,9 +86,8 @@ plt.ylabel('Euclidean distances', fontsize=12)
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
 name_out = 'pyplt_stations_dendrogram_{0}_sesa.png'.format(type_cycle)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
-plt.close('all')
-plt.cla()
+plt.show()
 exit()

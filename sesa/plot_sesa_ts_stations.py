@@ -87,7 +87,7 @@ for j in range(1, 155):
 			
 	print('Path out to save figure')
 	# Path out to save figure
-	path_out = '/home/nice/Documentos/FPS_SESA/docs/var_ts'
+	path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_new'
 	name_out = 'pyplt_nc_vars_{0}_{1}.png'.format(inmet[j][0], inmet[j][1])
 	plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 	plt.close('all')

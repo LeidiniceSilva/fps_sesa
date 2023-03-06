@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "02/14/2023"
+__date__        = "02/09/2023"
 __description__ = "This script convert .csv to .nc of the INMET weather station"
 
 import os

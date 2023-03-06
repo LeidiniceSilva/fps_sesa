@@ -3,14 +3,14 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"
-__description__ = "This script plot annual cycle in the csam  domain"
+__description__ = "This script plot annual cycle of the INMET weather station"
 
 import os
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
 
-from dict_csam_inmet_stations import inmet
+from dict_sesa_inmet_stations import inmet
 
 
 def import_inmet(var, dt):
@@ -70,7 +70,7 @@ def import_inmet(var, dt):
 	return mean_i, mean_ii, mean_iii
 
 
-var = 'uv10'
+var = 't2m'
 dt = 'H_2018-01-01_2021-12-31'
 
 print('Import dataset')
@@ -258,9 +258,8 @@ plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
 name_out = 'pyplt_stations_cluster_annual_cycle_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
-plt.close('all')
-plt.cla()
+plt.show()
 exit()

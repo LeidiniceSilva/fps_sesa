@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"
-__description__ = "This script plot point for each inmet automatic station over csam domain"
+__description__ = "This script plot point for the INMET weather station"
 
 import os
 import conda
@@ -41,7 +41,7 @@ plt.title('INMET automatic weather stations over SESA domain', fontsize=10, font
 plt.text(-74, -34, u'\u25B2 \nN', fontsize=10, fontweight='bold')
 
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
 name_out = 'pyplt_maps_points_station_sesa.png'
 if not os.path.exists(path_out):
 	create_path(path_out)
