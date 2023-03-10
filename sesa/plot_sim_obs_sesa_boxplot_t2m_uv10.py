@@ -114,8 +114,7 @@ mean_i, mean_ii, mean_iii = import_inmet(var, dt)
 	
 clim_regcm = mean_i
 clim_inmet = mean_ii
-clim_cmorph = mean_iii
-clim_era5 = mean_iv
+clim_era5 = mean_iii
 
 list_hc = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 0,
@@ -155,12 +154,6 @@ inmet_iii = []
 inmet_iv = []
 inmet_v = []
 
-cmorph_i = []
-cmorph_ii = []
-cmorph_iii = []
-cmorph_iv = []
-cmorph_v = []
-
 era5_i = []
 era5_ii = []
 era5_iii = []
@@ -170,68 +163,58 @@ era5_v = []
 for c_i in count_i:
 	regcm_i.append(clim_regcm[c_i])
 	inmet_i.append(clim_inmet[c_i])
-	cmorph_i.append(clim_cmorph[c_i])
 	era5_i.append(clim_era5[c_i])
 
 for c_ii in count_ii:
 	regcm_ii.append(clim_regcm[c_ii])
 	inmet_ii.append(clim_inmet[c_ii])
-	cmorph_ii.append(clim_cmorph[c_ii])
 	era5_ii.append(clim_era5[c_ii])
 	
 for c_iii in count_iii:
 	regcm_iii.append(clim_regcm[c_iii])
 	inmet_iii.append(clim_inmet[c_iii])
-	cmorph_iii.append(clim_cmorph[c_iii])
 	era5_iii.append(clim_era5[c_iii])
 	
 for c_iv in count_iv:
 	regcm_iv.append(clim_regcm[c_iv])
 	inmet_iv.append(clim_inmet[c_iv])
-	cmorph_iv.append(clim_cmorph[c_iv])
 	era5_iv.append(clim_era5[c_iv])
 	
 for c_v in count_v:
 	regcm_v.append(clim_regcm[c_v])
 	inmet_v.append(clim_inmet[c_v])
-	cmorph_v.append(clim_cmorph[c_v])
 	era5_v.append(clim_era5[c_v])
 
 regcm_cluster_i = np.nanmean(regcm_i, axis=0)
 inmet_cluster_i = np.nanmean(inmet_i, axis=0)
-cmorph_cluster_i = np.nanmean(cmorph_i, axis=0)
 era5_cluster_i = np.nanmean(era5_i, axis=0)
 
 regcm_cluster_ii = np.nanmean(regcm_ii, axis=0)
 inmet_cluster_ii = np.nanmean(inmet_ii, axis=0)
-cmorph_cluster_ii = np.nanmean(cmorph_ii, axis=0)
 era5_cluster_ii = np.nanmean(era5_ii, axis=0)
 
 regcm_cluster_iii = np.nanmean(regcm_iii, axis=0)
 inmet_cluster_iii = np.nanmean(inmet_iii, axis=0)
-cmorph_cluster_iii = np.nanmean(cmorph_iii, axis=0)
 era5_cluster_iii = np.nanmean(era5_iii, axis=0)
 
 regcm_cluster_iv = np.nanmean(regcm_iv, axis=0)
 inmet_cluster_iv = np.nanmean(inmet_iv, axis=0)
-cmorph_cluster_iv = np.nanmean(cmorph_iv, axis=0)
 era5_cluster_iv = np.nanmean(era5_iv, axis=0)
 
 regcm_cluster_v = np.nanmean(regcm_v, axis=0)
 inmet_cluster_v = np.nanmean(inmet_v, axis=0)
-cmorph_cluster_v = np.nanmean(cmorph_v, axis=0)
 era5_cluster_v = np.nanmean(era5_v, axis=0)
 
-cluster_i = [regcm_cluster_i, inmet_cluster_i, cmorph_cluster_i, era5_cluster_i]
-cluster_ii = [regcm_cluster_ii, inmet_cluster_ii, cmorph_cluster_ii, era5_cluster_ii]
-cluster_iii = [regcm_cluster_iii, inmet_cluster_iii, cmorph_cluster_iii, era5_cluster_iii]
-cluster_iv = [regcm_cluster_iv, inmet_cluster_iv, cmorph_cluster_iv, era5_cluster_iv]
-cluster_v = [regcm_cluster_v, inmet_cluster_v, cmorph_cluster_v, era5_cluster_v]
+cluster_i = [regcm_cluster_i, inmet_cluster_i, era5_cluster_i]
+cluster_ii = [regcm_cluster_ii, inmet_cluster_ii, era5_cluster_ii]
+cluster_iii = [regcm_cluster_iii, inmet_cluster_iii, era5_cluster_iii]
+cluster_iv = [regcm_cluster_iv, inmet_cluster_iv, era5_cluster_iv]
+cluster_v = [regcm_cluster_v, inmet_cluster_v, era5_cluster_v]
 
 print('Plot figure')
 # Plot figure
 fig = plt.figure(figsize=(10, 4))
-x = np.arange(0.5, 25 + 0.5)
+x = np.arange(0.5, 20 + 0.5)
 
 if var == 't2m':
 	legend = 'Temperature (°C)'
@@ -239,18 +222,18 @@ else:
 	legend = 'Wind 10m (m s⁻¹)'
 	
 ax = fig.add_subplot(1, 1, 1)
-bp = plt.boxplot(cluster_i, positions=[1, 2, 3, 4])
+bp = plt.boxplot(cluster_i, positions=[1, 2, 3])
 setBoxColors(bp)
-bp = plt.boxplot(cluster_ii, positions=[6, 7, 8, 9])
+bp = plt.boxplot(cluster_ii, positions=[5, 6, 7])
 setBoxColors(bp)
-bp = plt.boxplot(cluster_iii, positions=[11, 12, 13, 14])
+bp = plt.boxplot(cluster_iii, positions=[9, 10, 11])
 setBoxColors(bp)
-bp = plt.boxplot(cluster_iv, positions=[16, 17, 18, 19])
+bp = plt.boxplot(cluster_iv, positions=[13, 14, 15])
 setBoxColors(bp)
-bp = plt.boxplot(cluster_v, positions=[21, 22, 23, 24])
+bp = plt.boxplot(cluster_v, positions=[17, 18, 19])
 setBoxColors(bp)
 
-plt.xlim(0, 25)
+plt.xlim(0, 20)
 if var == 't2m':
 	plt.ylim(12, 32)
 else:
@@ -258,7 +241,7 @@ else:
 	
 plt.xlabel('Clusters', fontweight='bold')
 plt.ylabel('{0}'.format(legend), fontweight='bold')
-plt.xticks(x, ('','','Cluster I','','','','','Cluster II','','','','','Cluster III','','','','','Cluster IV','','','','','Cluster V','',''))
+plt.xticks(x, ('','Cluster I','','','','Cluster II','','','','Cluster III','','','','Cluster IV','','','','','Cluster V','',''))
 
 plt.axvline(5., linewidth=1., linestyle='--',  color='black')
 plt.axvline(10, linewidth=1., linestyle='--',  color='black')
@@ -267,13 +250,11 @@ plt.axvline(20, linewidth=1., linestyle='--',  color='black')
 
 c1, = plt.plot([1,1],'gray')
 c2, = plt.plot([1,1],'blue')
-c3, = plt.plot([1,1],'green')
-c4, = plt.plot([1,1],'red')
-plt.legend((c1, c2, c3, c4),('RegCM4', 'INMET', 'CMORPH', 'ERA5'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=4, frameon=False)
+c3, = plt.plot([1,1],'red')
+plt.legend((c1, c2, c3, c4),('RegCM4', 'INMET', 'ERA5'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=4, frameon=False)
 c1.set_visible(False)
 c2.set_visible(False)
 c3.set_visible(False)
-c4.set_visible(False)
 
 print('Path out to save figure')
 # Path out to save figure
