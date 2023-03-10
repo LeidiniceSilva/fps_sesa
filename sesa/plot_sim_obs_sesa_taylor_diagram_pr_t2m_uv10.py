@@ -14,7 +14,7 @@ from taylor_diagram import TaylorDiagram
 
 print('Read std and corr')
 # Read std and corr
-var = 'pr'
+var = 'uv10'
 
 if var == 'pr':
 	stddev1 = np.array([0.8854898761088505, 3.0378468, 1.8355739])
@@ -119,11 +119,11 @@ plt.subplots_adjust(top=0.95)
 
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
 name_out = 'pyplt_stations_cluster_taylor_diagram_{0}_sesa.png'.format(var)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=600)
-plt.show()
+plt.close('all')
+plt.cla()
 exit()
-	

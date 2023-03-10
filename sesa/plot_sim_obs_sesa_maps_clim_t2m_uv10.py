@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.patches import Polygon
 from mpl_toolkits.basemap import Basemap
-from dict_csam_inmet_stations import inmet
+from dict_sesa_inmet_stations import inmet
 
 
 def import_dataset(var):
@@ -90,7 +90,7 @@ def basemap():
 	return my_map
 
 
-var = 'uv10'
+var = 't2m'
 	
 print('Import dataset')
 # Import dataset
@@ -196,7 +196,7 @@ cbar.ax.tick_params(labelsize=8)
 	
 print('Path out to save figure')
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/sesa'
+path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
 name_out = 'pyplt_maps_clim_{0}_sesa.png'.format(var)
 if not os.path.exists(path_out):
 	create_path(path_out)

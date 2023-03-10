@@ -11,7 +11,7 @@ import xarray as xr
 import scipy.stats as st
 import matplotlib.pyplot as plt
 
-from dict_csam_inmet_stations import inmet
+from dict_sesa_inmet_stations import inmet
 
 
 def import_inmet(dt):
