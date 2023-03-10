@@ -48,7 +48,7 @@ def import_inmet(dt):
 		mean_iii.append(d_iii)
 
 		# reading era5 
-		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
+		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_8km_day_20180101-20211231.nc')
 		d_iv = d_iv.tp.sel(time=slice('2019-01-01','2021-12-31'))
 		d_iv = d_iv.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		d_iv = d_iv.values
@@ -64,8 +64,6 @@ def setBoxColors(bp):
     setp(bp['caps'][1], color='gray')
     setp(bp['whiskers'][0], color='gray')
     setp(bp['whiskers'][1], color='gray')
-    # ~ setp(bp['fliers'][0], color='gray')
-    # ~ setp(bp['fliers'][1], color='gray')
         
     setp(bp['boxes'][1], color='blue')
     setp(bp['medians'][1], color='blue')
@@ -73,8 +71,6 @@ def setBoxColors(bp):
     setp(bp['caps'][3], color='blue')
     setp(bp['whiskers'][2], color='blue')
     setp(bp['whiskers'][3], color='blue')
-    # ~ setp(bp['fliers'][2], color='blue')
-    # ~ setp(bp['fliers'][3], color='blue')
     
     setp(bp['boxes'][2], color='green')
     setp(bp['medians'][2], color='green')
@@ -82,8 +78,6 @@ def setBoxColors(bp):
     setp(bp['caps'][5], color='green')
     setp(bp['whiskers'][4], color='green')
     setp(bp['whiskers'][5], color='green')
-    # ~ setp(bp['fliers'][4], color='green')
-    # ~ setp(bp['fliers'][5], color='green')
        
     setp(bp['boxes'][3], color='red')
     setp(bp['medians'][3], color='red')
@@ -91,9 +85,8 @@ def setBoxColors(bp):
     setp(bp['caps'][7], color='red')
     setp(bp['whiskers'][6], color='red')
     setp(bp['whiskers'][7], color='red')
-    # ~ setp(bp['fliers'][6], color='red')
-    # ~ setp(bp['fliers'][7], color='red')
-    
+
+
 dt = 'H_2018-01-01_2021-12-31'
 
 print('Import dataset')
@@ -221,24 +214,37 @@ print('Plot figure')
 fig = plt.figure(figsize=(10, 4))
 x = np.arange(0.5, 25 + 0.5)
 
+A = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7], [2, 4, 16, 7]]
+B = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7], [2, 4, 16, 7]]
+C = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7], [2, 4, 16, 7]]
+D = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7], [2, 4, 16, 7]]
+E = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7], [2, 4, 16, 7]]
+
 ax = fig.add_subplot(1, 1, 1)
-bp = plt.boxplot(cluster_i, positions=[1, 2, 3, 4])
+bp = plt.boxplot(cluster_i, positions=[1, 2, 3, 4], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_ii, positions=[6, 7, 8, 9])
+bp = plt.boxplot(cluster_ii, positions=[6, 7, 8, 9], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_iii, positions=[11, 12, 13, 14])
+bp = plt.boxplot(cluster_iii, positions=[11, 12, 13, 14], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_iv, positions=[16, 17, 18, 19])
+bp = plt.boxplot(cluster_iv, positions=[16, 17, 18, 19], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_v, positions=[21, 22, 23, 24])
+bp = plt.boxplot(cluster_v, positions=[21, 22, 23, 24], sym='.')
 setBoxColors(bp)
 
 plt.xlim(0, 25)
 plt.ylim(0, 40)
+plt.yticks(np.arange(0, 44, 4))
+plt.xticks(x, ('','','','','','','','','','','','','','','','','','','','','','','','',''))
 plt.xlabel('Clusters', fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
-plt.xticks(x, ('','','Cluster I','','','','','Cluster II','','','','','Cluster III','','','','','Cluster IV','','','','','Cluster V','',''))
-
+plt.axhspan(36, 40, color='gray', alpha=0.5, lw=0)
+plt.text(1.25, 37, 'Cluster I', fontweight='bold')
+plt.text(6.25, 37, 'Cluster II', fontweight='bold')
+plt.text(11.25, 37, 'Cluster III', fontweight='bold')
+plt.text(16.25, 37, 'Cluster IV', fontweight='bold')
+plt.text(21.25, 37, 'Cluster V', fontweight='bold')
+plt.axhline(36., linewidth=1., linestyle='-',  color='black')
 plt.axvline(5., linewidth=1., linestyle='--',  color='black')
 plt.axvline(10, linewidth=1., linestyle='--',  color='black')
 plt.axvline(15, linewidth=1., linestyle='--',  color='black')

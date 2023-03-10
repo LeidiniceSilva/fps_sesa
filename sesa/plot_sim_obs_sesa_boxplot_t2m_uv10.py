@@ -75,8 +75,6 @@ def setBoxColors(bp):
     setp(bp['caps'][1], color='gray')
     setp(bp['whiskers'][0], color='gray')
     setp(bp['whiskers'][1], color='gray')
-    # ~ setp(bp['fliers'][0], color='gray')
-    # ~ setp(bp['fliers'][1], color='gray')
         
     setp(bp['boxes'][1], color='blue')
     setp(bp['medians'][1], color='blue')
@@ -84,26 +82,14 @@ def setBoxColors(bp):
     setp(bp['caps'][3], color='blue')
     setp(bp['whiskers'][2], color='blue')
     setp(bp['whiskers'][3], color='blue')
-    # ~ setp(bp['fliers'][2], color='blue')
-    # ~ setp(bp['fliers'][3], color='blue')
-    
-    setp(bp['boxes'][2], color='green')
-    setp(bp['medians'][2], color='green')
-    setp(bp['caps'][4], color='green')
-    setp(bp['caps'][5], color='green')
-    setp(bp['whiskers'][4], color='green')
-    setp(bp['whiskers'][5], color='green')
-    # ~ setp(bp['fliers'][4], color='green')
-    # ~ setp(bp['fliers'][5], color='green')
        
-    setp(bp['boxes'][3], color='red')
-    setp(bp['medians'][3], color='red')
-    setp(bp['caps'][6], color='red')
-    setp(bp['caps'][7], color='red')
-    setp(bp['whiskers'][6], color='red')
-    setp(bp['whiskers'][7], color='red')
-    # ~ setp(bp['fliers'][6], color='red')
-    # ~ setp(bp['fliers'][7], color='red')
+    setp(bp['boxes'][2], color='red')
+    setp(bp['medians'][2], color='red')
+    setp(bp['caps'][4], color='red')
+    setp(bp['caps'][5], color='red')
+    setp(bp['whiskers'][4], color='red')
+    setp(bp['whiskers'][5], color='red')
+
 
 var = 't2m' 
 dt = 'H_2018-01-01_2021-12-31'
@@ -211,47 +197,64 @@ cluster_iii = [regcm_cluster_iii, inmet_cluster_iii, era5_cluster_iii]
 cluster_iv = [regcm_cluster_iv, inmet_cluster_iv, era5_cluster_iv]
 cluster_v = [regcm_cluster_v, inmet_cluster_v, era5_cluster_v]
 
+A = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
+B = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
+C = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
+D = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
+E = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
+
 print('Plot figure')
 # Plot figure
 fig = plt.figure(figsize=(10, 4))
 x = np.arange(0.5, 20 + 0.5)
 
-if var == 't2m':
-	legend = 'Temperature (°C)'
-else:
-	legend = 'Wind 10m (m s⁻¹)'
-	
 ax = fig.add_subplot(1, 1, 1)
-bp = plt.boxplot(cluster_i, positions=[1, 2, 3])
+bp = plt.boxplot(cluster_i, positions=[1, 2, 3], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_ii, positions=[5, 6, 7])
+bp = plt.boxplot(cluster_ii, positions=[5, 6, 7], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_iii, positions=[9, 10, 11])
+bp = plt.boxplot(cluster_iii, positions=[9, 10, 11], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_iv, positions=[13, 14, 15])
+bp = plt.boxplot(cluster_iv, positions=[13, 14, 15], sym='.')
 setBoxColors(bp)
-bp = plt.boxplot(cluster_v, positions=[17, 18, 19])
+bp = plt.boxplot(cluster_v, positions=[17, 18, 19], sym='.')
 setBoxColors(bp)
 
-plt.xlim(0, 20)
 if var == 't2m':
-	plt.ylim(12, 32)
+	legend = 'Temperature (°C)'
+	plt.ylim(4, 34)
+	plt.yticks(np.arange(4, 36, 2))
+	plt.axhspan(30, 34, color='gray', alpha=0.5, lw=0)
+	plt.text(1, 30.75, 'Cluster I', fontweight='bold')
+	plt.text(5, 30.75, 'Cluster II', fontweight='bold')
+	plt.text(9, 30.75, 'Cluster III', fontweight='bold')
+	plt.text(13, 30.75, 'Cluster IV', fontweight='bold')
+	plt.text(17, 30.75, 'Cluster V', fontweight='bold')
+	plt.axhline(30., linewidth=1., linestyle='-',  color='black')
 else:
-	plt.ylim(0, 14)
+	legend = 'Wind 10m (m s⁻¹)'
+	plt.ylim(0, 10)
+	plt.yticks(np.arange(0, 11, 1))
+	plt.axhspan(9, 10, color='gray', alpha=0.5, lw=0)
+	plt.text(1, 9.25, 'Cluster I', fontweight='bold')
+	plt.text(5, 9.25, 'Cluster II', fontweight='bold')
+	plt.text(9, 9.25, 'Cluster III', fontweight='bold')
+	plt.text(13, 9.25, 'Cluster IV', fontweight='bold')
+	plt.text(17, 9.25, 'Cluster V', fontweight='bold')
+	plt.axhline(9, linewidth=1., linestyle='-',  color='black')
 	
 plt.xlabel('Clusters', fontweight='bold')
 plt.ylabel('{0}'.format(legend), fontweight='bold')
-plt.xticks(x, ('','Cluster I','','','','Cluster II','','','','Cluster III','','','','Cluster IV','','','','','Cluster V','',''))
-
-plt.axvline(5., linewidth=1., linestyle='--',  color='black')
-plt.axvline(10, linewidth=1., linestyle='--',  color='black')
-plt.axvline(15, linewidth=1., linestyle='--',  color='black')
-plt.axvline(20, linewidth=1., linestyle='--',  color='black')
-
+plt.xlim(0, 20)
+plt.xticks(x, ('','','','','','','','','','','','','','','','','','','',''))
+plt.axvline(4., linewidth=1., linestyle='--',  color='black')
+plt.axvline(8, linewidth=1., linestyle='--',  color='black')
+plt.axvline(12, linewidth=1., linestyle='--',  color='black')
+plt.axvline(16, linewidth=1., linestyle='--',  color='black')
 c1, = plt.plot([1,1],'gray')
 c2, = plt.plot([1,1],'blue')
 c3, = plt.plot([1,1],'red')
-plt.legend((c1, c2, c3, c4),('RegCM4', 'INMET', 'ERA5'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=4, frameon=False)
+plt.legend((c1, c2, c3),('RegCM4', 'INMET', 'ERA5'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=4, frameon=False)
 c1.set_visible(False)
 c2.set_visible(False)
 c3.set_visible(False)
