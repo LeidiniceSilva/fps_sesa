@@ -11,12 +11,8 @@ import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
 
-from matplotlib.patches import Polygon
-from mpl_toolkits.basemap import Basemap
 from dict_sesa_inmet_stations import inmet
-from dtaidistance import dtw, clustering
-from scipy.cluster.hierarchy import linkage, dendrogram
-from sklearn.cluster import AgglomerativeClustering
+from dict_urug_smn_stations import urug_smn
 
 
 def import_inmet(dt, type_cycle):
@@ -27,15 +23,14 @@ def import_inmet(dt, type_cycle):
 	clim_ii = []
 
 	# Select lat and lon 
-	for i in range(1, 155):
-				
+	for i in range(1, 101):
 		iy.append(inmet[i][2])
 		ix.append(inmet[i][3])
 
 		print('Reading INMET weather station:', i, inmet[i][0], inmet[i][1])
 		# Reading INMET weather station	
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
-		d_i = d_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
+		d_i = d_i.pre.sel(time=slice('2019-01-01','2021-12-31'))
 	
 		if type_cycle == 'diurnal_cycle':
 			d_i = d_i.groupby('time.hour').mean('time')
@@ -49,7 +44,7 @@ def import_inmet(dt, type_cycle):
 			clim_i.append(values_i*24)
 		
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
-		d_ii = d_ii.pre.sel(time=slice('2018-01-01','2021-12-31'))
+		d_ii = d_ii.pre.sel(time=slice('2019-01-01','2021-12-31'))
 		d_ii = d_ii.groupby('time.year').sum('time')
 		values_ii = d_ii.values
 		clim_ii.append(values_ii)		
@@ -57,31 +52,75 @@ def import_inmet(dt, type_cycle):
 	return iy, ix, clim_i, clim_ii
 
 
+def import_urug_smn(dt, type_cycle):
+	
+	jy = []
+	jx = []
+	clim_j = []
+	clim_jj = []
+	
+	# Select lat and lon 
+	for j in range(1, 72):
+		jy.append(urug_smn[j][1])
+		jx.append(urug_smn[j][2])		
+
+		print('Reading Uruguai weather station:', j, urug_smn[j][0])	
+		# Reading Uruguai weather stations
+		d_j = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
+		d_j = d_j.pre.sel(time=slice('2019-01-01','2021-12-31'))
+			
+		if type_cycle == 'diurnal_cycle':
+			d_j = d_j.groupby('time.hour').mean('time')
+			values_j = d_j.values*24
+			clim_d_j = values_j.tolist()	
+			clim_d_j = clim_d_j[3:]+clim_d_j[:3]
+			clim_j.append(clim_d_j)
+		else:
+			d_j = d_j.groupby('time.month').mean('time')
+			values_j = d_j.values
+			clim_j.append(values_j*24)
+		
+		d_jj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
+		d_jj = d_jj.pre.sel(time=slice('2019-01-01','2021-12-31'))
+		d_jj = d_jj.groupby('time.year').sum('time')
+		values_jj = d_jj.values
+		clim_jj.append(values_jj)	
+		
+	return jy, jx, clim_j, clim_jj
+	
+
 type_cycle = 'annual_cycle'	
 dt = 'H_2018-01-01_2021-12-31'
 
 print('Import latitude, longitude and database')
 # Import latitude, longitude and database
 iy, ix, clim_i, clim_ii = import_inmet(dt, type_cycle)			
-		
-lon_xx = ix
-lat_yy = iy
-clim_tot = clim_i
-clim_tot_i = clim_ii
+jy, jx, clim_j, clim_jj = import_urug_smn(dt, type_cycle)
+
+lon_xx = ix+jx
+lat_yy = iy+jy
+clim_tot = clim_i+clim_j
+clim_tot_i = clim_ii+clim_jj
 
 if type_cycle == 'diurnal_cycle':
-	list_hc = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 3, 1, 1, 1, 0, 3, 1, 3, 1, 1, 1, 3, 1, 3, 4, 3, 1, 3, 1, 3, 3, 3, 3, 1, 3, 0, 3, 3, 3, 3, 3, 4, 3,
-	4, 0, 0, 0, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 3, 4, 3, 0, 4, 0, 4, 4, 4, 4, 4, 0, 4, 0, 0, 4, 0,
-	4, 4, 4, 4, 4, 4, 0, 4, 0, 2, 4, 4, 2, 4, 4, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 0, 0, 0, 2, 0, 2, 2, 2, 0, 2,
-	2, 2, 2, 2, 4, 0]
+	list_hc = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 0, 2, 3, 3, 2, 0,
+	3, 0, 0, 3, 3, 0, 2, 0, 0, 3, 3, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+	1, 1, 1, 0, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 4, 2, 4, 2, 4, 2, 4, 4, 4, 4,
+	4, 4, 2, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 3, 2,
+	3, 2, 2, 2, 2, 1, 2]
 else:
-	list_hc = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	1, 1, 1, 1, 3, 1, 1, 1, 0, 3, 1, 3, 1, 1, 1, 3, 1, 3, 4, 3, 1, 3, 1, 3, 3, 3, 3, 1, 3, 0, 3, 3, 3, 3, 3, 4, 3,
-	4, 0, 0, 0, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 3, 4, 3, 0, 4, 0, 4, 4, 4, 4, 4, 0, 4, 0, 0, 4, 0,
-	4, 4, 4, 4, 4, 4, 0, 4, 0, 2, 4, 4, 2, 4, 4, 2, 2, 2, 2, 4, 2, 2, 4, 2, 2, 2, 2, 0, 0, 0, 2, 0, 2, 2, 2, 0, 2,
-	2, 2, 2, 2, 4, 0]
-
+	list_hc = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 0, 2, 3, 3, 2, 0,
+	3, 0, 0, 3, 3, 0, 2, 0, 0, 3, 3, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+	1, 1, 1, 0, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 4, 2, 4, 2, 4, 2, 4, 4, 4, 4,
+	4, 4, 2, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 3, 2,
+	3, 2, 2, 2, 2, 1, 2]
+	
 count_i = []
 count_ii = []
 count_iii = []
@@ -179,7 +218,7 @@ for patch, color in zip(box['boxes'], colors):
     patch.set_facecolor(color)
 for median in box['medians']:
     median.set(color='k', linewidth=1.)
-plt.yticks(np.arange(0, 2400, 200))
+plt.yticks(np.arange(900, 2000, 100))
 plt.ylabel('Annual mean precipitation (mm)', fontsize=10)
 
 print('Path out to save figure')

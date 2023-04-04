@@ -32,14 +32,27 @@ def import_inmet(dt):
 		d_i = d_i.groupby('time.month').mean('time')
 		values_i = d_i.values
 		mean_i.append(values_i*86400)
-
+		
 		# Reading inmet 
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
 		d_ii = d_ii.pre.sel(time=slice('2019-01-01','2021-12-31'))
-		d_ii = d_ii.groupby('time.month').mean('time')
+		d_ii = d_ii.resample(time='3H').sum()
 		values_ii = d_ii.values
 		mean_ii.append(values_ii*24)
-				
+		
+		import math
+
+		print(len(values_ii))
+		print(sum(math.isnan(x) for x in values_ii))
+		
+		# ~ x = np.array([0.9737068, np.nan, np.nan, -0.64236529, -0.88137541, -0.78318609])
+		# ~ y = np.array([0.9, 0.7643, 0.61, -0.64236529, -0.88137541, -0.78318609])
+
+		# ~ y[np.isnan(y)] = x[np.isnan(y)]
+		
+		# ~ print(x)
+		# ~ exit()
+		
 		# reading cmorph 
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/cmorph/' + 'CMORPH_V1.0_ADJ_CSAM_4km_mon_20180101-20211231.nc')
 		d_iii = d_iii.cmorph.sel(time=slice('2019-01-01','2021-12-31'))
@@ -64,7 +77,7 @@ dt = 'H_2018-01-01_2021-12-31'
 print('Import dataset')
 # Import dataset
 mean_i, mean_ii, mean_iii, mean_iv = import_inmet(dt)			
-		
+exit()		
 clim_regcm = mean_i
 clim_inmet = mean_ii
 clim_cmorph = mean_iii

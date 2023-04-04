@@ -30,8 +30,8 @@ def import_inmet(dt):
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/reg4/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2019-01-01','2021-12-31'))
 		d_i = d_i.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
-		d_i = d_i.values
-		mean_i.append(d_i*86400)
+		d_i = d_i.values*86400						
+		mean_i.append(d_i)
 
 		# Reading inmet 
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
@@ -41,14 +41,14 @@ def import_inmet(dt):
 		mean_ii.append(d_ii)
 				
 		# reading cmorph 
-		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/cmorph/' + 'CMORPH_V1.0_ADJ_CSAM_8km_day_20180101-20211231.nc')
+		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/cmorph/' + 'CMORPH_V1.0_ADJ_CSAM_4km_day_20180101-20211231.nc')
 		d_iii = d_iii.cmorph.sel(time=slice('2019-01-01','2021-12-31'))
 		d_iii = d_iii.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		d_iii = d_iii.values
 		mean_iii.append(d_iii)
 
 		# reading era5 
-		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_8km_day_20180101-20211231.nc')
+		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
 		d_iv = d_iv.tp.sel(time=slice('2019-01-01','2021-12-31'))
 		d_iv = d_iv.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
 		d_iv = d_iv.values
@@ -203,6 +203,31 @@ inmet_cluster_v = np.nanmean(inmet_v, axis=0)
 cmorph_cluster_v = np.nanmean(cmorph_v, axis=0)
 era5_cluster_v = np.nanmean(era5_v, axis=0)
 
+regcm_cluster_i = [i for i in regcm_cluster_i if i >= 0.1]	
+inmet_cluster_i = [i for i in inmet_cluster_i if i >= 0.1]	
+cmorph_cluster_i = [i for i in cmorph_cluster_i if i >= 0.1]	
+era5_cluster_i = [i for i in era5_cluster_i if i >= 0.1]	
+
+regcm_cluster_ii = [i for i in regcm_cluster_ii if i >= 0.1]	
+inmet_cluster_ii = [i for i in inmet_cluster_ii if i >= 0.1]	
+cmorph_cluster_ii = [i for i in cmorph_cluster_ii if i >= 0.1]	
+era5_cluster_ii = [i for i in era5_cluster_ii if i >= 0.1]	
+
+regcm_cluster_iii = [i for i in regcm_cluster_iii if i >= 0.1]	
+inmet_cluster_iii = [i for i in inmet_cluster_iii if i >= 0.1]	
+cmorph_cluster_iii = [i for i in cmorph_cluster_iii if i >= 0.1]	
+era5_cluster_iii = [i for i in era5_cluster_iii if i >= 0.1]	
+
+regcm_cluster_iv = [i for i in regcm_cluster_iv if i >= 0.1]	
+inmet_cluster_iv = [i for i in inmet_cluster_iv if i >= 0.1]	
+cmorph_cluster_iv = [i for i in cmorph_cluster_iv if i >= 0.1]	
+era5_cluster_iv = [i for i in era5_cluster_iv if i >= 0.1]	
+
+regcm_cluster_v = [i for i in regcm_cluster_v if i >= 0.1]	
+inmet_cluster_v = [i for i in inmet_cluster_v if i >= 0.1]	
+cmorph_cluster_v = [i for i in cmorph_cluster_v if i >= 0.1]	
+era5_cluster_v = [i for i in era5_cluster_v if i >= 0.1]	
+
 cluster_i = [regcm_cluster_i, inmet_cluster_i, cmorph_cluster_i, era5_cluster_i]
 cluster_ii = [regcm_cluster_ii, inmet_cluster_ii, cmorph_cluster_ii, era5_cluster_ii]
 cluster_iii = [regcm_cluster_iii, inmet_cluster_iii, cmorph_cluster_iii, era5_cluster_iii]
@@ -251,7 +276,7 @@ plt.axvline(15, linewidth=1., linestyle='--',  color='black')
 plt.axvline(20, linewidth=1., linestyle='--',  color='black')
 
 c1, = plt.plot([1,1],'gray')
-c2, = plt.plot([1,1],'blue')
+c2, = plt.plot([1,1],'blue') 
 c3, = plt.plot([1,1],'green')
 c4, = plt.plot([1,1],'red')
 plt.legend((c1, c2, c3, c4),('RegCM4', 'INMET', 'CMORPH', 'ERA5'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=4, frameon=False)

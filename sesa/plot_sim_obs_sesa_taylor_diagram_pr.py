@@ -3,15 +3,17 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"
-__description__ = "This script plot annual cycle statistics"
+__description__ = "This script plot taylor diagram"
 
 import os
 import numpy as np
 import xarray as xr
 import scipy.stats as st
 import matplotlib.pyplot as plt
+import mpl_toolkits.axisartist as axisartist
 
 from dict_sesa_inmet_stations import inmet
+from taylor_diagram import TaylorDiagram
 
 
 def import_inmet(dt):
@@ -55,7 +57,7 @@ def import_inmet(dt):
 		
 	return mean_i, mean_ii, mean_iii, mean_iv
 	
-
+var = 'pr'
 dt = 'H_2018-01-01_2021-12-31'
 
 print('Import dataset')
@@ -219,16 +221,71 @@ corr_regcm_inmet_cluster_v = st.pearsonr(inmet_cluster_v, regcm_cluster_v)[0]
 corr_regcm_cmorph_cluster_v = st.pearsonr(cmorph_cluster_v, regcm_cluster_v)[0]
 corr_regcm_era5_cluster_v = st.pearsonr(era5_cluster_v, regcm_cluster_v)[0]
 
-print(std_regcm_cluster_i, std_inmet_cluster_i, std_cmorph_cluster_i, std_era5_cluster_i)
-print(std_regcm_cluster_ii, std_inmet_cluster_ii, std_cmorph_cluster_ii, std_era5_cluster_ii)
-print(std_regcm_cluster_iii, std_inmet_cluster_iii, std_cmorph_cluster_iii, std_era5_cluster_iii)
-print(std_regcm_cluster_iv, std_inmet_cluster_iv, std_cmorph_cluster_iv, std_era5_cluster_iv)
-print(std_regcm_cluster_v, std_inmet_cluster_v, std_cmorph_cluster_v, std_era5_cluster_v)
+stddev1 = np.array([std_inmet_cluster_i, std_cmorph_cluster_i, std_era5_cluster_i])
+corrcoeff1 = np.array([corr_regcm_inmet_cluster_i, corr_regcm_cmorph_cluster_i, corr_regcm_era5_cluster_i])
+refstd1 = std_regcm_cluster_i
+models1 = ['RegCM_INMET', 'RegCM_CMORPH', 'RegCM_ERA5']
+stddev2 = np.array([std_inmet_cluster_ii, std_cmorph_cluster_ii, std_era5_cluster_ii])
+corrcoeff2 = np.array([corr_regcm_inmet_cluster_ii, corr_regcm_cmorph_cluster_ii, corr_regcm_era5_cluster_ii])
+refstd2 = std_regcm_cluster_ii
+models2 = ['RegCM_INMET', 'RegCM_CMORPH', 'RegCM_ERA5']
+stddev3 = np.array([std_inmet_cluster_iii, std_cmorph_cluster_iii, std_era5_cluster_iii])
+corrcoeff3 = np.array([corr_regcm_inmet_cluster_iii, corr_regcm_cmorph_cluster_iii, corr_regcm_era5_cluster_iii])
+refstd3 = std_regcm_cluster_iii
+models3 = ['RegCM_INMET', 'RegCM_CMORPH', 'RegCM_ERA5']
+stddev4 = np.array([std_inmet_cluster_iv, std_cmorph_cluster_iv, std_era5_cluster_iv])
+corrcoeff4 = np.array([corr_regcm_inmet_cluster_iv, corr_regcm_cmorph_cluster_iv, corr_regcm_era5_cluster_iv])
+refstd4 = std_regcm_cluster_iv
+models4 = ['RegCM_INMET', 'RegCM_CMORPH', 'RegCM_ERA5']
+stddev5 = np.array([std_inmet_cluster_v, std_cmorph_cluster_v, std_era5_cluster_v])
+corrcoeff5 = np.array([corr_regcm_inmet_cluster_v, corr_regcm_cmorph_cluster_v, corr_regcm_era5_cluster_v])
+refstd5 = std_regcm_cluster_v
+models5 = ['RegCM_INMET', 'RegCM_CMORPH', 'RegCM_ERA5']
+	
+print('Plot figure')
+# Plot figure
+fig = plt.figure(figsize=(12,8))
+fig.tight_layout(h_pad=1)
 
-print(corr_regcm_inmet_cluster_i, corr_regcm_cmorph_cluster_i, corr_regcm_era5_cluster_i)
-print(corr_regcm_inmet_cluster_ii, corr_regcm_cmorph_cluster_ii, corr_regcm_era5_cluster_ii)
-print(corr_regcm_inmet_cluster_iii, corr_regcm_cmorph_cluster_iii, corr_regcm_era5_cluster_iii)
-print(corr_regcm_inmet_cluster_iv, corr_regcm_cmorph_cluster_iv, corr_regcm_era5_cluster_iv)
-print(corr_regcm_inmet_cluster_v, corr_regcm_cmorph_cluster_v, corr_regcm_era5_cluster_v)
+titleprops_dict = dict(loc='left', fontweight='bold',
+					   x=0.0, y=1.05)
+
+fig, ax1 = TaylorDiagram(stddev1, corrcoeff1, refstd1, 
+						 fig=fig, rect=231, 
+						 title='(a) Cluster I', titleprops_dict=titleprops_dict,
+						 normalize=True, labels=models1, ref_label='Reference')
+
+fig, ax2 = TaylorDiagram(stddev2, corrcoeff2, refstd2, 
+						 fig=fig, rect=232, 
+						 title='(b) Cluster II', titleprops_dict=titleprops_dict,
+						 normalize=True, labels=models2, ref_label='Reference')
+
+fig, ax3 = TaylorDiagram(stddev3, corrcoeff3, refstd3, 
+						 fig=fig, rect=233,  
+						 title='(c) Cluster III', titleprops_dict=titleprops_dict,
+						 normalize=True, labels=models3, ref_label='Reference')
+
+fig, ax4 = TaylorDiagram(stddev4, corrcoeff4, refstd4, 
+						 fig=fig, rect=234, 
+						 title='(d) Cluster IV', titleprops_dict=titleprops_dict,
+						 normalize=True, labels=models4, ref_label='Reference')
+
+fig, ax5 = TaylorDiagram(stddev5, corrcoeff5, refstd5, 
+						 fig=fig, rect=235,
+						 title='(e) Cluster V', titleprops_dict=titleprops_dict,
+						 normalize=True, labels=models5, ref_label='Reference')
+						
+ax5.legend(bbox_to_anchor=(1.2, 0.70), loc='lower left', ncol=1)
+plt.subplots_adjust(top=0.95)
+
+print('Path out to save figure')
+# Path out to save figure
+path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
+name_out = 'pyplt_stations_cluster_taylor_diagram_{0}_sesa.png'.format(var)
+if not os.path.exists(path_out):
+	create_path(path_out)
+plt.savefig(os.path.join(path_out, name_out), dpi=600)
+plt.show()
 exit()
+
 
