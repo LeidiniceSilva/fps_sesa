@@ -15,9 +15,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from mpl_toolkits.basemap import Basemap
 from dict_sesa_inmet_stations import inmet
+from dict_urug_smn_stations import urug_smn
 
 
-def import_dataset():
+def import_inmet(dt):
 	
 	ix = []		  
 	iy = []
@@ -26,13 +27,11 @@ def import_dataset():
 	bias_iii = []
 
 	# Select lat and lon 
-	for i in range(1, 155):
-			
+	for i in range(1, 101):
 		iy.append(inmet[i][2])
 		ix.append(inmet[i][3])
 		
 		print('Reading weather station:', i, inmet[i][0], inmet[i][1])
-
 		# reading regcm 
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/reg4/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2019-01-01','2021-12-31'))
@@ -42,7 +41,7 @@ def import_dataset():
 		list_i = values_i*86400
 
 		# Reading inmet 
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
 		d_ii = d_ii.pre.sel(time=slice('2019-01-01','2021-12-31'))
 		d_ii = d_ii.groupby('time.season').mean('time')
 		values_ii = d_ii.values
@@ -77,6 +76,62 @@ def import_dataset():
 	return iy, ix, bias_i, bias_ii, bias_iii
 		
 
+def import_urug_smn(dt):
+	
+	jx = []		  
+	jy = []
+	bias_j = []
+	bias_jj = []
+	bias_jjj = []
+
+	# Select lat and lon 
+	for j in range(1, 72):
+		jy.append(urug_smn[j][1])
+		jx.append(urug_smn[j][2])	
+		
+		print('Reading Uruguai weather station:', j, urug_smn[j][0])	
+		# reading regcm 
+		d_j = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/reg4/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_j = d_j.pr.sel(time=slice('2019-01-01','2021-12-31'))
+		d_j = d_j.sel(lat=urug_smn[j][1], lon=urug_smn[j][2], method='nearest')
+		d_j = d_j.groupby('time.season').mean('time')
+		values_j = d_j.values
+		list_j = values_j*86400
+
+		# Reading smn
+		d_jj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
+		d_jj = d_jj.pre.sel(time=slice('2019-01-01','2021-12-31'))
+		d_jj = d_jj.groupby('time.season').mean('time')
+		values_jj = d_jj.values
+		list_jj = values_jj*24
+
+		# reading cmorph 
+		d_jjj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/cmorph/' + 'CMORPH_V1.0_ADJ_CSAM_4km_mon_20180101-20211231.nc')
+		d_jjj = d_jjj.cmorph.sel(time=slice('2019-01-01','2021-12-31'))
+		d_jjj = d_jjj.sel(lat=urug_smn[j][1], lon=urug_smn[j][2], method='nearest')
+		d_jjj = d_jjj.groupby('time.season').mean('time')
+		list_jjj = d_jjj.values
+
+		# reading era5 
+		d_jv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+		d_jv = d_jv.tp.sel(time=slice('2019-01-01','2021-12-31'))
+		d_jv = d_jv.groupby('time.season').mean('time')
+		d_jv = d_jv.sel(lat=urug_smn[j][1], lon=urug_smn[j][2], method='nearest')
+		list_jv = d_jv.values
+		
+		# calculate bias
+		mean_j = list_j - list_jj
+		bias_j.append(mean_j)
+
+		mean_jj = list_j - list_jjj
+		bias_jj.append(mean_jj)
+		
+		mean_jjj = list_j - list_jv
+		bias_jjj.append(mean_jjj)
+		
+	return jy, jx, bias_j, bias_jj, bias_jjj
+	
+	
 def basemap():
 	
 	my_map = Basemap(projection='cyl', llcrnrlon=-75., llcrnrlat=-35., urcrnrlon=-48.,urcrnrlat=-17., resolution='c')
@@ -88,28 +143,42 @@ def basemap():
 
 
 var = 'pr'
+dt = 'H_2018-01-01_2021-12-31'
 
 print('Import dataset')
 # Import dataset
-iy, ix, bias_i, bias_ii, bias_iii = import_dataset()			
+iy, ix, bias_i, bias_ii, bias_iii = import_inmet(dt)			
+jy, jx, bias_j, bias_jj, bias_jjj = import_urug_smn(dt)			
 
-lon_xx = ix
-lat_yy = iy
+lon_xx = ix+jx
+lat_yy = iy+jy
 
-regcm_inmet_djf = [item[0] for item in bias_i]
-regcm_inmet_mam = [item[1] for item in bias_i]
-regcm_inmet_jja = [item[2] for item in bias_i]
-regcm_inmet_son = [item[3] for item in bias_i]
+bias_tot_i = bias_i+bias_j
+bias_tot_ii = bias_ii+bias_jj
+bias_tot_iii = bias_iii+bias_jjj
 
-regcm_cmorph_djf = [item[0] for item in bias_ii]
-regcm_cmorph_mam = [item[1] for item in bias_ii]
-regcm_cmorph_jja = [item[2] for item in bias_ii]
-regcm_cmorph_son = [item[3] for item in bias_ii]
+print(bias_tot_i)
+print(bias_tot_ii)
+print(bias_tot_iii)
 
-regcm_era5_djf = [item[0] for item in bias_iii]
-regcm_era5_mam = [item[1] for item in bias_iii]
-regcm_era5_jja = [item[2] for item in bias_iii]
-regcm_era5_son = [item[3] for item in bias_iii]
+print(len(lon_xx))
+print(len(lat_yy))
+print(len(bias_tot_iii))
+
+regcm_inmet_djf = [item[0] for item in bias_tot_i]
+regcm_inmet_mam = [item[1] for item in bias_tot_i]
+regcm_inmet_jja = [item[2] for item in bias_tot_i]
+regcm_inmet_son = [item[3] for item in bias_tot_i]
+
+regcm_cmorph_djf = [item[0] for item in bias_tot_ii]
+regcm_cmorph_mam = [item[1] for item in bias_tot_ii]
+regcm_cmorph_jja = [item[2] for item in bias_tot_ii]
+regcm_cmorph_son = [item[3] for item in bias_tot_ii]
+
+regcm_era5_djf = [item[0] for item in bias_tot_iii]
+regcm_era5_mam = [item[1] for item in bias_tot_iii]
+regcm_era5_jja = [item[2] for item in bias_tot_iii]
+regcm_era5_son = [item[3] for item in bias_tot_iii]
 
 print('Plot figure')
 # Plot figure   
@@ -123,7 +192,7 @@ legend = 'Bias of precipitation (mm d⁻¹)'
 ax = fig.add_subplot(4, 3, 1)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_djf, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(a) RegCM47 - INMET DJF', loc='left', fontsize=6, fontweight='bold')
+plt.title('(a) RegCM47 - INMET+SMN DJF', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 2)
 my_map = basemap()
@@ -138,7 +207,7 @@ plt.title('(c) RegCM47 - ERA5 DJF', loc='left', fontsize=6, fontweight='bold')
 ax = fig.add_subplot(4, 3, 4)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_mam, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(d) RegCM47 - INMET MAM', loc='left', fontsize=6, fontweight='bold')
+plt.title('(d) RegCM47 - INMET+SMN MAM', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 5)
 my_map = basemap()
@@ -153,7 +222,7 @@ plt.title('(f) RegCM47 - ERA5 MAM', loc='left', fontsize=6, fontweight='bold')
 ax = fig.add_subplot(4, 3, 7)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_jja, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(g) RegCM47 - INMET JJA', loc='left', fontsize=6, fontweight='bold')
+plt.title('(g) RegCM47 - INMET+SMN JJA', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 8)
 my_map = basemap()
@@ -168,7 +237,7 @@ plt.title('(i) RegCM47 - ERA5 JJA', loc='left', fontsize=6, fontweight='bold')
 ax = fig.add_subplot(4, 3, 10)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 4, regcm_inmet_son, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(j) RegCM47 - INMET SON', loc='left', fontsize=6, fontweight='bold')
+plt.title('(j) RegCM47 - INMET+SMN SON', loc='left', fontsize=6, fontweight='bold')
 
 ax = fig.add_subplot(4, 3, 11)
 my_map = basemap()
@@ -192,7 +261,6 @@ name_out = 'pyplt_maps_bias_{0}_sesa.png'.format(var)
 if not os.path.exists(path_out):
 	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
-plt.close('all')
-plt.cla()
+plt.show()
 exit()
 
