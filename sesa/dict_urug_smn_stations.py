@@ -2,24 +2,21 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "10/31/2022"
+__date__        = "02/09/2023"
 __description__ = "Dictionary of the smn automatic station"
 
 """
-Dictionaries of the automatic weather station data
+Dictionary of the automatic weather station 
 
 > {station}
 
-    Name, latitude and longitude:
+    Stations and locations, where:
 
-    where:
-
-        1 - automatic station code.
+        1 - Automatic weather station: name, latitude, longitude
 
     Examples:
 
-         1: ['Aguapey',	-28,416682,	-56,542211]
-         
+         1: ['Aguapey',	-28,416682,	-56,542211]       
 """
 
 urug_smn = {1	:['Aguapey',	           -28.416682,	-56.542211],

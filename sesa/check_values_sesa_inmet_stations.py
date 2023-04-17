@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"
-__description__ = "This script plot boxplt of the INMET weather station"
+__description__ = "This script check nan in automatic weather station"
 
 import os
 import math

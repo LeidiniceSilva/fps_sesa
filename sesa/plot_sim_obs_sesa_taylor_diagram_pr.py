@@ -35,14 +35,12 @@ def import_inmet(dt):
 		d_i = d_i.groupby('time.month').mean('time')
 		values_i = d_i.values
 		mean_i.append(values_i*86400)
-		
 		# Reading inmet 
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/inmet/inmet_nc/' + 'pre_{0}_{1}.nc'.format(inmet[i][0], dt))
 		d_ii = d_ii.pre.sel(time=slice('2019-01-01','2021-12-31'))
 		d_ii = d_ii.groupby('time.month').mean('time')
 		values_ii = d_ii.values
 		mean_ii.append(values_ii*24)				
-		
 		# reading cmorph 
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/cmorph/' + 'CMORPH_V1.0_ADJ_CSAM_4km_mon_20180101-20211231.nc')
 		d_iii = d_iii.cmorph.sel(time=slice('2019-01-01','2021-12-31'))
@@ -50,7 +48,6 @@ def import_inmet(dt):
 		d_iii = d_iii.groupby('time.month').mean('time')
 		values_iii = d_iii.values
 		mean_iii.append(values_iii)
-		
 		# reading era5 
 		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_iv = d_iv.tp.sel(time=slice('2019-01-01','2021-12-31'))
@@ -72,7 +69,7 @@ def import_urug_smn(dt):
 	# Select lat and lon 
 	for j in range(1, 72):
 
-		print('Reading Uruguai weather station:', j, urug_smn[j][0])	
+		print('Reading weather station:', j, urug_smn[j][0])	
 		# Reading regcm
 		d_j = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/reg4/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_j = d_j.pr.sel(time=slice('2019-01-01','2021-12-31'))
@@ -80,14 +77,12 @@ def import_urug_smn(dt):
 		d_j = d_j.groupby('time.month').mean('time')
 		values_j = d_j.values
 		mean_j.append(values_j*86400)
-		
 		# Reading smn
 		d_jj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/urug_smn/urug_smn_nc/' + 'pre_{0}_{1}.nc'.format(urug_smn[j][0], dt))
 		d_jj = d_jj.pre.sel(time=slice('2019-01-01','2021-12-31'))
 		d_jj = d_jj.groupby('time.month').mean('time')
 		values_jj = d_jj.values
 		mean_jj.append(values_jj*24)
-		
 		# reading cmorph 
 		d_jjj = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/cmorph/' + 'CMORPH_V1.0_ADJ_CSAM_4km_mon_20180101-20211231.nc')
 		d_jjj = d_jjj.cmorph.sel(time=slice('2019-01-01','2021-12-31'))
@@ -95,7 +90,6 @@ def import_urug_smn(dt):
 		d_jjj = d_jjj.groupby('time.month').mean('time')
 		values_jjj = d_jjj.values
 		mean_jjj.append(values_jjj)
-		
 		# reading era5 
 		d_jv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_jv = d_jv.tp.sel(time=slice('2019-01-01','2021-12-31'))
@@ -299,7 +293,19 @@ stddev5 = np.array([std_inmet_cluster_v, std_cmorph_cluster_v, std_era5_cluster_
 corrcoeff5 = np.array([corr_regcm_inmet_cluster_v, corr_regcm_cmorph_cluster_v, corr_regcm_era5_cluster_v])
 refstd5 = std_regcm_cluster_v
 models5 = ['RegCM_INMET', 'RegCM_CMORPH', 'RegCM_ERA5']
-	
+
+print('RegCM vs. INMET (Cluster I): ', st.pearsonr(inmet_cluster_i, regcm_cluster_i))
+print('RegCM vs. INMET (Cluster II): ', st.pearsonr(inmet_cluster_ii, regcm_cluster_ii))
+print('RegCM vs. INMET (Cluster III): ', st.pearsonr(inmet_cluster_iii, regcm_cluster_iii))
+print('RegCM vs. INMET (Cluster IV): ', st.pearsonr(inmet_cluster_iv, regcm_cluster_iv))
+print('RegCM vs. INMET (Cluster V): ', st.pearsonr(inmet_cluster_v, regcm_cluster_v))
+
+print('RegCM vs. ERA5 (Cluster I): ', st.pearsonr(era5_cluster_i, regcm_cluster_i))
+print('RegCM vs. ERA5 (Cluster II): ', st.pearsonr(era5_cluster_ii, regcm_cluster_ii))
+print('RegCM vs. ERA5 (Cluster III): ', st.pearsonr(era5_cluster_iii, regcm_cluster_iii))
+print('RegCM vs. ERA5 (Cluster IV): ', st.pearsonr(era5_cluster_iv, regcm_cluster_iv))
+print('RegCM vs. ERA5 (Cluster V): ', st.pearsonr(era5_cluster_v, regcm_cluster_v))
+
 print('Plot figure')
 # Plot figure
 fig = plt.figure(figsize=(12,8))
@@ -340,8 +346,6 @@ print('Path out to save figure')
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
 name_out = 'pyplt_stations_cluster_taylor_diagram_{0}_sesa.png'.format(var)
-if not os.path.exists(path_out):
-	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=600)
 plt.show()
 exit()

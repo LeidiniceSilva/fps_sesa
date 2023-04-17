@@ -26,7 +26,6 @@ def import_inmet(var, dt):
 	for i in range(1, 155):
 
 		print('Reading weather station:', i, inmet[i][0], inmet[i][1])
-	
 		if var == 't2m':
 			# reading regcm 
 			d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/reg4/' + 'tas_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
@@ -271,8 +270,6 @@ print('Path out to save figure')
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_sesa'
 name_out = 'pyplt_stations_cluster_taylor_diagram_{0}_sesa.png'.format(var)
-if not os.path.exists(path_out):
-	create_path(path_out)
 plt.savefig(os.path.join(path_out, name_out), dpi=600)
 plt.show()
 exit()

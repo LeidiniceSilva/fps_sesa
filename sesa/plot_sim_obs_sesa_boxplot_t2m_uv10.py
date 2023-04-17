@@ -197,12 +197,6 @@ cluster_iii = [regcm_cluster_iii, inmet_cluster_iii, era5_cluster_iii]
 cluster_iv = [regcm_cluster_iv, inmet_cluster_iv, era5_cluster_iv]
 cluster_v = [regcm_cluster_v, inmet_cluster_v, era5_cluster_v]
 
-A = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
-B = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
-C = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
-D = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
-E = [[12, 4, 16, 7], [2, 14, 6, 7], [2, 4, 16, 7]]
-
 print('Plot figure')
 # Plot figure
 fig = plt.figure(figsize=(10, 4))

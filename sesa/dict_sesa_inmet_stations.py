@@ -6,15 +6,13 @@ __date__        = "02/09/2023"
 __description__ = "Dictionary of the inmet automatic station"
 
 """
-Dictionaries of the station
+Dictionary of the automatic weather station 
 
 > {station}
 
-    Stations and locations:
+    Stations and locations, where:
 
-    where:
-
-        1 - automatic station name: code, name, latitude, longiitude
+        1 - Automatic weather station: code, name, latitude, longitude
 
     Examples:
 

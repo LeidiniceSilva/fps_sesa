@@ -100,9 +100,9 @@ print('Plot figure')
 # Plot figure   
 fig = plt.figure()
 
-my_map = Basemap(projection='cyl', llcrnrlon=-75, llcrnrlat=-35., urcrnrlon=-48.,urcrnrlat=-17., resolution='c')
-my_map.drawmeridians(np.arange(-75.,-25.,5.), labels=[0,0,0,1], linewidth=0.5, color='black')
-my_map.drawparallels(np.arange(-40.,5.,5.), labels=[1,0,0,0], linewidth=0.5, color='black') 
+my_map = Basemap(projection='cyl', llcrnrlon=-64, llcrnrlat=-35., urcrnrlon=-48.,urcrnrlat=-17., resolution='c')
+my_map.drawmeridians(np.arange(-64.,-48.,4.), labels=[0,0,0,1], linewidth=0.5, color='black')
+my_map.drawparallels(np.arange(-35.,-17.,4.), labels=[1,0,0,0], linewidth=0.5, color='black') 
 my_map.plot(lon_c_i, lat_c_i, 'o', color='blue', label='Cluster I', markersize=5)
 my_map.plot(lon_c_ii, lat_c_ii, 'o', color='gray', label='Cluster II', markersize=5)
 my_map.plot(lon_c_iii, lat_c_iii, 'o', color='green', label='Cluster III', markersize=5)
@@ -110,13 +110,13 @@ my_map.plot(lon_c_iv, lat_c_iv, 'o', color='red', label='Cluster IV', markersize
 my_map.plot(lon_c_v, lat_c_v, 'o', color='yellow', label='Cluster V', markersize=5)
 plt.xlabel(u'Longitude', labelpad=20, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=30, fontweight='bold')
-plt.legend(loc=2, fontsize=10)
+plt.legend(loc=6, fontsize=10)
 
 path = '/home/nice/Documentos/github_projects/shp'
 my_map.readshapefile('{0}/lim_pais/lim_pais'.format(path), 'world', drawbounds=True, color='black', linewidth=0.5)
 
 plt.title('Cluster analysis over SESA domain', fontsize=10, fontweight='bold')
-plt.text(-74, -34, u'\u25B2 \nN', fontsize=10, fontweight='bold')
+plt.text(-63.8, -34, u'\u25B2 \nN', fontsize=10, fontweight='bold')
 
 print('Path out to save figure')
 # Path out to save figure

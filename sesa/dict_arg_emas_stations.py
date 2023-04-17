@@ -2,24 +2,21 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "10/31/2022"
-__description__ = "Dictionary of the bcer_mpcc automatic station"
+__date__        = "02/09/2023"
+__description__ = "Dictionary of the automatic station"
 
 """
-Dictionaries of the automatic weather station data
+Dictionary of the automatic weather station 
 
 > {station}
 
-    Code, longitude and latitude:
+    Stations and locations, where:
 
-    where:
-
-        1 - automatic station code.
+        1 - Automatic weather station: code, longitude, latitude 
 
     Examples:
 
-         1: ['31001', -60.2483, -32.0706]
-         
+         1: ['31001', -60.2483, -32.0706] 
 """
 
 arg_emas = {1	:['31001',	-60.2483,	-32.0706],

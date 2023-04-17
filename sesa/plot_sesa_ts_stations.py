@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "02/14/2023"
+__date__        = "02/09/2023"
 __description__ = "This script plot ts of the INMET weather station"
 
 import os
@@ -10,12 +10,12 @@ import numpy as np
 import netCDF4 as nc
 import matplotlib.pyplot as plt
 
-from dict_inmet_stations_sesa import inmet
+from dict_sesa_inmet_stations import inmet
 
 dt = 'H_2018-01-01_2021-12-31'
 
 # Getting the data 
-for j in range(1, 155):
+for j in range(1, 101):
 
 	print('Reading INMET weather station:', j, inmet[j][0], inmet[j][1])
 	
@@ -87,7 +87,7 @@ for j in range(1, 155):
 			
 	print('Path out to save figure')
 	# Path out to save figure
-	path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_new'
+	path_out = '/home/nice/Documentos/FPS_SESA/figs/figs_ts'
 	name_out = 'pyplt_nc_vars_{0}_{1}.png'.format(inmet[j][0], inmet[j][1])
 	plt.savefig(os.path.join(path_out, name_out), dpi=300, bbox_inches='tight')
 	plt.close('all')
