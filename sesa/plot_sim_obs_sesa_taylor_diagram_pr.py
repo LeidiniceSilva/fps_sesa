@@ -294,18 +294,6 @@ corrcoeff5 = np.array([corr_regcm_inmet_cluster_v, corr_regcm_cmorph_cluster_v, 
 refstd5 = std_regcm_cluster_v
 models5 = ['RegCM_INMET', 'RegCM_CMORPH', 'RegCM_ERA5']
 
-print('RegCM vs. INMET (Cluster I): ', st.pearsonr(inmet_cluster_i, regcm_cluster_i))
-print('RegCM vs. INMET (Cluster II): ', st.pearsonr(inmet_cluster_ii, regcm_cluster_ii))
-print('RegCM vs. INMET (Cluster III): ', st.pearsonr(inmet_cluster_iii, regcm_cluster_iii))
-print('RegCM vs. INMET (Cluster IV): ', st.pearsonr(inmet_cluster_iv, regcm_cluster_iv))
-print('RegCM vs. INMET (Cluster V): ', st.pearsonr(inmet_cluster_v, regcm_cluster_v))
-
-print('RegCM vs. ERA5 (Cluster I): ', st.pearsonr(era5_cluster_i, regcm_cluster_i))
-print('RegCM vs. ERA5 (Cluster II): ', st.pearsonr(era5_cluster_ii, regcm_cluster_ii))
-print('RegCM vs. ERA5 (Cluster III): ', st.pearsonr(era5_cluster_iii, regcm_cluster_iii))
-print('RegCM vs. ERA5 (Cluster IV): ', st.pearsonr(era5_cluster_iv, regcm_cluster_iv))
-print('RegCM vs. ERA5 (Cluster V): ', st.pearsonr(era5_cluster_v, regcm_cluster_v))
-
 print('Plot figure')
 # Plot figure
 fig = plt.figure(figsize=(12,8))
