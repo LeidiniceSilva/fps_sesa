@@ -25,7 +25,7 @@ def import_inmet():
 	clim_i = []
 
 	# Select lat and lon 
-	for i in range(1, 100):
+	for i in range(1, 101):
 		iy.append(inmet[i][2])
 		ix.append(inmet[i][3])
 		
