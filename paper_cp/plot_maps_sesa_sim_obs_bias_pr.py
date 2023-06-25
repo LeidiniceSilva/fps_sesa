@@ -30,7 +30,9 @@ def import_inmet():
 	bias_vi = []
 
 	# Select lat and lon 
-	for i in range(1, 100):
+	for i in range(1, 101):
+		yy=inmet[i][2]
+		xx=inmet[i][3]
 		iy.append(inmet[i][2])
 		ix.append(inmet[i][3])
 		
@@ -39,7 +41,7 @@ def import_inmet():
 		# reading regcm usp 
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_i = d_i.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
 		d_i = d_i.groupby('time.year').mean('time')
 		values_i = d_i.values
 		values_i = np.nanmean(values_i*86400)
@@ -47,7 +49,7 @@ def import_inmet():
 		# reading wrf ncar 
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_ii = d_ii.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
 		d_ii = d_ii.groupby('time.year').mean('time')
 		values_ii = d_ii.values
 		values_ii = np.nanmean(values_ii*86400)
@@ -55,7 +57,7 @@ def import_inmet():
 		# reading wrf ucan 
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iii = d_iii.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
 		d_iii = d_iii.groupby('time.year').mean('time')
 		values_iii = d_iii.values
 		values_iii = np.nanmean(values_iii*86400)
@@ -70,7 +72,7 @@ def import_inmet():
 		# reading era5 
 		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_v = d_v.tp.sel(time=slice('2018-06-01','2021-05-31'))
-		d_v = d_v.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
 		d_v = d_v.groupby('time.year').mean('time')
 		values_v = d_v.values
 		values_v = np.nanmean(values_v)
@@ -103,6 +105,8 @@ def import_smn():
 
 	# Select lat and lon 
 	for i in range(1, 72):
+		yy=urug_smn[i][1]
+		xx=urug_smn[i][2]
 		iy.append(urug_smn[i][1])
 		ix.append(urug_smn[i][2])
 		
@@ -111,7 +115,7 @@ def import_smn():
 		# reading regcm usp 
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_i = d_i.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
 		d_i = d_i.groupby('time.year').mean('time')
 		values_i = d_i.values
 		values_i = np.nanmean(values_i*86400)
@@ -119,7 +123,7 @@ def import_smn():
 		# reading wrf ncar 
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_ii = d_ii.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
 		d_ii = d_ii.groupby('time.year').mean('time')
 		values_ii = d_ii.values
 		values_ii = np.nanmean(values_ii*86400)
@@ -127,7 +131,7 @@ def import_smn():
 		# reading wrf ucan 
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iii = d_iii.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
 		d_iii = d_iii.groupby('time.year').mean('time')
 		values_iii = d_iii.values
 		values_iii = np.nanmean(values_iii*86400)
@@ -142,7 +146,7 @@ def import_smn():
 		# reading era5 
 		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_v = d_v.tp.sel(time=slice('2018-06-01','2021-05-31'))
-		d_v = d_v.sel(lat=inmet[i][2], lon=inmet[i][3], method='nearest')
+		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
 		d_v = d_v.groupby('time.year').mean('time')
 		values_v = d_v.values
 		values_v = np.nanmean(values_v)
