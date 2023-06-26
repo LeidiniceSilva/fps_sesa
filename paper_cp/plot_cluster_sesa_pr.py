@@ -75,6 +75,8 @@ def import_smn():
 	return iy, ix, clim_i, clim_ii
 	
 
+var = 'pr'
+
 # Import latitude, longitude and database
 lat_x, lon_x, clim_inmet_x, clim_inmet_xx = import_inmet()			
 lat_y, lon_y, clim_smn_y, clim_smn_yy = import_smn()
@@ -237,7 +239,7 @@ ax.tick_params(axis='both', which='major', labelsize=10)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/paper_cp'
-name_out = 'pyplt_cluster_analysis_sesa.png'
+name_out = 'pyplt_cluster_analysis_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()

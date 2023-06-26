@@ -178,7 +178,7 @@ font_size = 8
 ax = fig.add_subplot(2, 3, 1)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_usp, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(a) RegCM', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(a) RegCM USP', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=20, fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 3, 2)

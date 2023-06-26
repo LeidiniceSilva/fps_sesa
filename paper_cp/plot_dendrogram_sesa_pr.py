@@ -63,6 +63,8 @@ def import_smn():
 		
 	return iy, ix, clim_i
 	
+
+var = 'pr'
 	
 # Import latitude, longitude and database
 lat_x, lon_x, clim_i_x = import_inmet()			
@@ -102,7 +104,7 @@ plt.yticks(np.arange(0, 10, 1), fontsize=20)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/paper_cp'
-name_out = 'pyplt_maps_dendrogram_sesa.png'
+name_out = 'pyplt_dendrogram_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
