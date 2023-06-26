@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 
-# -*- coding:utf-8 -*-
-
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "02/09/2023"

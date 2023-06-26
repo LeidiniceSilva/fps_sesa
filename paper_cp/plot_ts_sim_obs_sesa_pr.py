@@ -3,14 +3,15 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Jun 16, 2023"
-__description__ = "This script plot boxplot"
+__description__ = "This script plot annual cycle"
 
 import os
 import numpy as np
 import xarray as xr
+import pandas as pd
+import datetime as dt
 import matplotlib.pyplot as plt
 
-from pylab import setp
 from dict_inmet_stations import inmet
 from dict_smn_stations import urug_smn
 
@@ -31,37 +32,41 @@ def import_inmet():
 		print('Reading weather station:', i, inmet[i][0], inmet[i][1])
 		
 		# reading regcm usp 
-		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
+		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
+		d_i = d_i.resample(time='1M').mean()
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 		
 		# reading wrf ncar 
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
+		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
+		d_ii = d_ii.resample(time='1M').mean()
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 
 		# reading wrf ucan 
-		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
+		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
+		d_iii = d_iii.resample(time='1M').mean()
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 				
 		# Reading inmet 
 		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/inmet/inmet_hr/inmet_nc_sesa/pre/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
 		d_iv = d_iv.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iv = d_iv.resample(time='1D').sum()
+		d_iv = d_iv.resample(time='1M').mean()
 		d_iv = d_iv.values
-		mean_iv.append(d_iv)
+		mean_iv.append(d_iv*24)
 		
 		# reading era5 
-		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
+		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_v = d_v.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
+		d_v = d_v.resample(time='1M').mean()
 		d_v = d_v.values
 		mean_v.append(d_v)
 				
@@ -84,78 +89,46 @@ def import_smn():
 		print('Reading weather station:', i, urug_smn[i][0])	
 		
 		# reading regcm usp 
-		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
+		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
+		d_i = d_i.resample(time='1M').mean()
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 		
 		# reading wrf ncar 
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
+		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
+		d_ii = d_ii.resample(time='1M').mean()
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 
 		# reading wrf ucan 
-		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
+		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
+		d_iii = d_iii.resample(time='1M').mean()
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 				
 		# Reading smn 
 		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/smn/urug_smn_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(urug_smn[i][0]))
 		d_iv = d_iv.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iv = d_iv.resample(time='1D').sum()
+		d_iv = d_iv.resample(time='1M').mean()
 		d_iv = d_iv.values
-		mean_iv.append(d_iv)
+		mean_iv.append(d_iv*24)
 		
 		# reading era5 
-		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
+		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_v = d_v.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
+		d_v = d_v.resample(time='1M').mean()
 		d_v = d_v.values
 		mean_v.append(d_v)
 				
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v
-	
 
-def setBoxColors(bp):
-    setp(bp['boxes'][0], color='black')
-    setp(bp['medians'][0], color='black')
-    setp(bp['caps'][0], color='black')
-    setp(bp['caps'][1], color='black')
-    setp(bp['whiskers'][0], color='black')
-    setp(bp['whiskers'][1], color='black')
-        
-    setp(bp['boxes'][1], color='green')
-    setp(bp['medians'][1], color='green')
-    setp(bp['caps'][2], color='green')
-    setp(bp['caps'][3], color='green')
-    setp(bp['whiskers'][2], color='green')
-    setp(bp['whiskers'][3], color='green')
-       
-    setp(bp['boxes'][2], color='orange')
-    setp(bp['medians'][2], color='orange')
-    setp(bp['caps'][4], color='orange')
-    setp(bp['caps'][5], color='orange')
-    setp(bp['whiskers'][4], color='orange')
-    setp(bp['whiskers'][5], color='orange')
-
-    setp(bp['boxes'][3], color='blue')
-    setp(bp['medians'][3], color='blue')
-    setp(bp['caps'][6], color='blue')
-    setp(bp['caps'][7], color='blue')
-    setp(bp['whiskers'][6], color='blue')
-    setp(bp['whiskers'][7], color='blue')
-
-    setp(bp['boxes'][4], color='red')
-    setp(bp['medians'][4], color='red')
-    setp(bp['caps'][9], color='red')
-    setp(bp['whiskers'][8], color='red')
-    setp(bp['whiskers'][9], color='red')
-    
 
 var = 'pr'
 
@@ -298,92 +271,106 @@ wrf_ucan_c_v = np.nanmean(wrf_ucan_v, axis=0)
 inmet_smn_c_v = np.nanmean(inmet_smn_v, axis=0)
 era5_c_v = np.nanmean(era5_v, axis=0)
 
-reg_usp_c_i = [i for i in reg_usp_c_i if i >= 0.1]	
-wrf_ncar_c_i = [i for i in wrf_ncar_c_i if i >= 0.1]	
-wrf_ucan_c_i = [i for i in wrf_ucan_c_i if i >= 0.1]	
-inmet_smn_c_i = [i for i in inmet_smn_c_i if i >= 0.1]	
-era5_c_i = [i for i in era5_c_i if i >= 0.1]	
-
-reg_usp_c_ii = [i for i in reg_usp_c_ii if i >= 0.1]	
-wrf_ncar_c_ii = [i for i in wrf_ncar_c_ii if i >= 0.1]	
-wrf_ucan_c_ii = [i for i in wrf_ucan_c_ii if i >= 0.1]	
-inmet_smn_c_ii = [i for i in inmet_smn_c_ii if i >= 0.1]	
-era5_c_ii = [i for i in era5_c_ii if i >= 0.1]	
-
-reg_usp_c_iii = [i for i in reg_usp_c_iii if i >= 0.1]	
-wrf_ncar_c_iii = [i for i in wrf_ncar_c_iii if i >= 0.1]	
-wrf_ucan_c_iii = [i for i in wrf_ucan_c_iii if i >= 0.1]	
-inmet_smn_c_iii = [i for i in inmet_smn_c_iii if i >= 0.1]	
-era5_c_iii = [i for i in era5_c_iii if i >= 0.1]	
-
-reg_usp_c_iv = [i for i in reg_usp_c_iv if i >= 0.1]	
-wrf_ncar_c_iv = [i for i in wrf_ncar_c_iv if i >= 0.1]	
-wrf_ucan_c_iv = [i for i in wrf_ucan_c_iv if i >= 0.1]	
-inmet_smn_c_iv = [i for i in inmet_smn_c_iv if i >= 0.1]	
-era5_c_iv = [i for i in era5_c_iv if i >= 0.1]	
-
-reg_usp_c_v = [i for i in reg_usp_c_v if i >= 0.1]	
-wrf_ncar_c_v = [i for i in wrf_ncar_c_v if i >= 0.1]	
-wrf_ucan_c_v = [i for i in wrf_ucan_c_v if i >= 0.1]	
-inmet_smn_c_v = [i for i in inmet_smn_c_v if i >= 0.1]	
-era5_c_v = [i for i in era5_c_v if i >= 0.1]	
-
-cluster_i = [reg_usp_c_i, wrf_ncar_c_i, wrf_ucan_c_i, inmet_smn_c_i, era5_c_i]
-cluster_ii = [reg_usp_c_ii, wrf_ncar_c_ii, wrf_ucan_c_ii, inmet_smn_c_ii, era5_c_ii]
-cluster_iii = [reg_usp_c_iii, wrf_ncar_c_iii, wrf_ucan_c_iii, inmet_smn_c_iii, era5_c_iii]
-cluster_iv = [reg_usp_c_iv, wrf_ncar_c_iv, wrf_ucan_c_iv, inmet_smn_c_iv, era5_c_iv]
-cluster_v = [reg_usp_c_v, wrf_ncar_c_v, wrf_ucan_c_v, inmet_smn_c_v, era5_c_v]
-
 # Plot figure
-fig = plt.figure(figsize=(10, 4))
-x = np.arange(0.5, 30 + 0.5)
+fig = plt.figure(figsize=(12, 8))
+dt = pd.date_range(start="20180601", end="20210531", freq="M")
 
-ax = fig.add_subplot(1, 1, 1)
-bp = plt.boxplot(cluster_i, positions=[1, 2, 3, 4, 5], sym='.')
-setBoxColors(bp)
-bp = plt.boxplot(cluster_ii, positions=[7, 8, 9, 10, 11], sym='.')
-setBoxColors(bp)
-bp = plt.boxplot(cluster_iii, positions=[13, 14, 15, 16, 17], sym='.')
-setBoxColors(bp)
-bp = plt.boxplot(cluster_iv, positions=[19, 20, 21, 22, 23], sym='.')
-setBoxColors(bp)
-bp = plt.boxplot(cluster_v, positions=[25, 26, 27, 28, 29], sym='.')
-setBoxColors(bp)
+ax = fig.add_subplot(3, 2, 1)
+reg_usp_c_i_dt = pd.Series(data=reg_usp_c_i, index=dt)
+wrf_ncar_c_i_dt = pd.Series(data=wrf_ncar_c_i, index=dt)
+wrf_ucan_c_i_dt = pd.Series(data=wrf_ucan_c_i, index=dt)
+inmet_smn_c_i_dt = pd.Series(data=inmet_smn_c_i, index=dt)
+era5_c_i_dt = pd.Series(data=era5_c_i, index=dt)
 
-plt.xlim(0, 20)
-plt.ylim(0, 80)
-plt.yticks(np.arange(0, 88, 8))
-plt.xticks(x, ('','','','','','','','','','','','','','','','','','','','','','','','','','','','','', ''))
-plt.xlabel('Dataset', fontweight='bold')
+plt.plot(reg_usp_c_i_dt, linewidth=1, linestyle='--', color='black', label = 'RegCM USP')
+plt.plot(wrf_ncar_c_i_dt, linewidth=1, linestyle='--', color='green', label = 'WRF NCAR')
+plt.plot(wrf_ucan_c_i_dt, linewidth=1, linestyle='--', color='orange', label = 'WRF UCAN')
+plt.plot(inmet_smn_c_i_dt, linewidth=1, linestyle='--', color='blue', label = 'INMET+SMN')
+plt.plot(era5_c_i_dt, linewidth=1, linestyle='--', color='red', label = 'ERA5')
+plt.title('(a) Cluster I', loc='left', fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
-plt.axhspan(72, 80, color='gray', alpha=0.5, lw=0)
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1))
+plt.setp(ax.get_xticklabels(), visible=False)
+plt.legend(loc=9, ncol=3, fontsize=8, frameon=False)
 
-plt.text(1.5, 74, 'Cluster I', fontweight='bold')
-plt.text(7.5, 74, 'Cluster II', fontweight='bold')
-plt.text(13.5, 74, 'Cluster III', fontweight='bold')
-plt.text(19.5, 74, 'Cluster IV', fontweight='bold')
-plt.text(25.5, 74, 'Cluster V', fontweight='bold')
-plt.axhline(72, linewidth=1., linestyle='-',  color='black')
-plt.axvline(6., linewidth=1., linestyle='--',  color='black')
-plt.axvline(12, linewidth=1., linestyle='--',  color='black')
-plt.axvline(18, linewidth=1., linestyle='--',  color='black')
-plt.axvline(24, linewidth=1., linestyle='--',  color='black')
+ax = fig.add_subplot(3, 2, 2)
+reg_usp_c_ii_dt = pd.Series(data=reg_usp_c_ii, index=dt)
+wrf_ncar_c_ii_dt = pd.Series(data=wrf_ncar_c_ii, index=dt)
+wrf_ucan_c_ii_dt = pd.Series(data=wrf_ucan_c_ii, index=dt)
+inmet_smn_c_ii_dt = pd.Series(data=inmet_smn_c_ii, index=dt)
+era5_c_ii_dt = pd.Series(data=era5_c_ii, index=dt)
 
-c1, = plt.plot([1,1],'black')
-c2, = plt.plot([1,1],'green')
-c3, = plt.plot([1,1],'orange')
-c4, = plt.plot([1,1],'blue')
-c5, = plt.plot([1,1],'red')
-plt.legend((c1, c2, c3, c4, c5),('RegCM USP', 'WRF NCAR', 'WRF UCAN', 'INMET+SMN', 'ERA5'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=5, frameon=False)
-c1.set_visible(False)
-c2.set_visible(False)
-c3.set_visible(False)
-c4.set_visible(False)
-c5.set_visible(False)
+plt.plot(reg_usp_c_ii_dt, linewidth=1, linestyle='--', color='black', label = 'RegCM USP')
+plt.plot(wrf_ncar_c_ii_dt, linewidth=1, linestyle='--', color='green', label = 'WRF NCAR')
+plt.plot(wrf_ucan_c_ii_dt, linewidth=1, linestyle='--', color='orange', label = 'WRF UCAN')
+plt.plot(inmet_smn_c_ii_dt, linewidth=1, linestyle='--', color='blue', label = 'INMET+SMN')
+plt.plot(era5_c_ii_dt, linewidth=1, linestyle='--', color='red', label = 'ERA5')
+plt.title('(b) Cluster II', loc='left', fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1))
+plt.setp(ax.get_xticklabels(), visible=False)
+
+ax = fig.add_subplot(3, 2, 3)
+reg_usp_c_iii_dt = pd.Series(data=reg_usp_c_iii, index=dt)
+wrf_ncar_c_iii_dt = pd.Series(data=wrf_ncar_c_iii, index=dt)
+wrf_ucan_c_iii_dt = pd.Series(data=wrf_ucan_c_iii, index=dt)
+inmet_smn_c_iii_dt = pd.Series(data=inmet_smn_c_iii, index=dt)
+era5_c_iii_dt = pd.Series(data=era5_c_iii, index=dt)
+
+plt.plot(reg_usp_c_iii_dt, linewidth=1, linestyle='--', color='black', label = 'RegCM USP')
+plt.plot(wrf_ncar_c_iii_dt, linewidth=1, linestyle='--', color='green', label = 'WRF NCAR')
+plt.plot(wrf_ucan_c_iii_dt, linewidth=1, linestyle='--', color='orange', label = 'WRF UCAN')
+plt.plot(inmet_smn_c_iii_dt, linewidth=1, linestyle='--', color='blue', label = 'INMET+SMN')
+plt.plot(era5_c_iii_dt, linewidth=1, linestyle='--', color='red', label = 'ERA5')
+plt.title('(c) Cluster III', loc='left', fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1))
+plt.setp(ax.get_xticklabels(), visible=False)
+
+ax = fig.add_subplot(3, 2, 4)
+reg_usp_c_iv_dt = pd.Series(data=reg_usp_c_iv, index=dt)
+wrf_ncar_c_iv_dt = pd.Series(data=wrf_ncar_c_iv, index=dt)
+wrf_ucan_c_iv_dt = pd.Series(data=wrf_ucan_c_iv, index=dt)
+inmet_smn_c_iv_dt = pd.Series(data=inmet_smn_c_iv, index=dt)
+era5_c_iv_dt = pd.Series(data=era5_c_iv, index=dt)
+
+plt.plot(reg_usp_c_iv_dt, linewidth=1, linestyle='--', color='black', label = 'RegCM USP')
+plt.plot(wrf_ncar_c_iv_dt, linewidth=1, linestyle='--', color='green', label = 'WRF NCAR')
+plt.plot(wrf_ucan_c_iv_dt, linewidth=1, linestyle='--', color='orange', label = 'WRF UCAN')
+plt.plot(inmet_smn_c_iv_dt, linewidth=1, linestyle='--', color='blue', label = 'INMET+SMN')
+plt.plot(era5_c_iv_dt, linewidth=1, linestyle='--', color='red', label = 'ERA5')
+plt.title('(d) Cluster IV', loc='left', fontweight='bold')
+plt.xlabel('Period', fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1))
+plt.xticks(fontsize=8)
+
+ax = fig.add_subplot(3, 2, 5)
+reg_usp_c_v_dt = pd.Series(data=reg_usp_c_v, index=dt)
+wrf_ncar_c_v_dt = pd.Series(data=wrf_ncar_c_v, index=dt)
+wrf_ucan_c_v_dt = pd.Series(data=wrf_ucan_c_v, index=dt)
+inmet_smn_c_v_dt = pd.Series(data=inmet_smn_c_v, index=dt)
+era5_c_v_dt = pd.Series(data=era5_c_v, index=dt)
+
+plt.plot(reg_usp_c_v_dt, linewidth=1, linestyle='--', color='black', label = 'RegCM USP')
+plt.plot(wrf_ncar_c_v_dt, linewidth=1, linestyle='--', color='green', label = 'WRF NCAR')
+plt.plot(wrf_ucan_c_v_dt, linewidth=1, linestyle='--', color='orange', label = 'WRF UCAN')
+plt.plot(inmet_smn_c_v_dt, linewidth=1, linestyle='--', color='blue', label = 'ERA5')
+plt.plot(era5_c_v_dt, linewidth=1, linestyle='--', color='red', label = 'ERA5')
+plt.title('(e) Cluster V', loc='left', fontweight='bold')
+plt.xlabel('Period', fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1))
+plt.xticks(fontsize=8)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/paper_cp'
-name_out = 'pyplt_boxplot_{0}_sesa.png'.format(var)
+name_out = 'pyplt_ts_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
