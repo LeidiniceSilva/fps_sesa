@@ -14,7 +14,8 @@ from matplotlib import gridspec
 from matplotlib.path import Path
 from netCDF4 import Dataset as nc
 from dict_inmet_stations import inmet
-from dict_smn_stations import urug_smn
+from dict_smn_i_stations import smn_i
+from dict_smn_ii_stations import smn_ii
 from matplotlib.patches import Polygon
 from matplotlib.patches import PathPatch
 from mpl_toolkits.basemap import Basemap, cm
@@ -24,15 +25,23 @@ ix = []
 iy = []
 jx = []
 jy = []
+kx = []
+ky = []
 
-for i in range(1, 100):
-			
+for i in range(1, 151):
+
 	ix.append(inmet[i][3])
 	iy.append(inmet[i][2])
 
-for j in range(1, 72):
-	jx.append(urug_smn[j][2])
-	jy.append(urug_smn[j][1])
+for j in range(1, 73):
+
+	jx.append(smn_i[j][2])
+	jy.append(smn_i[j][1])
+	
+for k in range(1, 77):
+
+	kx.append(smn_ii[k][2])
+	ky.append(smn_ii[k][1])
 	
 # Specify directories 
 dirnc = '/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp'
@@ -68,7 +77,8 @@ my_map.drawmeridians(np.arange(-82, -34, 10.), labels=[0,0,0,1], fontsize=font_s
 my_map.readshapefile('/home/nice/Documentos/github_projects/shp/shp_america_sul/america_sul', 'america_sul', drawbounds=True, color='black', linewidth=1.)
 
 my_map.plot(ix, iy, 'o', color='blue', label='INMET', markersize=2)
-my_map.plot(jx, jy, 'o', color='red', label='SMN', markersize=2)	
+my_map.plot(jx, jy, 'o', color='gray', label='SMN', markersize=2)	
+my_map.plot(kx, ky, 'o', color='gray', markersize=2)	
 plt.xlabel(u'Longitude', labelpad=20, fontsize=font_size, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=30, fontsize=font_size, fontweight='bold')
 plt.text(-40, 6, u'\u25B2 \nN', fontsize=font_size, fontweight='bold')

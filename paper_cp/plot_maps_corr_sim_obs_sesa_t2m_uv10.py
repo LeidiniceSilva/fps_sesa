@@ -87,7 +87,7 @@ def import_inmet(var):
 
 			# reading wrf ncar 
 			d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'sfcWind_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
-			d_ii = d_ii.sfcWind.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ii = d_ii.uas.sel(time=slice('2018-06-01','2021-05-31'))
 			d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
 			d_ii = d_ii.groupby('time.year').mean('time')
 			values_ii = d_ii.values
@@ -137,7 +137,7 @@ def basemap():
 	return my_map
 
 
-var = 't2m'
+var = 'uv10'
 
 # Import dataset
 lat_x, lon_x, corr_i_x, corr_ii_x, corr_iii_x, corr_iv_x, corr_v_x, corr_vi_x = import_inmet(var)			

@@ -131,7 +131,7 @@ def basemap():
 	return my_map
 	
 
-var = 't2m'
+var = 'uv10'
 
 # Import dataset
 lat_x, lon_x, clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x = import_inmet(var)			
@@ -156,7 +156,7 @@ if var == 't2m':
 else:
 	color=cmocean.cm.algae
 	v_min = 0
-	v_max = 8
+	v_max = 6
 	legend = 'Wind 10m (m s⁻¹)'
 font_size = 8
 	
