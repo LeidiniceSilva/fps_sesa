@@ -28,7 +28,7 @@ jy = []
 kx = []
 ky = []
 
-for i in range(1, 151):
+for i in range(1, 100):
 
 	ix.append(inmet[i][3])
 	iy.append(inmet[i][2])
@@ -38,7 +38,7 @@ for j in range(1, 73):
 	jx.append(smn_i[j][2])
 	jy.append(smn_i[j][1])
 	
-for k in range(1, 77):
+for k in range(1, 68):
 
 	kx.append(smn_ii[k][2])
 	ky.append(smn_ii[k][1])
