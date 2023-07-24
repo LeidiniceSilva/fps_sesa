@@ -34,7 +34,7 @@ for j in range(1, 73):
 	jx.append(smn_i[j][2])
 	jy.append(smn_i[j][1])
 	
-for k in range(1, 68):
+for k in range(1, 87):
 
 	kx.append(smn_ii[k][2])
 	ky.append(smn_ii[k][1])
@@ -53,17 +53,27 @@ plt.legend(loc=1, fontsize=10)
 path = '/home/nice/Documentos/github_projects/shp'
 my_map.readshapefile('{0}/lim_pais/lim_pais'.format(path), 'world', drawbounds=True, color='black', linewidth=0.5)
 
-plt.title('Automatic Weather Stations')
-plt.text(-68, -40, u'SESA', fontsize=10)
+plt.xlabel(u'Longitude', labelpad=20, fontsize=10, fontweight='bold')
+plt.ylabel(u'Latitude', labelpad=30, fontsize=10, fontweight='bold')
+# ~ plt.text(-68, -40, u'SESA', fontsize=10)
+plt.text(-56, -44, u'CSAM', fontsize=10, fontweight='bold')
 plt.text(-36, -57, u'\u25B2 \nN', fontsize=10, fontweight='bold')
 
-x1,i1 = my_map(-65,-35)
-x2,i2 = my_map(-65,-17)
-x3,i3 = my_map(-48,-17)
-x4,i4 = my_map(-48,-35)
-
-poly1 = Polygon([(x1,i1),(x2,i2),(x3,i3),(x4,i4)], facecolor='none', edgecolor='black', linewidth=1.)
+# CSAM
+a1,b1 = (-70,-40)
+a2,b2 = (-70,-15)
+a3,b3 = (-45,-15)
+a4,b4 = (-45,-40)
+poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='black', linewidth=1.)
 plt.gca().add_patch(poly1)
+
+# ~ # SESA
+# ~ x1,i1 = my_map(-65,-35)
+# ~ x2,i2 = my_map(-65,-17)
+# ~ x3,i3 = my_map(-48,-17)
+# ~ x4,i4 = my_map(-48,-35)
+# ~ poly1 = Polygon([(x1,i1),(x2,i2),(x3,i3),(x4,i4)], facecolor='none', edgecolor='black', linewidth=1.)
+# ~ plt.gca().add_patch(poly1)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/paper_cp'

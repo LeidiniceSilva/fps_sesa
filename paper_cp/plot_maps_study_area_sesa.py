@@ -38,7 +38,7 @@ for j in range(1, 73):
 	jx.append(smn_i[j][2])
 	jy.append(smn_i[j][1])
 	
-for k in range(1, 68):
+for k in range(1, 87):
 
 	kx.append(smn_ii[k][2])
 	ky.append(smn_ii[k][1])
@@ -82,7 +82,7 @@ my_map.plot(kx, ky, 'o', color='gray', markersize=2)
 plt.xlabel(u'Longitude', labelpad=20, fontsize=font_size, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=30, fontsize=font_size, fontweight='bold')
 plt.text(-40, 6, u'\u25B2 \nN', fontsize=font_size, fontweight='bold')
-plt.text(-56, -39, u'SESA', color='red', fontsize=font_size, fontweight='bold')
+# ~ plt.text(-56, -39, u'SESA', color='red', fontsize=font_size, fontweight='bold')
 plt.text(-56, -44, u'CSAM', color='black', fontsize=font_size, fontweight='bold')
 plt.legend(loc=4, fontsize=font_size, frameon=False)
 
@@ -94,13 +94,13 @@ a4,b4 = (-45,-40)
 poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='black', linewidth=1.)
 plt.gca().add_patch(poly1)
 
-# SESA
-a1,b1 = (-65,-35)
-a2,b2 = (-65,-17)
-a3,b3 = (-48,-17)
-a4,b4 = (-48,-35)
-poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='red', linewidth=1.)
-plt.gca().add_patch(poly1)
+# ~ # SESA
+# ~ a1,b1 = (-65,-35)
+# ~ a2,b2 = (-65,-17)
+# ~ a3,b3 = (-48,-17)
+# ~ a4,b4 = (-48,-35)
+# ~ poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='red', linewidth=1.)
+# ~ plt.gca().add_patch(poly1)
 
 ax = plt.subplot(gs[1])
 my_map = Basemap(ax=ax, llcrnrlon=lon_start, llcrnrlat=lat_start, urcrnrlon=lon_end, urcrnrlat=lat_end, resolution='c', area_thresh=10000., projection='cyl', lon_0=lonc, lat_0=latc, lat_ts=0)	
@@ -116,13 +116,13 @@ plt.ylabel(u'Latitude', labelpad=30, fontsize=font_size, fontweight='bold')
 cbar = fig.colorbar(im, drawedges=True, fraction=0.030, pad=0.04, aspect=20)
 cbar.set_label('Topography (meters)', fontsize=font_size, fontweight='bold')
 
-# SESA
-a1,b1 = (-65,-34.9)
-a2,b2 = (-65,-17.1)
-a3,b3 = (-48.1,-17.1)
-a4,b4 = (-48.1,-34.9)
-poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='red', linewidth=2.)
-plt.gca().add_patch(poly1)
+# ~ # SESA
+# ~ a1,b1 = (-65,-34.9)
+# ~ a2,b2 = (-65,-17.1)
+# ~ a3,b3 = (-48.1,-17.1)
+# ~ a4,b4 = (-48.1,-34.9)
+# ~ poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='red', linewidth=2.)
+# ~ plt.gca().add_patch(poly1)
 
 # Path out to save figure
 path_out = '/home/nice/Documentos/FPS_SESA/figs/paper_cp'
