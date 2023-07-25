@@ -242,7 +242,8 @@ my_map.plot(lon_c_v, lat_c_v, 'o', color='yellow', label='Cluster V', markersize
 plt.title('(a)', loc='left', fontsize=10, fontweight='bold')
 plt.xlabel(u'Longitude', labelpad=20, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=30, fontweight='bold')
-plt.text(-50, -34, u'\u25B2 \nN', fontsize=10, fontweight='bold')
+plt.text(-68, -19, u'\u25B2 \nN', fontsize=10, fontweight='bold')
+plt.legend(loc=3, ncol=3, fontsize=8, frameon=False)
 
 ax = fig.add_subplot(2, 2, 2) 
 time = np.arange(0.5, 12 + 0.5)

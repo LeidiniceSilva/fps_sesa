@@ -29,7 +29,7 @@ def import_inmet():
 	clim_vii, mon_vii, day_vii = [], [], []
 
 	# Select lat and lon 
-	for i in range(1, 2):
+	for i in range(1, 100):
 		yy=inmet[i][2]
 		xx=inmet[i][3]
 		
@@ -161,7 +161,7 @@ def import_smn_i():
 	clim_vii, mon_vii, day_vii = [], [], []
 	
 	# Select lat and lon 
-	for i in range(1, 2):
+	for i in range(1, 72):
 		yy=smn_i[i][1]
 		xx=smn_i[i][2]
 		
@@ -293,7 +293,7 @@ def import_smn_ii():
 	clim_vii, mon_vii, day_vii = [], [], []
 	
 	# Select lat and lon 
-	for i in range(1, 2):
+	for i in range(1, 86):
 		yy=smn_ii[i][1]
 		xx=smn_ii[i][2]
 		
@@ -551,10 +551,10 @@ ax = fig.add_subplot(2, 2, 1)
 x = np.arange(1, 7 + 1)
 bp = plt.boxplot(day_boxplot, positions=[1, 2, 3, 4, 5, 6, 7], sym='.')
 setBoxColors(bp)
-plt.title('(a) Daily frequency', loc='left', fontweight='bold')
-plt.ylim(0, 80)
-plt.yticks(np.arange(0, 88, 8))
-plt.xticks(x, ('RegCM4','RegCM5 Holtslag','RegCM5 UW-PBL','WRF415','WRF433','INMET+SMN','ERA5'), fontsize=8)
+plt.title('(a) Daily boxplot', loc='left', fontweight='bold')
+plt.ylim(0, 40)
+plt.yticks(np.arange(0, 44, 4))
+plt.xticks(x, ('RegCM4','RegCM5 \n Holtslag','RegCM5 \n UW-PBL','WRF415','WRF433','INMET+SMN','ERA5'), fontsize=8)
 plt.xlabel('Dataset', fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
 
@@ -567,7 +567,7 @@ plt.plot(x_wrf_ncar_ccdf, wrf_ncar_ccdf, marker='.', markersize=4, markerfacecol
 plt.plot(x_wrf_ucan_ccdf, wrf_ucan_ccdf, marker='.', markersize=4, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF433')
 plt.plot(x_inmet_smn_ccdf, inmet_smn_ccdf, marker='.', markersize=4, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='INMET+SMN')
 plt.plot(x_era5_ccdf, era5_ccdf, marker='.', markersize=4, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
-plt.title('(b) Daily boxplot', loc='left', fontweight='bold')
+plt.title('(b) Daily CDF', loc='left', fontweight='bold')
 plt.yticks(y, ('10⁻⁸','10⁻⁶','10⁻⁴','10⁻²','10⁰'))
 plt.ylabel('Frequency', fontweight='bold')
 plt.xlabel('Precipitation (mm d⁻¹)', fontweight='bold')
