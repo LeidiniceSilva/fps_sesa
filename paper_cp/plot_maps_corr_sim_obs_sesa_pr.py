@@ -122,7 +122,7 @@ def import_smn_i():
 		iy.append(smn_i[i][1])
 		ix.append(smn_i[i][2])
 		
-		print('Reading weather station:', i, smn_ii[i][0])		
+		print('Reading weather station:', i, smn_i[i][0])		
 		# reading regcm usp 
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
@@ -336,7 +336,7 @@ font_size = 8
 ax = fig.add_subplot(2, 5, 1)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_usp_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(a) RegCM4 vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(a) RegCM4 vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=20, fontsize=font_size, fontweight='bold')
 cbar = plt.colorbar(pltfig, cax=fig.add_axes([0.91, 0.25, 0.010, 0.50]), extend='both')
 cbar.set_label('{0}'.format(legend), fontsize=font_size, fontweight='bold')
@@ -355,12 +355,12 @@ plt.title('(c) RegCM5 UW-PBL vs. \nINMET+SMN', loc='left', fontsize=font_size, f
 ax = fig.add_subplot(2, 5, 4)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, wrf_ncar_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(d) WRF415 vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(d) WRF415 vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 5)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, wrf_ucan_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(e) WRF433 vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(e) WRF433 vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 6)
 my_map = basemap()

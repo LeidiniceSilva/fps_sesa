@@ -37,7 +37,6 @@ def import_inmet():
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
-		d_i = d_i.resample(time='1M').mean()
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
@@ -45,7 +44,6 @@ def import_inmet():
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
-		d_ii = d_ii.resample(time='1M').mean()
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
@@ -53,7 +51,6 @@ def import_inmet():
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
-		d_iii = d_iii.resample(time='1M').mean()
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
@@ -61,7 +58,6 @@ def import_inmet():
 		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=yy, lon=xx, method='nearest')
-		d_iv = d_iv.resample(time='1M').mean()
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
@@ -69,7 +65,6 @@ def import_inmet():
 		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
-		d_v = d_v.resample(time='1M').mean()
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 		
@@ -84,7 +79,6 @@ def import_inmet():
 		d_vii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=yy, lon=xx, method='nearest')
-		d_vii = d_vii.resample(time='1M').mean()
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				
@@ -111,7 +105,6 @@ def import_smn_i():
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
-		d_i = d_i.resample(time='1M').mean()
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
@@ -119,7 +112,6 @@ def import_smn_i():
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
-		d_ii = d_ii.resample(time='1M').mean()
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
@@ -127,7 +119,6 @@ def import_smn_i():
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
-		d_iii = d_iii.resample(time='1M').mean()
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
@@ -135,7 +126,6 @@ def import_smn_i():
 		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=yy, lon=xx, method='nearest')
-		d_iv = d_iv.resample(time='1M').mean()
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
@@ -143,7 +133,6 @@ def import_smn_i():
 		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
-		d_v = d_v.resample(time='1M').mean()
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 						
@@ -158,7 +147,6 @@ def import_smn_i():
 		d_vii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=yy, lon=xx, method='nearest')
-		d_vii = d_vii.resample(time='1M').mean()
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				
@@ -185,7 +173,6 @@ def import_smn_ii():
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
-		d_i = d_i.resample(time='1M').mean()
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
@@ -193,7 +180,6 @@ def import_smn_ii():
 		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
-		d_ii = d_ii.resample(time='1M').mean()
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
@@ -201,7 +187,6 @@ def import_smn_ii():
 		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
-		d_iii = d_iii.resample(time='1M').mean()
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
@@ -209,7 +194,6 @@ def import_smn_ii():
 		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=yy, lon=xx, method='nearest')
-		d_iv = d_iv.resample(time='1M').mean()
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
@@ -217,7 +201,6 @@ def import_smn_ii():
 		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
-		d_v = d_v.resample(time='1M').mean()
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 						
@@ -232,7 +215,6 @@ def import_smn_ii():
 		d_vii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=yy, lon=xx, method='nearest')
-		d_vii = d_vii.resample(time='1M').mean()
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				

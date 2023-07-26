@@ -169,7 +169,7 @@ def basemap():
 	return my_map
 	
 
-var = 't2m'
+var = 'uv10'
 
 # Import dataset
 lat_x, lon_x, corr_i_x, corr_ii_x, corr_iii_x, corr_iv_x, corr_v_x, corr_vi_x, corr_vii_x, corr_viii_x, corr_ix_x, corr_x_x = import_inmet()			

@@ -123,7 +123,7 @@ def import_smn_i():
 		iy.append(smn_i[i][1])
 		ix.append(smn_i[i][2])
 		
-		print('Reading weather station:', i, smn_ii[i][0])		
+		print('Reading weather station:', i, smn_i[i][0])		
 		# reading regcm usp 
 		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
