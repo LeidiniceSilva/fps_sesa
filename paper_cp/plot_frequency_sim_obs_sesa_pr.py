@@ -281,6 +281,8 @@ era5_i, era5_ii, era5_iii, era5_iv, era5_v = [], [], [], [], []
 
 for c_i in count_i:
 	reg_usp_i.append(reg_usp[c_i])
+	reg_ictp_i_i.append(reg_ictp_i[c_i])
+	reg_ictp_ii_i.append(reg_ictp_ii[c_i])
 	wrf_ncar_i.append(wrf_ncar[c_i])
 	wrf_ucan_i.append(wrf_ucan[c_i])
 	inmet_smn_i.append(inmet_smn[c_i])
@@ -288,6 +290,8 @@ for c_i in count_i:
 
 for c_ii in count_ii:
 	reg_usp_ii.append(reg_usp[c_ii])
+	reg_ictp_i_ii.append(reg_ictp_i[c_ii])
+	reg_ictp_ii_ii.append(reg_ictp_ii[c_ii])
 	wrf_ncar_ii.append(wrf_ncar[c_ii])
 	wrf_ucan_ii.append(wrf_ucan[c_ii])
 	inmet_smn_ii.append(inmet_smn[c_ii])
@@ -295,6 +299,8 @@ for c_ii in count_ii:
 	
 for c_iii in count_iii:
 	reg_usp_iii.append(reg_usp[c_iii])
+	reg_ictp_i_iii.append(reg_ictp_i[c_iii])
+	reg_ictp_ii_iii.append(reg_ictp_ii[c_iii])
 	wrf_ncar_iii.append(wrf_ncar[c_iii])
 	wrf_ucan_iii.append(wrf_ucan[c_iii])
 	inmet_smn_iii.append(inmet_smn[c_iii])
@@ -302,6 +308,8 @@ for c_iii in count_iii:
 	
 for c_iv in count_iv:
 	reg_usp_iv.append(reg_usp[c_iv])
+	reg_ictp_i_iv.append(reg_ictp_i[c_iv])
+	reg_ictp_ii_iv.append(reg_ictp_ii[c_iv])
 	wrf_ncar_iv.append(wrf_ncar[c_iv])
 	wrf_ucan_iv.append(wrf_ucan[c_iv])
 	inmet_smn_iv.append(inmet_smn[c_iv])
@@ -309,6 +317,8 @@ for c_iv in count_iv:
 	
 for c_v in count_v:
 	reg_usp_v.append(reg_usp[c_v])
+	reg_ictp_i_v.append(reg_ictp_i[c_v])
+	reg_ictp_ii_v.append(reg_ictp_ii[c_v])
 	wrf_ncar_v.append(wrf_ncar[c_v])
 	wrf_ucan_v.append(wrf_ucan[c_v])
 	inmet_smn_v.append(inmet_smn[c_v])
@@ -356,7 +366,7 @@ era5_c_v = np.nanmean(era5_v, axis=0)
 
 x_reg_usp_ccdf_i, reg_usp_ccdf_i = compute_ccdf(reg_usp_c_i)
 x_reg_ictp_i_ccdf_i, reg_ictp_i_ccdf_i = compute_ccdf(reg_ictp_i_c_i)
-x_reg_ictp_ii_ccdf_i, reg_ictp_i_ccdf_i = compute_ccdf(reg_ictp_ii_c_i)
+x_reg_ictp_ii_ccdf_i, reg_ictp_ii_ccdf_i = compute_ccdf(reg_ictp_ii_c_i)
 x_wrf_ncar_ccdf_i, wrf_ncar_ccdf_i = compute_ccdf(wrf_ncar_c_i)
 x_wrf_ucan_ccdf_i, wrf_ucan_ccdf_i = compute_ccdf(wrf_ucan_c_i)
 x_inmet_smn_ccdf_i, inmet_smn_ccdf_i = compute_ccdf(inmet_smn_c_i)
@@ -364,7 +374,7 @@ x_era5_ccdf_i, era5_ccdf_i = compute_ccdf(era5_c_i)
 
 x_reg_usp_ccdf_ii, reg_usp_ccdf_ii = compute_ccdf(reg_usp_c_ii)
 x_reg_ictp_i_ccdf_ii, reg_ictp_i_ccdf_ii = compute_ccdf(reg_ictp_i_c_ii)
-x_reg_ictp_ii_ccdf_ii, reg_ictp_i_ccdf_ii = compute_ccdf(reg_ictp_ii_c_ii)
+x_reg_ictp_ii_ccdf_ii, reg_ictp_ii_ccdf_ii = compute_ccdf(reg_ictp_ii_c_ii)
 x_wrf_ncar_ccdf_ii, wrf_ncar_ccdf_ii = compute_ccdf(wrf_ncar_c_ii)
 x_wrf_ucan_ccdf_ii, wrf_ucan_ccdf_ii = compute_ccdf(wrf_ucan_c_ii)
 x_inmet_smn_ccdf_ii, inmet_smn_ccdf_ii = compute_ccdf(inmet_smn_c_ii)
@@ -372,7 +382,7 @@ x_era5_ccdf_ii, era5_ccdf_ii = compute_ccdf(era5_c_ii)
 
 x_reg_usp_ccdf_iii, reg_usp_ccdf_iii = compute_ccdf(reg_usp_c_iii)
 x_reg_ictp_i_ccdf_iii, reg_ictp_i_ccdf_iii = compute_ccdf(reg_ictp_i_c_iii)
-x_reg_ictp_ii_ccdf_iii, reg_ictp_i_ccdf_iii = compute_ccdf(reg_ictp_ii_c_iii)
+x_reg_ictp_ii_ccdf_iii, reg_ictp_ii_ccdf_iii = compute_ccdf(reg_ictp_ii_c_iii)
 x_wrf_ncar_ccdf_iii, wrf_ncar_ccdf_iii = compute_ccdf(wrf_ncar_c_iii)
 x_wrf_ucan_ccdf_iii, wrf_ucan_ccdf_iii = compute_ccdf(wrf_ucan_c_iii)
 x_inmet_smn_ccdf_iii, inmet_smn_ccdf_iii = compute_ccdf(inmet_smn_c_iii)
@@ -380,7 +390,7 @@ x_era5_ccdf_iii, era5_ccdf_iii = compute_ccdf(era5_c_iii)
 
 x_reg_usp_ccdf_iv, reg_usp_ccdf_iv = compute_ccdf(reg_usp_c_iv)
 x_reg_ictp_i_ccdf_iv, reg_ictp_i_ccdf_iv = compute_ccdf(reg_ictp_i_c_iv)
-x_reg_ictp_ii_ccdf_iv, reg_ictp_i_ccdf_iv = compute_ccdf(reg_ictp_ii_c_iv)
+x_reg_ictp_ii_ccdf_iv, reg_ictp_ii_ccdf_iv = compute_ccdf(reg_ictp_ii_c_iv)
 x_wrf_ncar_ccdf_iv, wrf_ncar_ccdf_iv = compute_ccdf(wrf_ncar_c_iv)
 x_wrf_ucan_ccdf_iv, wrf_ucan_ccdf_iv = compute_ccdf(wrf_ucan_c_iv)
 x_inmet_smn_ccdf_iv, inmet_smn_ccdf_iv = compute_ccdf(inmet_smn_c_iv)
@@ -388,7 +398,7 @@ x_era5_ccdf_iv, era5_ccdf_iv = compute_ccdf(era5_c_iv)
 
 x_reg_usp_ccdf_v, reg_usp_ccdf_v = compute_ccdf(reg_usp_c_v)
 x_reg_ictp_i_ccdf_v, reg_ictp_i_ccdf_v = compute_ccdf(reg_ictp_i_c_v)
-x_reg_ictp_ii_ccdf_v, reg_ictp_i_ccdf_v = compute_ccdf(reg_ictp_ii_c_v)
+x_reg_ictp_ii_ccdf_v, reg_ictp_ii_ccdf_v = compute_ccdf(reg_ictp_ii_c_v)
 x_wrf_ncar_ccdf_v, wrf_ncar_ccdf_v = compute_ccdf(wrf_ncar_c_v)
 x_wrf_ucan_ccdf_v, wrf_ucan_ccdf_v = compute_ccdf(wrf_ucan_c_v)
 x_inmet_smn_ccdf_v, inmet_smn_ccdf_v = compute_ccdf(inmet_smn_c_v)
