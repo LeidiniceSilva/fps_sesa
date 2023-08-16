@@ -292,8 +292,8 @@ def import_smn_ii():
 def basemap():
 	
 	my_map = Basemap(projection='cyl', llcrnrlon=-70., llcrnrlat=-40., urcrnrlon=-45.,urcrnrlat=-15., resolution='c')
-	my_map.drawmeridians(np.arange(-70,-45,5), labels=[0,0,0,1], size=8, linewidth=0.5, color='black')
-	my_map.drawparallels(np.arange(-40,-15,5), labels=[1,0,0,0], size=8, linewidth=0.5, color='black')
+	my_map.drawmeridians(np.arange(-70,-45,5), labels=[0,0,0,1], size=font_size, linewidth=0.5, color='black')
+	my_map.drawparallels(np.arange(-40,-15,5), labels=[1,0,0,0], size=font_size, linewidth=0.5, color='black')
 	my_map.readshapefile('/home/nice/Documentos/github_projects/shp/shp_america_sul/america_sul', 'america_sul', drawbounds=True, color='black', linewidth=.5)
 
 	return my_map
@@ -325,18 +325,18 @@ wrf_ucan_inmet_smn = corr_ix_x + corr_ix_y + corr_ix_z
 wrf_ucan_reanalise = corr_x_x + corr_x_y + corr_x_z
 
 # Plot figure   
-fig = plt.figure(figsize=(11, 5))
+fig = plt.figure(figsize=(11, 4.5))
 
 color='PRGn'
 v_min = -0.9
 v_max = 0.9
 legend = 'Correlation of precipitation'
-font_size = 8
+font_size = 7
 	
 ax = fig.add_subplot(2, 5, 1)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_usp_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(a) RegCM4 vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(a) Reg4 vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=20, fontsize=font_size, fontweight='bold')
 cbar = plt.colorbar(pltfig, cax=fig.add_axes([0.91, 0.25, 0.010, 0.50]), extend='both')
 cbar.set_label('{0}'.format(legend), fontsize=font_size, fontweight='bold')
@@ -345,52 +345,52 @@ cbar.ax.tick_params(labelsize=font_size)
 ax = fig.add_subplot(2, 5, 2)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_ictp_i_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(b) RegCM5 Holtslag vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(b) Reg5-Holt vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 3)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_ictp_ii_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(c) RegCM5 UW-PBL vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(c) Reg5-UW vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 4)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, wrf_ncar_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(d) WRF415 vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(d) WRF-NCAR vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 5)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, wrf_ucan_inmet_smn, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(e) WRF433 vs. \nINMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(e) WRF-UCAN vs. INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 6)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_usp_reanalise, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(f) RegCM4 vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(f) Reg4 vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel(u'Longitude', labelpad=15, fontsize=font_size, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=20, fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 7)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_ictp_i_reanalise, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(g) RegCM5 Holtslag vs. \nERA5', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(g) Reg5-Holt vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel(u'Longitude', labelpad=15, fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 8)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, reg_ictp_ii_reanalise, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(h) RegCM5 UW-PBL vs. \nERA5', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(h) Reg5-UW vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel(u'Longitude', labelpad=15, fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 9)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, wrf_ncar_reanalise, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(i) WRF415 vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(i) WRF-NCAR vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel(u'Longitude', labelpad=15, fontsize=font_size, fontweight='bold')
 
 ax = fig.add_subplot(2, 5, 10)
 my_map = basemap()
 pltfig = my_map.scatter(lon_xx, lat_yy, 5, wrf_ucan_reanalise, cmap=color, marker='o', vmin=v_min, vmax=v_max)
-plt.title('(j) WRF433 vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(j) WRF-UCAN vs. ERA5', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel(u'Longitude', labelpad=15, fontsize=font_size, fontweight='bold')
 
 # Path out to save figure

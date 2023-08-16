@@ -227,47 +227,47 @@ def setBoxColors(bp):
     setp(bp['whiskers'][0], color='black')
     setp(bp['whiskers'][1], color='black')
         
-    setp(bp['boxes'][1], color='gray')
-    setp(bp['medians'][1], color='gray')
-    setp(bp['caps'][2], color='gray')
-    setp(bp['caps'][3], color='gray')
-    setp(bp['whiskers'][2], color='gray')
-    setp(bp['whiskers'][3], color='gray')
+    setp(bp['boxes'][1], color='red')
+    setp(bp['medians'][1], color='red')
+    setp(bp['caps'][2], color='red')
+    setp(bp['caps'][3], color='red')
+    setp(bp['whiskers'][2], color='red')
+    setp(bp['whiskers'][3], color='red')
        
-    setp(bp['boxes'][2], color='brown')
-    setp(bp['medians'][2], color='brown')
-    setp(bp['caps'][4], color='brown')
-    setp(bp['caps'][5], color='brown')
-    setp(bp['whiskers'][4], color='brown')
-    setp(bp['whiskers'][5], color='brown')
+    setp(bp['boxes'][2], color='blue')
+    setp(bp['medians'][2], color='blue')
+    setp(bp['caps'][4], color='blue')
+    setp(bp['caps'][5], color='blue')
+    setp(bp['whiskers'][4], color='blue')
+    setp(bp['whiskers'][5], color='blue')
 
-    setp(bp['boxes'][3], color='green')
-    setp(bp['medians'][3], color='green')
-    setp(bp['caps'][6], color='green')
-    setp(bp['caps'][7], color='green')
-    setp(bp['whiskers'][6], color='green')
-    setp(bp['whiskers'][7], color='green')
+    setp(bp['boxes'][3], color='gray')
+    setp(bp['medians'][3], color='gray')
+    setp(bp['caps'][6], color='gray')
+    setp(bp['caps'][7], color='gray')
+    setp(bp['whiskers'][6], color='gray')
+    setp(bp['whiskers'][7], color='gray')
 
-    setp(bp['boxes'][4], color='orange')
-    setp(bp['medians'][4], color='orange')
-    setp(bp['caps'][8], color='orange')
-    setp(bp['caps'][9], color='orange')
-    setp(bp['whiskers'][8], color='orange')
-    setp(bp['whiskers'][9], color='orange')
+    setp(bp['boxes'][4], color='brown')
+    setp(bp['medians'][4], color='brown')
+    setp(bp['caps'][8], color='brown')
+    setp(bp['caps'][9], color='brown')
+    setp(bp['whiskers'][8], color='brown')
+    setp(bp['whiskers'][9], color='brown')
 
-    setp(bp['boxes'][5], color='blue')
-    setp(bp['medians'][5], color='blue')
-    setp(bp['caps'][10], color='blue')
-    setp(bp['caps'][11], color='blue')
-    setp(bp['whiskers'][10], color='blue')
-    setp(bp['whiskers'][11], color='blue')
+    setp(bp['boxes'][5], color='green')
+    setp(bp['medians'][5], color='green')
+    setp(bp['caps'][10], color='green')
+    setp(bp['caps'][11], color='green')
+    setp(bp['whiskers'][10], color='green')
+    setp(bp['whiskers'][11], color='green')
 
-    setp(bp['boxes'][6], color='red')
-    setp(bp['medians'][6], color='red')
-    setp(bp['caps'][12], color='red')
-    setp(bp['caps'][13], color='red')
-    setp(bp['whiskers'][12], color='red')
-    setp(bp['whiskers'][13], color='red')
+    setp(bp['boxes'][6], color='orange')
+    setp(bp['medians'][6], color='orange')
+    setp(bp['caps'][12], color='orange')
+    setp(bp['caps'][13], color='orange')
+    setp(bp['whiskers'][12], color='orange')
+    setp(bp['whiskers'][13], color='orange')
     
 
 var = 'pr'
@@ -447,11 +447,11 @@ wrf_ucan_c_v = [i for i in wrf_ucan_c_v if i >= 0.1]
 inmet_smn_c_v = [i for i in inmet_smn_c_v if i >= 0.1]	
 era5_c_v = [i for i in era5_c_v if i >= 0.1]	
 
-cluster_i = [reg_usp_c_i, reg_ictp_i_c_i, reg_ictp_ii_c_i, wrf_ncar_c_i, wrf_ucan_c_i, inmet_smn_c_i, era5_c_i]
-cluster_ii = [reg_usp_c_ii, reg_ictp_i_c_ii, reg_ictp_ii_c_ii, wrf_ncar_c_ii, wrf_ucan_c_ii, inmet_smn_c_ii, era5_c_ii]
-cluster_iii = [reg_usp_c_iii, reg_ictp_i_c_iii, reg_ictp_ii_c_iii, wrf_ncar_c_iii, wrf_ucan_c_iii, inmet_smn_c_iii, era5_c_iii]
-cluster_iv = [reg_usp_c_iv, reg_ictp_i_c_iv, reg_ictp_ii_c_iv, wrf_ncar_c_iv, wrf_ucan_c_iv, inmet_smn_c_iv, era5_c_iv]
-cluster_v = [reg_usp_c_v, reg_ictp_i_c_v, reg_ictp_ii_c_v, wrf_ncar_c_v, wrf_ucan_c_v, inmet_smn_c_v, era5_c_v]
+cluster_i = [inmet_smn_c_i, era5_c_i, reg_usp_c_i, reg_ictp_i_c_i, reg_ictp_ii_c_i, wrf_ncar_c_i, wrf_ucan_c_i]
+cluster_ii = [inmet_smn_c_ii, era5_c_ii, reg_usp_c_ii, reg_ictp_i_c_ii, reg_ictp_ii_c_ii, wrf_ncar_c_ii, wrf_ucan_c_ii]
+cluster_iii = [inmet_smn_c_iii, era5_c_iii, reg_usp_c_iii, reg_ictp_i_c_iii, reg_ictp_ii_c_iii, wrf_ncar_c_iii, wrf_ucan_c_iii]
+cluster_iv = [inmet_smn_c_iv, era5_c_iv, reg_usp_c_iv, reg_ictp_i_c_iv, reg_ictp_ii_c_iv, wrf_ncar_c_iv, wrf_ucan_c_iv]
+cluster_v = [inmet_smn_c_v, era5_c_v, reg_usp_c_v, reg_ictp_i_c_v, reg_ictp_ii_c_v, wrf_ncar_c_v, wrf_ucan_c_v]
 
 # Plot figure
 fig = plt.figure(figsize=(10, 4))
@@ -489,13 +489,13 @@ plt.axvline(24, linewidth=1., linestyle='--',  color='black')
 plt.axvline(32, linewidth=1., linestyle='--',  color='black')
 
 c1, = plt.plot([1,1],'black')
-c2, = plt.plot([1,1],'gray')
-c3, = plt.plot([1,1],'brown')
-c4, = plt.plot([1,1],'green')
-c5, = plt.plot([1,1],'orange')
-c6, = plt.plot([1,1],'blue')
-c7, = plt.plot([1,1],'red')
-plt.legend((c1, c2, c3, c4, c5, c6, c7),('RegCM4', 'RegCM5 Holtslag', 'RegCM5 UW-PBL', 'WRF415', 'WRF433', 'INMET+SMN', 'ERA5'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=7, fontsize=8, frameon=False)
+c2, = plt.plot([1,1],'red')
+c3, = plt.plot([1,1],'blue')
+c4, = plt.plot([1,1],'gray')
+c5, = plt.plot([1,1],'brown')
+c6, = plt.plot([1,1],'green')
+c7, = plt.plot([1,1],'orange')
+plt.legend((c1, c2, c3, c4, c5, c6, c7),('INMET+SMN', 'ERA5', 'Reg4', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN'), bbox_to_anchor=(0.5, 1.09), loc=9, ncol=7, fontsize=8, frameon=False)
 c1.set_visible(False)
 c2.set_visible(False)
 c3.set_visible(False)
