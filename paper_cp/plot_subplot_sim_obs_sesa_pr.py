@@ -503,21 +503,21 @@ day_wrf_ucan    = day_v_x + day_v_y + day_v_z
 day_inmet_smn   = day_vi_x + day_vi_y + day_vi_z
 day_era5        = day_vii_x + day_vii_y + day_vii_z
 
+clim_inmet_smn = np.nanmean(clim_inmet_smn, axis=0)
+clim_era5 = np.nanmean(clim_era5, axis=0)
 clim_reg_usp = np.nanmean(clim_reg_usp, axis=0)
 clim_reg_ictp_i = np.nanmean(clim_reg_ictp_i, axis=0)
 clim_reg_ictp_ii = np.nanmean(clim_reg_ictp_ii, axis=0)
 clim_wrf_ncar = np.nanmean(clim_wrf_ncar, axis=0)
 clim_wrf_ucan = np.nanmean(clim_wrf_ucan, axis=0)
-clim_inmet_smn = np.nanmean(clim_inmet_smn, axis=0)
-clim_era5 = np.nanmean(clim_era5, axis=0)
 
+mon_inmet_smn = np.nanmean(mon_inmet_smn, axis=0)
+mon_era5 = np.nanmean(mon_era5, axis=0)
 mon_reg_usp = np.nanmean(mon_reg_usp, axis=0)
 mon_reg_ictp_i = np.nanmean(mon_reg_ictp_i, axis=0)
 mon_reg_ictp_ii = np.nanmean(mon_reg_ictp_ii, axis=0)
 mon_wrf_ncar = np.nanmean(mon_wrf_ncar, axis=0)
 mon_wrf_ucan = np.nanmean(mon_wrf_ucan, axis=0)
-mon_inmet_smn = np.nanmean(mon_inmet_smn, axis=0)
-mon_era5 = np.nanmean(mon_era5, axis=0)
 
 day_inmet_smn = np.array(day_inmet_smn)
 day_inmet_smn = day_inmet_smn.flatten()
@@ -540,23 +540,23 @@ day_wrf_ncar = day_wrf_ncar.flatten()
 day_wrf_ucan = np.array(day_wrf_ucan)
 day_wrf_ucan = day_wrf_ucan.flatten()
 
+day_inmet_smn_i = [i for i in day_inmet_smn if i >= 0.1]	
+day_era5_i = [i for i in day_era5 if i >= 0.1]	
 day_reg_usp_i = [i for i in day_reg_usp if i >= 0.1]	
 day_reg_ictp_i_i = [i for i in day_reg_ictp_i if i >= 0.1]	
 day_reg_ictp_ii_i = [i for i in day_reg_ictp_ii if i >= 0.1]	
 day_wrf_ncar_i = [i for i in day_wrf_ncar if i >= 0.1]	
 day_wrf_ucan_i = [i for i in day_wrf_ucan if i >= 0.1]	
-day_inmet_smn_i = [i for i in day_inmet_smn if i >= 0.1]	
-day_era5_i = [i for i in day_era5 if i >= 0.1]	
 
-day_boxplot = [day_reg_usp_i, day_reg_ictp_i_i, day_reg_ictp_ii_i, day_wrf_ncar_i, day_wrf_ucan_i, day_inmet_smn_i, day_era5_i]
+day_boxplot = [day_inmet_smn_i, day_era5_i, day_reg_usp_i, day_reg_ictp_i_i, day_reg_ictp_ii_i, day_wrf_ncar_i, day_wrf_ucan_i]
 
+x_inmet_smn_ccdf, inmet_smn_ccdf = compute_ccdf(day_inmet_smn)
+x_era5_ccdf, era5_ccdf = compute_ccdf(day_era5)
 x_reg_usp_ccdf, reg_usp_ccdf = compute_ccdf(day_reg_usp)
 x_reg_ictp_i_ccdf, reg_ictp_i_ccdf = compute_ccdf(day_reg_ictp_i)
 x_reg_ictp_ii_ccdf, reg_ictp_ii_ccdf = compute_ccdf(day_reg_ictp_ii)
 x_wrf_ncar_ccdf, wrf_ncar_ccdf = compute_ccdf(day_wrf_ncar)
 x_wrf_ucan_ccdf, wrf_ucan_ccdf = compute_ccdf(day_wrf_ucan)
-x_inmet_smn_ccdf, inmet_smn_ccdf = compute_ccdf(day_inmet_smn)
-x_era5_ccdf, era5_ccdf = compute_ccdf(day_era5)
 
 # Plot figure
 fig = plt.figure(figsize=(14, 10))
@@ -566,21 +566,21 @@ x = np.arange(1, 7 + 1)
 bp = plt.boxplot(day_boxplot, positions=[1, 2, 3, 4, 5, 6, 7], sym='.')
 setBoxColors(bp)
 plt.title('(a) Daily boxplot', loc='left', fontweight='bold')
-plt.ylim(0, 180)
-plt.yticks(np.arange(0, 200, 20))
+plt.ylim(0, 300)
+plt.yticks(np.arange(0, 330, 30))
 plt.xticks(x, ('INMET+SMN','ERA5','Reg4','Reg5-Holt','Reg5-UW','WRF-NCAR','WRF-UCAN'), fontsize=8)
 plt.xlabel('Dataset', fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontweight='bold')
 
 ax = fig.add_subplot(2, 2, 2)
 y = np.arange(0, 1.25, 0.25)
-plt.plot(x_inmet_smn_ccdf, inmet_smn_ccdf, marker='.', markersize=4, markerfacecolor='black', markeredgecolor='black', linestyle='None', label='INMET+SMN')
-plt.plot(x_era5_ccdf, era5_ccdf, marker='.', markersize=4, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
-plt.plot(x_reg_usp_ccdf, reg_usp_ccdf, marker='.', markersize=4, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='Reg4')
-plt.plot(x_reg_ictp_i_ccdf, reg_ictp_i_ccdf, marker='.', markersize=4, markerfacecolor='gray', markeredgecolor='gray', linestyle='None', label='Reg5-Holt')
-plt.plot(x_reg_ictp_ii_ccdf, reg_ictp_ii_ccdf, marker='.', markersize=4, markerfacecolor='brown', markeredgecolor='brown', linestyle='None', label='Reg5-UW')
-plt.plot(x_wrf_ncar_ccdf, wrf_ncar_ccdf, marker='.', markersize=4, markerfacecolor='green', markeredgecolor='green', linestyle='None', label='WRF-NCAR')
-plt.plot(x_wrf_ucan_ccdf, wrf_ucan_ccdf, marker='.', markersize=4, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF-UCAN')
+plt.plot(x_inmet_smn_ccdf, inmet_smn_ccdf, marker='.', markersize=3, markerfacecolor='black', markeredgecolor='black', linestyle='None', label='INMET+SMN')
+plt.plot(x_era5_ccdf, era5_ccdf, marker='.', markersize=3, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
+plt.plot(x_reg_usp_ccdf, reg_usp_ccdf, marker='.', markersize=3, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='Reg4')
+plt.plot(x_reg_ictp_i_ccdf, reg_ictp_i_ccdf, marker='.', markersize=3, markerfacecolor='gray', markeredgecolor='gray', linestyle='None', label='Reg5-Holt')
+plt.plot(x_reg_ictp_ii_ccdf, reg_ictp_ii_ccdf, marker='.', markersize=3, markerfacecolor='brown', markeredgecolor='brown', linestyle='None', label='Reg5-UW')
+plt.plot(x_wrf_ncar_ccdf, wrf_ncar_ccdf, marker='.', markersize=3, markerfacecolor='green', markeredgecolor='green', linestyle='None', label='WRF-NCAR')
+plt.plot(x_wrf_ucan_ccdf, wrf_ucan_ccdf, marker='.', markersize=3, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF-UCAN')
 plt.title('(b) Daily CDF', loc='left', fontweight='bold')
 plt.yticks(y, ('10⁻⁸','10⁻⁶','10⁻⁴','10⁻²','10⁰'))
 plt.ylabel('Frequency', fontweight='bold')
