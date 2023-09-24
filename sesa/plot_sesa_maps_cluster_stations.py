@@ -90,6 +90,34 @@ for c_v in count_v:
 	lon_c_v.append(longitude[c_v])
 	lat_c_v.append(latitude[c_v])
 
+print("longitude x latitude C.I: ", len(lon_c_i))
+print("longitude x latitude C.II: ", len(lon_c_ii))
+print("longitude x latitude C.III: ", len(lon_c_iii))
+print("longitude x latitude C.IV: ", len(lon_c_iv))
+print("longitude x latitude C.V: ", len(lon_c_v))
+print()
+
+print("list of longitude C.I: ", lon_c_i)
+print()
+print("list of latitude C.I: ", lat_c_i)
+
+print("list of longitude C.II: ", lon_c_ii)
+print()
+print("list of latitude C.II: ", lat_c_ii)
+
+print("list of longitude C.III: ", lon_c_iii)
+print()
+print("list of latitude C.III: ", lat_c_iii)
+
+print("list of longitude C.IV: ", lon_c_iv)
+print()
+print("list of latitude C.IV: ", lat_c_iv)
+
+print("list of longitude C.V: ", lon_c_v)
+print()
+print("list of latitude C.V: ", lat_c_v)
+exit()
+
 print('Plot figure')
 # Plot figure   
 fig = plt.figure()
