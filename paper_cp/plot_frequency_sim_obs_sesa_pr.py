@@ -32,49 +32,49 @@ def import_inmet():
 		
 		print('Reading weather station:', i, inmet[i][0], inmet[i][1])		
 		# reading regcm usp 
-		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
+		d_i = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
 		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_day_20180601-20211231.nc')
+		d_ii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_day_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
 		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_day_20180601-20211231.nc')
+		d_iii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_day_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
 		# reading wrf ncar 
-		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
+		d_iv = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=yy, lon=xx, method='nearest')
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
 		# reading wrf ucan 
-		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
+		d_v = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 		
 		# Reading inmet 
-		d_vi = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/inmet/inmet_hr/inmet_nc/pre/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+		d_vi = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/inmet/inmet_nc_sesa/pre/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.resample(time='1D').sum()
 		d_vi = d_vi.values
 		mean_vi.append(d_vi)
 		
 		# reading era5 
-		d_vii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
+		d_vii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=yy, lon=xx, method='nearest')
 		d_vii = d_vii.values
@@ -100,49 +100,49 @@ def import_smn_i():
 		
 		print('Reading weather station:', i, smn_i[i][0])	
 		# reading regcm usp 
-		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
+		d_i = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
 		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_day_20180601-20211231.nc')
+		d_ii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_day_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
 		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_day_20180601-20211231.nc')
+		d_iii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_day_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
 		# reading wrf ncar 
-		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
+		d_iv = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=yy, lon=xx, method='nearest')
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
 		# reading wrf ucan 
-		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
+		d_v = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 						
 		# Reading smn 
-		d_vi = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/smn_i/smn_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
+		d_vi = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/smn_i/smn_nc/' + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.resample(time='1D').sum()
 		d_vi = d_vi.values
 		mean_vi.append(d_vi)
 		
 		# reading era5 
-		d_vii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
+		d_vii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=yy, lon=xx, method='nearest')
 		d_vii = d_vii.values
@@ -168,48 +168,48 @@ def import_smn_ii():
 		
 		print('Reading weather station:', i, smn_ii[i][0])	
 		# reading regcm usp 
-		d_i = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
+		d_i = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_usp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_day_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=yy, lon=xx, method='nearest')
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
 		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_day_20180601-20211231.nc')
+		d_ii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_day_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=yy, lon=xx, method='nearest')
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
 		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_day_20180601-20211231.nc')
+		d_iii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_ictp/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_day_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=yy, lon=xx, method='nearest')
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
 		# reading wrf ncar 
-		d_iv = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
+		d_iv = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/wrf_ncar/' + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_day_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=yy, lon=xx, method='nearest')
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
 		# reading wrf ucan 
-		d_v = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
+		d_v = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/wrf_ucan/' + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_day_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=yy, lon=xx, method='nearest')
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 						
 		# Reading smn 
-		d_vi = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/smn_ii/smn_nc/' + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
+		d_vi = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/smn_ii/smn_nc/' + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.values
 		mean_vi.append(d_vi)
 		
 		# reading era5 
-		d_vii = xr.open_dataset('/home/nice/Documentos/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
+		d_vii = xr.open_dataset('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/era5/' + 'tp_era5_csam_4km_day_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=yy, lon=xx, method='nearest')
 		d_vii = d_vii.values
@@ -217,15 +217,6 @@ def import_smn_ii():
 				
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
-
-def compute_ccdf(dataset):
-	
-	x = np.sort(dataset)	
-	cdf = x.cumsum() / x.sum()
-	ccdf = 1 - cdf
-		
-	return x, ccdf
-	
 
 var = 'pr'
     
@@ -240,7 +231,7 @@ reg_ictp_ii = clim_iii_x + clim_iii_y + clim_iii_z
 wrf_ncar = clim_iv_x + clim_iv_y + clim_iv_z
 wrf_ucan = clim_v_x + clim_v_y + clim_v_z
 inmet_smn = clim_vi_x + clim_vi_y + clim_vi_z
-era5 = clim_vii_x + clim_vi_y + clim_vii_z
+era5 = clim_vii_x + clim_vii_y + clim_vii_z
 
 list_hc = [4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 0, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0,
 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 1, 0, 0,
@@ -259,6 +250,7 @@ count_iii = []
 count_iv = []
 count_v = []
 
+# Select cluster
 for count, idx in enumerate(list_hc):
 	if idx == 0:
 		count_i.append(count)
@@ -364,116 +356,205 @@ wrf_ucan_c_v = np.nanmean(wrf_ucan_v, axis=0)
 inmet_smn_c_v = np.nanmean(inmet_smn_v, axis=0)
 era5_c_v = np.nanmean(era5_v, axis=0)
 
-x_reg_usp_ccdf_i, reg_usp_ccdf_i = compute_ccdf(reg_usp_c_i)
-x_reg_ictp_i_ccdf_i, reg_ictp_i_ccdf_i = compute_ccdf(reg_ictp_i_c_i)
-x_reg_ictp_ii_ccdf_i, reg_ictp_ii_ccdf_i = compute_ccdf(reg_ictp_ii_c_i)
-x_wrf_ncar_ccdf_i, wrf_ncar_ccdf_i = compute_ccdf(wrf_ncar_c_i)
-x_wrf_ucan_ccdf_i, wrf_ucan_ccdf_i = compute_ccdf(wrf_ucan_c_i)
-x_inmet_smn_ccdf_i, inmet_smn_ccdf_i = compute_ccdf(inmet_smn_c_i)
-x_era5_ccdf_i, era5_ccdf_i = compute_ccdf(era5_c_i)
+reg_usp_c_i = np.nanmean(reg_usp_i, axis=0)
+reg_ictp_i_c_i = np.nanmean(reg_ictp_i_i, axis=0)
+reg_ictp_ii_c_i = np.nanmean(reg_ictp_ii_i, axis=0)
+wrf_ncar_c_i = np.nanmean(wrf_ncar_i, axis=0)
+wrf_ucan_c_i = np.nanmean(wrf_ucan_i, axis=0)
+inmet_smn_c_i = np.nanmean(inmet_smn_i, axis=0)
+era5_c_i = np.nanmean(era5_i, axis=0)
 
-x_reg_usp_ccdf_ii, reg_usp_ccdf_ii = compute_ccdf(reg_usp_c_ii)
-x_reg_ictp_i_ccdf_ii, reg_ictp_i_ccdf_ii = compute_ccdf(reg_ictp_i_c_ii)
-x_reg_ictp_ii_ccdf_ii, reg_ictp_ii_ccdf_ii = compute_ccdf(reg_ictp_ii_c_ii)
-x_wrf_ncar_ccdf_ii, wrf_ncar_ccdf_ii = compute_ccdf(wrf_ncar_c_ii)
-x_wrf_ucan_ccdf_ii, wrf_ucan_ccdf_ii = compute_ccdf(wrf_ucan_c_ii)
-x_inmet_smn_ccdf_ii, inmet_smn_ccdf_ii = compute_ccdf(inmet_smn_c_ii)
-x_era5_ccdf_ii, era5_ccdf_ii = compute_ccdf(era5_c_ii)
+# Round values to each cluster
+round_reg_usp_c_i = np.round(reg_usp_c_i,0)
+round_reg_ictp_i_c_i = np.round(reg_ictp_i_i,0)
+round_reg_ictp_ii_c_i = np.round(reg_ictp_ii_i,0)
+round_wrf_ncar_c_i = np.round(wrf_ncar_i,0)
+round_wrf_ucan_c_i = np.round(wrf_ucan_i,0)
+round_inmet_smn_c_i = np.round(inmet_smn_i,0)
+round_era5_c_i = np.round(era5_i,0)
 
-x_reg_usp_ccdf_iii, reg_usp_ccdf_iii = compute_ccdf(reg_usp_c_iii)
-x_reg_ictp_i_ccdf_iii, reg_ictp_i_ccdf_iii = compute_ccdf(reg_ictp_i_c_iii)
-x_reg_ictp_ii_ccdf_iii, reg_ictp_ii_ccdf_iii = compute_ccdf(reg_ictp_ii_c_iii)
-x_wrf_ncar_ccdf_iii, wrf_ncar_ccdf_iii = compute_ccdf(wrf_ncar_c_iii)
-x_wrf_ucan_ccdf_iii, wrf_ucan_ccdf_iii = compute_ccdf(wrf_ucan_c_iii)
-x_inmet_smn_ccdf_iii, inmet_smn_ccdf_iii = compute_ccdf(inmet_smn_c_iii)
-x_era5_ccdf_iii, era5_ccdf_iii = compute_ccdf(era5_c_iii)
+round_reg_usp_c_ii = np.round(reg_usp_c_ii,0)
+round_reg_ictp_i_c_ii = np.round(reg_ictp_i_ii,0)
+round_reg_ictp_ii_c_ii = np.round(reg_ictp_ii_ii,0)
+round_wrf_ncar_c_ii = np.round(wrf_ncar_ii,0)
+round_wrf_ucan_c_ii = np.round(wrf_ucan_ii,0)
+round_inmet_smn_c_ii = np.round(inmet_smn_ii,0)
+round_era5_c_ii = np.round(era5_ii,0)
 
-x_reg_usp_ccdf_iv, reg_usp_ccdf_iv = compute_ccdf(reg_usp_c_iv)
-x_reg_ictp_i_ccdf_iv, reg_ictp_i_ccdf_iv = compute_ccdf(reg_ictp_i_c_iv)
-x_reg_ictp_ii_ccdf_iv, reg_ictp_ii_ccdf_iv = compute_ccdf(reg_ictp_ii_c_iv)
-x_wrf_ncar_ccdf_iv, wrf_ncar_ccdf_iv = compute_ccdf(wrf_ncar_c_iv)
-x_wrf_ucan_ccdf_iv, wrf_ucan_ccdf_iv = compute_ccdf(wrf_ucan_c_iv)
-x_inmet_smn_ccdf_iv, inmet_smn_ccdf_iv = compute_ccdf(inmet_smn_c_iv)
-x_era5_ccdf_iv, era5_ccdf_iv = compute_ccdf(era5_c_iv)
+round_reg_usp_c_iii = np.round(reg_usp_c_iii,0)
+round_reg_ictp_i_c_iii = np.round(reg_ictp_i_iii,0)
+round_reg_ictp_ii_c_iii = np.round(reg_ictp_ii_iii,0)
+round_wrf_ncar_c_iii = np.round(wrf_ncar_iii,0)
+round_wrf_ucan_c_iii = np.round(wrf_ucan_iii,0)
+round_inmet_smn_c_iii = np.round(inmet_smn_iii,0)
+round_era5_c_iii = np.round(era5_iii,0)
 
-x_reg_usp_ccdf_v, reg_usp_ccdf_v = compute_ccdf(reg_usp_c_v)
-x_reg_ictp_i_ccdf_v, reg_ictp_i_ccdf_v = compute_ccdf(reg_ictp_i_c_v)
-x_reg_ictp_ii_ccdf_v, reg_ictp_ii_ccdf_v = compute_ccdf(reg_ictp_ii_c_v)
-x_wrf_ncar_ccdf_v, wrf_ncar_ccdf_v = compute_ccdf(wrf_ncar_c_v)
-x_wrf_ucan_ccdf_v, wrf_ucan_ccdf_v = compute_ccdf(wrf_ucan_c_v)
-x_inmet_smn_ccdf_v, inmet_smn_ccdf_v = compute_ccdf(inmet_smn_c_v)
-x_era5_ccdf_v, era5_ccdf_v = compute_ccdf(era5_c_v)
+round_reg_usp_c_iv = np.round(reg_usp_c_iv,0)
+round_reg_ictp_i_c_iv = np.round(reg_ictp_i_iv,0)
+round_reg_ictp_ii_c_iv = np.round(reg_ictp_ii_iv,0)
+round_wrf_ncar_c_iv = np.round(wrf_ncar_iv,0)
+round_wrf_ucan_c_iv = np.round(wrf_ucan_iv,0)
+round_inmet_smn_c_iv = np.round(inmet_smn_iv,0)
+round_era5_c_iv = np.round(era5_iv,0)
+
+round_reg_usp_c_v = np.round(reg_usp_c_v,0)
+round_reg_ictp_i_c_v = np.round(reg_ictp_i_v,0)
+round_reg_ictp_ii_c_v = np.round(reg_ictp_ii_v,0)
+round_wrf_ncar_c_v = np.round(wrf_ncar_v,0)
+round_wrf_ucan_c_v = np.round(wrf_ucan_v,0)
+round_inmet_smn_c_v = np.round(inmet_smn_v,0)
+round_era5_c_v = np.round(era5_v,0)
+
+# Filter 0 mm/day
+filter_reg_usp_c_i = round_reg_usp_c_i[round_reg_usp_c_i > 0.]
+filter_reg_ictp_i_c_i = round_reg_ictp_i_c_i[round_reg_ictp_i_c_i > 0.]
+filter_reg_ictp_ii_c_i = round_reg_ictp_ii_c_i[round_reg_ictp_ii_c_i > 0.]
+filter_wrf_ncar_c_i = round_wrf_ncar_c_i[round_wrf_ncar_c_i > 0.]
+filter_wrf_ucan_c_i = round_wrf_ucan_c_i[round_wrf_ucan_c_i > 0.]
+filter_inmet_smn_c_i = round_inmet_smn_c_i[round_inmet_smn_c_i > 0.]
+filter_era5_c_i = round_era5_c_i[round_era5_c_i > 0.]
+
+filter_reg_usp_c_ii = round_reg_usp_c_ii[round_reg_usp_c_ii > 0.]
+filter_reg_ictp_i_c_ii = round_reg_ictp_i_c_ii[round_reg_ictp_i_c_ii > 0.]
+filter_reg_ictp_ii_c_ii = round_reg_ictp_ii_c_ii[round_reg_ictp_ii_c_ii > 0.]
+filter_wrf_ncar_c_ii = round_wrf_ncar_c_ii[round_wrf_ncar_c_ii > 0.]
+filter_wrf_ucan_c_ii = round_wrf_ucan_c_ii[round_wrf_ucan_c_ii > 0.]
+filter_inmet_smn_c_ii = round_inmet_smn_c_ii[round_inmet_smn_c_ii > 0.]
+filter_era5_c_ii = round_era5_c_ii[round_era5_c_ii > 0.]
+
+filter_reg_usp_c_iii = round_reg_usp_c_iii[round_reg_usp_c_iii > 0.]
+filter_reg_ictp_i_c_iii = round_reg_ictp_i_c_iii[round_reg_ictp_i_c_iii > 0.]
+filter_reg_ictp_ii_c_iii = round_reg_ictp_ii_c_iii[round_reg_ictp_ii_c_iii > 0.]
+filter_wrf_ncar_c_iii = round_wrf_ncar_c_iii[round_wrf_ncar_c_iii > 0.]
+filter_wrf_ucan_c_iii = round_wrf_ucan_c_iii[round_wrf_ucan_c_iii > 0.]
+filter_inmet_smn_c_iii = round_inmet_smn_c_iii[round_inmet_smn_c_iii > 0.]
+filter_era5_c_iii = round_era5_c_iii[round_era5_c_iii > 0.]
+
+filter_reg_usp_c_iv = round_reg_usp_c_iv[round_reg_usp_c_iv > 0.]
+filter_reg_ictp_i_c_iv = round_reg_ictp_i_c_iv[round_reg_ictp_i_c_iv > 0.]
+filter_reg_ictp_ii_c_iv = round_reg_ictp_ii_c_iv[round_reg_ictp_ii_c_iv > 0.]
+filter_wrf_ncar_c_iv = round_wrf_ncar_c_iv[round_wrf_ncar_c_iv > 0.]
+filter_wrf_ucan_c_iv = round_wrf_ucan_c_iv[round_wrf_ucan_c_iv > 0.]
+filter_inmet_smn_c_iv = round_inmet_smn_c_iv[round_inmet_smn_c_iv > 0.]
+filter_era5_c_iv = round_era5_c_iv[round_era5_c_iv > 0.]
+
+filter_reg_usp_c_v = round_reg_usp_c_v[round_reg_usp_c_v > 0.]
+filter_reg_ictp_i_c_v = round_reg_ictp_i_c_v[round_reg_ictp_i_c_v > 0.]
+filter_reg_ictp_ii_c_v = round_reg_ictp_ii_c_v[round_reg_ictp_ii_c_v > 0.]
+filter_wrf_ncar_c_v = round_wrf_ncar_c_v[round_wrf_ncar_c_v > 0.]
+filter_wrf_ucan_c_v = round_wrf_ucan_c_v[round_wrf_ucan_c_v > 0.]
+filter_inmet_smn_c_v = round_inmet_smn_c_v[round_inmet_smn_c_v > 0.]
+filter_era5_c_v = round_era5_c_v[round_era5_c_v > 0.]
+
+# Compute frequency
+x_freq_reg_usp_c_i, freq_reg_usp_c_i = np.unique(filter_reg_usp_c_i, return_counts=True) 
+x_freq_reg_ictp_i_c_i, freq_reg_ictp_i_c_i = np.unique(filter_reg_ictp_i_c_i, return_counts=True) 
+x_freq_reg_ictp_ii_c_i, freq_reg_ictp_ii_c_i = np.unique(filter_reg_ictp_ii_c_i, return_counts=True) 
+x_freq_wrf_ncar_c_i, freq_wrf_ncar_c_i = np.unique(filter_wrf_ncar_c_i, return_counts=True) 
+x_freq_wrf_ucan_c_i, freq_wrf_ucan_c_i = np.unique(filter_wrf_ucan_c_i, return_counts=True) 
+x_freq_inmet_smn_c_i, freq_inmet_smn_c_i = np.unique(filter_inmet_smn_c_i, return_counts=True) 
+x_freq_era5_c_i, freq_era5_c_i = np.unique(filter_era5_c_i, return_counts=True) 
+
+x_freq_reg_usp_c_ii, freq_reg_usp_c_ii = np.unique(filter_reg_usp_c_ii, return_counts=True) 
+x_freq_reg_ictp_i_c_ii, freq_reg_ictp_i_c_ii = np.unique(filter_reg_ictp_i_c_ii, return_counts=True) 
+x_freq_reg_ictp_ii_c_ii, freq_reg_ictp_ii_c_ii = np.unique(filter_reg_ictp_ii_c_ii, return_counts=True) 
+x_freq_wrf_ncar_c_ii, freq_wrf_ncar_c_ii = np.unique(filter_wrf_ncar_c_ii, return_counts=True) 
+x_freq_wrf_ucan_c_ii, freq_wrf_ucan_c_ii = np.unique(filter_wrf_ucan_c_ii, return_counts=True) 
+x_freq_inmet_smn_c_ii, freq_inmet_smn_c_ii = np.unique(filter_inmet_smn_c_ii, return_counts=True) 
+x_freq_era5_c_ii, freq_era5_c_ii = np.unique(filter_era5_c_ii, return_counts=True) 
+
+x_freq_reg_usp_c_iii, freq_reg_usp_c_iii = np.unique(filter_reg_usp_c_iii, return_counts=True) 
+x_freq_reg_ictp_i_c_iii, freq_reg_ictp_i_c_iii = np.unique(filter_reg_ictp_i_c_iii, return_counts=True) 
+x_freq_reg_ictp_ii_c_iii, freq_reg_ictp_ii_c_iii = np.unique(filter_reg_ictp_ii_c_iii, return_counts=True) 
+x_freq_wrf_ncar_c_iii, freq_wrf_ncar_c_iii = np.unique(filter_wrf_ncar_c_iii, return_counts=True) 
+x_freq_wrf_ucan_c_iii, freq_wrf_ucan_c_iii = np.unique(filter_wrf_ucan_c_iii, return_counts=True) 
+x_freq_inmet_smn_c_iii, freq_inmet_smn_c_iii = np.unique(filter_inmet_smn_c_iii, return_counts=True) 
+x_freq_era5_c_iii, freq_era5_c_iii = np.unique(filter_era5_c_iii, return_counts=True) 
+
+x_freq_reg_usp_c_iv, freq_reg_usp_c_iv = np.unique(filter_reg_usp_c_iv, return_counts=True) 
+x_freq_reg_ictp_i_c_iv, freq_reg_ictp_i_c_iv = np.unique(filter_reg_ictp_i_c_iv, return_counts=True) 
+x_freq_reg_ictp_ii_c_iv, freq_reg_ictp_ii_c_iv = np.unique(filter_reg_ictp_ii_c_iv, return_counts=True) 
+x_freq_wrf_ncar_c_iv, freq_wrf_ncar_c_iv = np.unique(filter_wrf_ncar_c_iv, return_counts=True) 
+x_freq_wrf_ucan_c_iv, freq_wrf_ucan_c_iv = np.unique(filter_wrf_ucan_c_iv, return_counts=True) 
+x_freq_inmet_smn_c_iv, freq_inmet_smn_c_iv = np.unique(filter_inmet_smn_c_iv, return_counts=True) 
+x_freq_era5_c_iv, freq_era5_c_iv = np.unique(filter_era5_c_iv, return_counts=True)
+
+x_freq_reg_usp_c_v, freq_reg_usp_c_v = np.unique(filter_reg_usp_c_v, return_counts=True) 
+x_freq_reg_ictp_i_c_v, freq_reg_ictp_i_c_v = np.unique(filter_reg_ictp_i_c_v, return_counts=True) 
+x_freq_reg_ictp_ii_c_v, freq_reg_ictp_ii_c_v = np.unique(filter_reg_ictp_ii_c_v, return_counts=True) 
+x_freq_wrf_ncar_c_v, freq_wrf_ncar_c_v = np.unique(filter_wrf_ncar_c_v, return_counts=True) 
+x_freq_wrf_ucan_c_v, freq_wrf_ucan_c_v = np.unique(filter_wrf_ucan_c_v, return_counts=True) 
+x_freq_inmet_smn_c_v, freq_inmet_smn_c_v = np.unique(filter_inmet_smn_c_v, return_counts=True) 
+x_freq_era5_c_v, freq_era5_c_v = np.unique(filter_era5_c_v, return_counts=True)
 
 # Plot figure
 fig = plt.figure(figsize=(10, 10))
-y = np.arange(0, 1.25, 0.25)
 
-ax = fig.add_subplot(3, 2, 1)
-plt.plot(x_inmet_smn_ccdf_i, inmet_smn_ccdf_i, marker='.', markersize=4, markerfacecolor='black', markeredgecolor='black', linestyle='None', label='INMET+SMN')
-plt.plot(x_era5_ccdf_i, era5_ccdf_i, marker='.', markersize=4, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
-plt.plot(x_reg_usp_ccdf_i, reg_usp_ccdf_i, marker='.', markersize=4, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='Reg4')
-plt.plot(x_reg_ictp_i_ccdf_i, reg_ictp_i_ccdf_i, marker='.', markersize=4, markerfacecolor='gray', markeredgecolor='gray', linestyle='None', label='Reg5-Holt')
-plt.plot(x_reg_ictp_ii_ccdf_i, reg_ictp_ii_ccdf_i, marker='.', markersize=4, markerfacecolor='brown', markeredgecolor='brown', linestyle='None', label='Reg5-UW')
-plt.plot(x_wrf_ncar_ccdf_i, wrf_ncar_ccdf_i, marker='.', markersize=4, markerfacecolor='green', markeredgecolor='green', linestyle='None', label='WRF-NCAR')
-plt.plot(x_wrf_ucan_ccdf_i, wrf_ucan_ccdf_i, marker='.', markersize=4, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF-UCAN')
-
+ax = fig.add_subplot(3, 2, 1)  
+plt.plot(x_freq_inmet_smn_c_i,   freq_inmet_smn_c_i,   marker='.', markersize=4, mfc='black',  mec='black',  linestyle='None', label='INMET+SMN')
+plt.plot(x_freq_era5_c_i,        freq_era5_c_i,        marker='.', markersize=4, mfc='red',    mec='red',    linestyle='None', label='ERA5')
+plt.plot(x_freq_reg_usp_c_i,     freq_reg_usp_c_i,     marker='.', markersize=4, mfc='blue',   mec='blue',   linestyle='None', label='Reg4')
+plt.plot(x_freq_reg_ictp_i_c_i,  freq_reg_ictp_i_c_i,  marker='.', markersize=4, mfc='gray',   mec='gray',   linestyle='None', label='Reg5-Holt')
+plt.plot(x_freq_reg_ictp_ii_c_i, freq_reg_ictp_ii_c_i, marker='.', markersize=4, mfc='brown',  mec='brown',  linestyle='None', label='Reg5-UW')
+plt.plot(x_freq_wrf_ncar_c_i,    freq_wrf_ncar_c_i,    marker='.', markersize=4, mfc='green',  mec='green',  linestyle='None', label='WRF-NCAR')
+plt.plot(x_freq_wrf_ucan_c_i,    freq_wrf_ucan_c_i,    marker='.', markersize=4, mfc='orange', mec='orange', linestyle='None', label='WRF-UCAN')
 plt.title('(a) Cluster I', loc='left', fontweight='bold')
-plt.yticks(y, ('10⁻⁸','10⁻⁶','10⁻⁴','10⁻²','10⁰'))
-plt.ylabel('Frequency', fontweight='bold')
+plt.yscale('log')
+plt.ylabel('Frequency (days)', fontweight='bold')
 plt.legend(frameon=False)
 
 ax = fig.add_subplot(3, 2, 2)
-plt.plot(x_inmet_smn_ccdf_ii, inmet_smn_ccdf_ii, marker='.', markersize=4, markerfacecolor='black', markeredgecolor='black', linestyle='None', label='INMET+SMN')
-plt.plot(x_era5_ccdf_ii, era5_ccdf_ii, marker='.', markersize=4, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
-plt.plot(x_reg_usp_ccdf_ii, reg_usp_ccdf_ii, marker='.', markersize=4, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='Reg4')
-plt.plot(x_reg_ictp_i_ccdf_ii, reg_ictp_i_ccdf_ii, marker='.', markersize=4, markerfacecolor='gray', markeredgecolor='gray', linestyle='None', label='Reg5-Holt')
-plt.plot(x_reg_ictp_ii_ccdf_ii, reg_ictp_ii_ccdf_ii, marker='.', markersize=4, markerfacecolor='brown', markeredgecolor='brown', linestyle='None', label='Reg5-UW')
-plt.plot(x_wrf_ncar_ccdf_ii, wrf_ncar_ccdf_ii, marker='.', markersize=4, markerfacecolor='green', markeredgecolor='green', linestyle='None', label='WRF-NCAR')
-plt.plot(x_wrf_ucan_ccdf_ii, wrf_ucan_ccdf_ii, marker='.', markersize=4, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF-UCAN')
+plt.plot(x_freq_inmet_smn_c_ii,   freq_inmet_smn_c_ii,   marker='.', markersize=4, mfc='black',  mec='black',  linestyle='None', label='INMET+SMN')
+plt.plot(x_freq_era5_c_ii,        freq_era5_c_ii,        marker='.', markersize=4, mfc='red',    mec='red',    linestyle='None', label='ERA5')
+plt.plot(x_freq_reg_usp_c_ii,     freq_reg_usp_c_ii,     marker='.', markersize=4, mfc='blue',   mec='blue',   linestyle='None', label='Reg4')
+plt.plot(x_freq_reg_ictp_i_c_ii,  freq_reg_ictp_i_c_ii,  marker='.', markersize=4, mfc='gray',   mec='gray',   linestyle='None', label='Reg5-Holt')
+plt.plot(x_freq_reg_ictp_ii_c_ii, freq_reg_ictp_ii_c_ii, marker='.', markersize=4, mfc='brown',  mec='brown',  linestyle='None', label='Reg5-UW')
+plt.plot(x_freq_wrf_ncar_c_ii,    freq_wrf_ncar_c_ii,    marker='.', markersize=4, mfc='green',  mec='green',  linestyle='None', label='WRF-NCAR')
+plt.plot(x_freq_wrf_ucan_c_ii,    freq_wrf_ucan_c_ii,    marker='.', markersize=4, mfc='orange', mec='orange', linestyle='None', label='WRF-UCAN')
 plt.title('(b) Cluster II', loc='left', fontweight='bold')
-plt.yticks(y, ('10⁻⁸','10⁻⁶','10⁻⁴','10⁻²','10⁰'))
-plt.ylabel('Frequency', fontweight='bold')
+plt.yscale('log')
+plt.ylabel('Frequency (days)', fontweight='bold')
 
 ax = fig.add_subplot(3, 2, 3)
-plt.plot(x_inmet_smn_ccdf_iii, inmet_smn_ccdf_iii, marker='.', markersize=4, markerfacecolor='black', markeredgecolor='black', linestyle='None', label='INMET+SMN')
-plt.plot(x_era5_ccdf_iii, era5_ccdf_iii, marker='.', markersize=4, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
-plt.plot(x_reg_usp_ccdf_iii, reg_usp_ccdf_iii, marker='.', markersize=4, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='Reg4')
-plt.plot(x_reg_ictp_i_ccdf_iii, reg_ictp_i_ccdf_iii, marker='.', markersize=4, markerfacecolor='gray', markeredgecolor='gray', linestyle='None', label='Reg5-Holt')
-plt.plot(x_reg_ictp_ii_ccdf_iii, reg_ictp_ii_ccdf_iii, marker='.', markersize=4, markerfacecolor='brown', markeredgecolor='brown', linestyle='None', label='Reg5-UW')
-plt.plot(x_wrf_ncar_ccdf_iii, wrf_ncar_ccdf_iii, marker='.', markersize=4, markerfacecolor='green', markeredgecolor='green', linestyle='None', label='WRF-NCAR')
-plt.plot(x_wrf_ucan_ccdf_iii, wrf_ucan_ccdf_iii, marker='.', markersize=4, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF-UCAN')
+plt.plot(x_freq_inmet_smn_c_iii,   freq_inmet_smn_c_iii,   marker='.', markersize=4, mfc='black',  mec='black',  linestyle='None', label='INMET+SMN')
+plt.plot(x_freq_era5_c_iii,        freq_era5_c_iii,        marker='.', markersize=4, mfc='red',    mec='red',    linestyle='None', label='ERA5')
+plt.plot(x_freq_reg_usp_c_iii,     freq_reg_usp_c_iii,     marker='.', markersize=4, mfc='blue',   mec='blue',   linestyle='None', label='Reg4')
+plt.plot(x_freq_reg_ictp_i_c_iii,  freq_reg_ictp_i_c_iii,  marker='.', markersize=4, mfc='gray',   mec='gray',   linestyle='None', label='Reg5-Holt')
+plt.plot(x_freq_reg_ictp_ii_c_iii, freq_reg_ictp_ii_c_iii, marker='.', markersize=4, mfc='brown',  mec='brown',  linestyle='None', label='Reg5-UW')
+plt.plot(x_freq_wrf_ncar_c_iii,    freq_wrf_ncar_c_iii,    marker='.', markersize=4, mfc='green',  mec='green',  linestyle='None', label='WRF-NCAR')
+plt.plot(x_freq_wrf_ucan_c_iii,    freq_wrf_ucan_c_iii,    marker='.', markersize=4, mfc='orange', mec='orange', linestyle='None', label='WRF-UCAN')
 plt.title('(c) Cluster III', loc='left', fontweight='bold')
-plt.yticks(y, ('10⁻⁸','10⁻⁶','10⁻⁴','10⁻²','10⁰'))
-plt.ylabel('Frequency', fontweight='bold')
+plt.yscale('log')
+plt.ylabel('Frequency (days)', fontweight='bold')
 
 ax = fig.add_subplot(3, 2, 4)
-plt.plot(x_inmet_smn_ccdf_iv, inmet_smn_ccdf_iv, marker='.', markersize=4, markerfacecolor='black', markeredgecolor='black', linestyle='None', label='INMET+SMN')
-plt.plot(x_era5_ccdf_iv, era5_ccdf_iv, marker='.', markersize=4, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
-plt.plot(x_reg_usp_ccdf_iv, reg_usp_ccdf_iv, marker='.', markersize=4, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='Reg4')
-plt.plot(x_reg_ictp_i_ccdf_iv, reg_ictp_i_ccdf_iv, marker='.', markersize=4, markerfacecolor='gray', markeredgecolor='gray', linestyle='None', label='Reg5-Holt')
-plt.plot(x_reg_ictp_ii_ccdf_iv, reg_ictp_ii_ccdf_iv, marker='.', markersize=4, markerfacecolor='brown', markeredgecolor='brown', linestyle='None', label='Reg5-UW')
-plt.plot(x_wrf_ncar_ccdf_iv, wrf_ncar_ccdf_iv, marker='.', markersize=4, markerfacecolor='green', markeredgecolor='green', linestyle='None', label='WRF-NCAR')
-plt.plot(x_wrf_ucan_ccdf_iv, wrf_ucan_ccdf_iv, marker='.', markersize=4, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF-UCAN')
+plt.plot(x_freq_inmet_smn_c_iv,   freq_inmet_smn_c_iv,   marker='.', markersize=4, mfc='black',  mec='black',  linestyle='None', label='INMET+SMN')
+plt.plot(x_freq_era5_c_iv,        freq_era5_c_iv,        marker='.', markersize=4, mfc='red',    mec='red',    linestyle='None', label='ERA5')
+plt.plot(x_freq_reg_usp_c_iv,     freq_reg_usp_c_iv,     marker='.', markersize=4, mfc='blue',   mec='blue',   linestyle='None', label='Reg4')
+plt.plot(x_freq_reg_ictp_i_c_iv,  freq_reg_ictp_i_c_iv,  marker='.', markersize=4, mfc='gray',   mec='gray',   linestyle='None', label='Reg5-Holt')
+plt.plot(x_freq_reg_ictp_ii_c_iv, freq_reg_ictp_ii_c_iv, marker='.', markersize=4, mfc='brown',  mec='brown',  linestyle='None', label='Reg5-UW')
+plt.plot(x_freq_wrf_ncar_c_iv,    freq_wrf_ncar_c_iv,    marker='.', markersize=4, mfc='green',  mec='green',  linestyle='None', label='WRF-NCAR')
+plt.plot(x_freq_wrf_ucan_c_iv,    freq_wrf_ucan_c_iv,    marker='.', markersize=4, mfc='orange', mec='orange', linestyle='None', label='WRF-UCAN')
 plt.title('(d) Cluster IV', loc='left', fontweight='bold')
-plt.yticks(y, ('10⁻⁸','10⁻⁶','10⁻⁴','10⁻²','10⁰'))
-plt.xlabel('Intensity (mm d⁻¹)', fontweight='bold')
-plt.ylabel('Frequency', fontweight='bold')
+plt.yscale('log')
+plt.xlabel('Intensity of daily precipitation (> 0 mm d⁻¹)', fontweight='bold')
+plt.ylabel('Frequency (days)', fontweight='bold')
 
 ax = fig.add_subplot(3, 2, 5)
-plt.plot(x_inmet_smn_ccdf_v, inmet_smn_ccdf_v, marker='.', markersize=4, markerfacecolor='black', markeredgecolor='black', linestyle='None', label='INMET+SMN')
-plt.plot(x_era5_ccdf_v, era5_ccdf_v, marker='.', markersize=4, markerfacecolor='red', markeredgecolor='red', linestyle='None', label='ERA5')
-plt.plot(x_reg_usp_ccdf_v, reg_usp_ccdf_v, marker='.', markersize=4, markerfacecolor='blue', markeredgecolor='blue', linestyle='None', label='Reg4')
-plt.plot(x_reg_ictp_i_ccdf_v, reg_ictp_i_ccdf_v, marker='.', markersize=4, markerfacecolor='gray', markeredgecolor='gray', linestyle='None', label='Reg5-Holt')
-plt.plot(x_reg_ictp_ii_ccdf_v, reg_ictp_ii_ccdf_v, marker='.', markersize=4, markerfacecolor='brown', markeredgecolor='brown', linestyle='None', label='Reg5-UW')
-plt.plot(x_wrf_ncar_ccdf_v, wrf_ncar_ccdf_v, marker='.', markersize=4, markerfacecolor='green', markeredgecolor='green', linestyle='None', label='WRF-NCAR')
-plt.plot(x_wrf_ucan_ccdf_v, wrf_ucan_ccdf_v, marker='.', markersize=4, markerfacecolor='orange', markeredgecolor='orange', linestyle='None', label='WRF-UCAN')
+plt.plot(x_freq_inmet_smn_c_v,   freq_inmet_smn_c_v,   marker='.', markersize=4, mfc='black',  mec='black',  linestyle='None', label='INMET+SMN')
+plt.plot(x_freq_era5_c_v,        freq_era5_c_v,        marker='.', markersize=4, mfc='red',    mec='red',    linestyle='None', label='ERA5')
+plt.plot(x_freq_reg_usp_c_v,     freq_reg_usp_c_v,     marker='.', markersize=4, mfc='blue',   mec='blue',   linestyle='None', label='Reg4')
+plt.plot(x_freq_reg_ictp_i_c_v,  freq_reg_ictp_i_c_v,  marker='.', markersize=4, mfc='gray',   mec='gray',   linestyle='None', label='Reg5-Holt')
+plt.plot(x_freq_reg_ictp_ii_c_v, freq_reg_ictp_ii_c_v, marker='.', markersize=4, mfc='brown',  mec='brown',  linestyle='None', label='Reg5-UW')
+plt.plot(x_freq_wrf_ncar_c_v,    freq_wrf_ncar_c_v,    marker='.', markersize=4, mfc='green',  mec='green',  linestyle='None', label='WRF-NCAR')
+plt.plot(x_freq_wrf_ucan_c_v,    freq_wrf_ucan_c_v,    marker='.', markersize=4, mfc='orange', mec='orange', linestyle='None', label='WRF-UCAN')
 plt.title('(e) Cluster V', loc='left', fontweight='bold')
-plt.yticks(y, ('10⁻⁸','10⁻⁶','10⁻⁴','10⁻²','10⁰'))
-plt.xlabel('Intensity (mm d⁻¹)', fontweight='bold')
-plt.ylabel('Frequency', fontweight='bold')
+plt.yscale('log')
+plt.xlabel('Intensity of daily precipitation (> 0 mm d⁻¹)', fontweight='bold')
+plt.ylabel('Frequency (days)', fontweight='bold')
 
 # Path out to save figure
-path_out = '/home/nice/Documentos/FPS_SESA/figs/paper_cp'
+path_out = '/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/figs/paper_cp'
 name_out = 'pyplt_frequency_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
