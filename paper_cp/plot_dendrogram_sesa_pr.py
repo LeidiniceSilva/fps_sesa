@@ -6,7 +6,6 @@ __date__        = "02/09/2023"
 __description__ = "This script plot dendrogram of the INMET weather station"
 
 import os
-import conda
 import numpy as np
 import xarray as xr
 import pandas as pd
