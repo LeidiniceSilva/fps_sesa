@@ -100,7 +100,7 @@ def import_smn_i():
 	mean_vii = []
 	
 	# Select lat and lon 
-	for i in range(1, 72):
+	for i in range(1, 73):
 		yy=smn_i[i][1]
 		xx=smn_i[i][2]
 		
@@ -250,7 +250,7 @@ reg_ictp_ii = clim_iii_x + clim_iii_y + clim_iii_z
 wrf_ncar = clim_iv_x + clim_iv_y + clim_iv_z
 wrf_ucan = clim_v_x + clim_v_y + clim_v_z
 inmet_smn = clim_vi_x + clim_vi_y + clim_vi_z
-era5 = clim_vii_x + clim_vi_y + clim_vii_z
+era5 = clim_vii_x + clim_vii_y + clim_vii_z
 
 list_hc = [4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 0, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0,
 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 1, 0, 0,
