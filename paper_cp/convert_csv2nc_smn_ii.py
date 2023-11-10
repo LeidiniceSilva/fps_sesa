@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from netCDF4 import Dataset
-from dict_smn_ii_stations import smn_ii
+from dict_smn_iii_stations import smn_iii
 
 var = 'tmin'
 
@@ -33,7 +33,7 @@ else:
 	
 # create date list
 dt = pd.date_range('1979-01-01','2021-12-31', freq='D').strftime('%Y-%m-%d').tolist()
-
+	
 for idx in range(0, 98):
 
 	print('Reading smn station:', idx+1, smn_ii[idx+1][0])
