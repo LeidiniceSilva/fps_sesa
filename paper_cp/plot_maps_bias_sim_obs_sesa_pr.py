@@ -256,7 +256,7 @@ def import_smn_ii():
 		values_v = values_v*86400
 			
 		# Reading smn 
-		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_ii/smn_nc/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
+		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_ii/smn_nc/pre/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.groupby('time.year').mean('time')
 		values_vi = np.nanmean(d_vi.values)
