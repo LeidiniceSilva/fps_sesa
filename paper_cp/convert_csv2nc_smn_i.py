@@ -13,10 +13,10 @@ from netCDF4 import Dataset
 from dict_smn_i_stations import smn_i
 
 # Reading smn station
-# ~ df = pd.read_csv(os.path.join('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/smn_i/', 'PP_SMN_MIN_2018-01-01_2021-12-31.csv'))
-# ~ df['Date'] = pd.to_datetime(df['Date'])
-# ~ df = df.set_index('Date').resample('D').sum()
-# ~ df.iloc[:,:].to_csv('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/smn_i/PP_SMN_D_2018-01-01_2021-12-31.csv')
+df = pd.read_csv(os.path.join('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/smn_i/', 'PP_SMN_MIN_2018-01-01_2021-12-31.csv'))
+df['Date'] = pd.to_datetime(df['Date'])
+df = df.set_index('Date').resample('D').sum()
+df.iloc[:,:].to_csv('/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/obs/smn_i/PP_SMN_D_2018-01-01_2021-12-31.csv')
 
 nc_var = 'pre'
 unit_var = 'mm'
