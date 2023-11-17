@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Nov 16, 2023"
-__description__ = "This script plot weather stations"
+__description__ = "This script plot weather stations dots"
 
 import os
 import numpy as np
@@ -32,7 +32,7 @@ for j in range(1, 73):
 	jx.append(smn_i[j][2])
 	jy.append(smn_i[j][1])
 		
-# Plot my map 
+# Plot figure
 fig = plt.figure()
 
 my_map = Basemap(projection='cyl', llcrnrlon=-90., llcrnrlat=-60., urcrnrlon=-30.,urcrnrlat=20., resolution='c')
