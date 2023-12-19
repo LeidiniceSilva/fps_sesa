@@ -18,14 +18,14 @@ from scipy.cluster.hierarchy import linkage, dendrogram
 
 type_cycle = 'diurnal_cycle'	
 path = '/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA'
+# ~ skip_list = [1,2,11,30,36,43,53]
 
-
+		
 def import_inmet():
 		
 	ix = []		  
 	iy = []
 	clim_i = []
-
 	# Select lat and lon 
 	for i in range(1, 100):
 		iy.append(inmet[i][2])
@@ -47,7 +47,6 @@ def import_smn_i():
 	ix = []		  
 	iy = []
 	clim_i = []
-
 	# Select lat and lon 
 	for i in range(1, 73):
 		iy.append(smn_i[i][1])
@@ -88,15 +87,15 @@ print()
 z = linkage(df, method='ward', metric='euclidean')
 
 # Agglomerative clustering
-Agg_hc = AgglomerativeClustering(n_clusters=5, affinity='euclidean', linkage='ward')
+Agg_hc = AgglomerativeClustering(n_clusters=4, affinity='euclidean', linkage='ward')
 y_hc = Agg_hc.fit_predict(df)
 print(y_hc)
 print(len(y_hc))
 
 # Plot figure   
 plt.figure(figsize=(30,10))
-dendrogram(z, leaf_rotation=90., leaf_font_size=10., color_threshold=3800)
-plt.title('Dendrogram of diurnal cycle', fontsize=20) 
+dendrogram(z, leaf_rotation=90., leaf_font_size=10., truncate_mode='level', color_threshold=3800)
+plt.title('Dendrogram of precipitation diurnal cycle', fontsize=20) 
 plt.xlabel('Weather stations (INMET+SMN)', fontsize=20) 
 plt.ylabel('Euclidean distances', fontsize=20) 
 

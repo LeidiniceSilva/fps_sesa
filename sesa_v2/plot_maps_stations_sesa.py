@@ -19,16 +19,12 @@ ix = []
 iy = []
 jx = []
 jy = []
-kx = []
-ky = []
 
 for i in range(1, 100):
-
 	ix.append(inmet[i][3])
 	iy.append(inmet[i][2])
 
 for j in range(1, 73):
-
 	jx.append(smn_i[j][2])
 	jy.append(smn_i[j][1])
 		
@@ -40,7 +36,6 @@ my_map.drawmeridians(np.arange(-90.,-20.,10.), labels=[0,0,0,1], linewidth=0.5, 
 my_map.drawparallels(np.arange(-60.,30.,10.), labels=[1,0,0,0], linewidth=0.5, color='black') 
 my_map.plot(ix, iy, 'o', color='blue', label='INMET', markersize=2)
 my_map.plot(jx, jy, 'o', color='gray', label='SMN', markersize=2)
-my_map.plot(kx, ky, 'o', color='gray', markersize=2)
 plt.legend(loc=1, fontsize=10)
 
 my_map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/shp_america_sul/america_sul', 'america_sul', drawbounds=True, color='black', linewidth=.5)
