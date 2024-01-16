@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Jun 16, 2023"
-__description__ = "This script plot maps of correlation"
+__description__ = "This script plot maps of kge function"
 
 import os
 import numpy as np
@@ -20,10 +20,42 @@ from mpl_toolkits.basemap import Basemap
 path = '/afs/ictp.it/home/m/mda_silv/Documents'
 
 
+def compute_kge(model, obs):
+
+	"""
+	The input arrays must have the same dimensions
+	Param model: Numpy array with model data
+	Param obs: Numpy array with obs data
+	Return: Kling-Gupta Efficiency
+	"""
+
+	p1 = np.corrcoef(obs, model)[0][1]
+	p2 = np.nanmean(obs)
+	p3 = np.nanmean(model)
+	p4 = np.nanstd(obs, ddof=0)
+	p5 = np.nanstd(model, ddof=0)
+	p6 = p3/p2
+	p7 = p5/p4
+	p8 = np.sqrt((p1 -1)**2 + (p6 -1)**2 + (p7 -1)**2)
+	kge = 1 - p8
+
+	return kge
+	
+
+def basemap():
+	
+	my_map = Basemap(projection='cyl', llcrnrlon=-70., llcrnrlat=-40., urcrnrlon=-45.,urcrnrlat=-15., resolution='c')
+	my_map.drawmeridians(np.arange(-70,-45,5), labels=[0,0,0,1], size=font_size, linewidth=0.5, color='black')
+	my_map.drawparallels(np.arange(-40,-15,5), labels=[1,0,0,0], size=font_size, linewidth=0.5, color='black')
+	my_map.readshapefile('{0}/github_projects/shp/shp_america_sul/america_sul'.format(path), 'america_sul', drawbounds=True, color='black', linewidth=.5)
+
+	return my_map
+	
+	
 def import_inmet():
 
 	iy, ix = [], []
-	corr_i, corr_ii, corr_iii, corr_iv, corr_v, corr_vi, corr_vii, corr_viii, corr_ix, corr_x = [], [], [], [], [], [], [], [], [], []
+	kge_i, kge_ii, kge_iii, kge_iv, kge_v, kge_vi, kge_vii, kge_viii, kge_ix, kge_x = [], [], [], [], [], [], [], [], [], []
 
 	# Select lat and lon 
 	for i in range(1, 100):
@@ -32,7 +64,7 @@ def import_inmet():
 		iy.append(inmet[i][2])
 		ix.append(inmet[i][3])
 		
-		print('Reading weather station:', i, inmet[i][0], inmet[i][1])		
+		print('Reading weather station:', i, inmet[i][0])		
 		# reading regcm usp 
 		d_i = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
@@ -86,34 +118,35 @@ def import_inmet():
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_vii = d_vii.groupby('time.month').mean('time')
 		values_vii = d_vii.values
-		
-		# calculate correlation regcm usp
-		corr_i.append(np.corrcoef(values_i, values_vi)[0][1])
-		corr_ii.append(np.corrcoef(values_i, values_vii)[0][1])
+		values_vii = values_vii
 
-		# calculate correlation regcm ictp 1
-		corr_iii.append(np.corrcoef(values_ii, values_vi)[0][1])
-		corr_iv.append(np.corrcoef(values_ii, values_vii)[0][1])
+		# calculate kge regcm usp
+		kge_i.append(compute_kge(values_i, values_vi))	
+		kge_ii.append(compute_kge(values_i, values_vii))
 
-		# calculate correlation regcm ictp 2
-		corr_v.append(np.corrcoef(values_iii, values_vi)[0][1])	
-		corr_vi.append(np.corrcoef(values_iii, values_vii)[0][1])
+		# calculate kge regcm ictp 1
+		kge_iii.append(compute_kge(values_ii, values_vi))	
+		kge_iv.append(compute_kge(values_ii, values_vii))
 
-		# calculate correlation wrf ncar
-		corr_vii.append(np.corrcoef(values_iv, values_vi)[0][1])
-		corr_viii.append(np.corrcoef(values_iv, values_vii)[0][1])
+		# calculate kge regcm ictp 2
+		kge_v.append(compute_kge(values_iii, values_vi))
+		kge_vi.append(compute_kge(values_iii, values_vii))
 
-		# calculate correlation wrf ucan
-		corr_ix.append(np.corrcoef(values_v, values_vi)[0][1])
-		corr_x.append(np.corrcoef(values_v, values_vii)[0][1])
+		# calculate kge wrf ncar
+		kge_vii.append(compute_kge(values_iv, values_vi))	
+		kge_viii.append(compute_kge(values_iv, values_vii))
 
-	return iy, ix, corr_i, corr_ii, corr_iii, corr_iv, corr_v, corr_vi, corr_vii, corr_viii, corr_ix, corr_x
+		# calculate kge wrf ucan
+		kge_ix.append(compute_kge(values_v, values_vi))
+		kge_x.append(compute_kge(values_v, values_vii))
+
+	return iy, ix, kge_i, kge_ii, kge_iii, kge_iv, kge_v, kge_vi, kge_vii, kge_viii, kge_ix, kge_x
 
 
 def import_smn_i():
 
 	iy, ix = [], []
-	corr_i, corr_ii, corr_iii, corr_iv, corr_v, corr_vi, corr_vii, corr_viii, corr_ix, corr_x = [], [], [], [], [], [], [], [], [], []
+	kge_i, kge_ii, kge_iii, kge_iv, kge_v, kge_vi, kge_vii, kge_viii, kge_ix, kge_x = [], [], [], [], [], [], [], [], [], []
 
 	# Select lat and lon 
 	for i in range(1, 72):
@@ -177,33 +210,33 @@ def import_smn_i():
 		d_vii = d_vii.groupby('time.month').mean('time')
 		values_vii = d_vii.values
 
-		# calculate correlation regcm usp
-		corr_i.append(np.corrcoef(values_i, values_vi)[0][1])
-		corr_ii.append(np.corrcoef(values_i, values_vii)[0][1])
+		# calculate kge regcm usp
+		kge_i.append(compute_kge(values_i, values_vi))	
+		kge_ii.append(compute_kge(values_i, values_vii))
 
-		# calculate correlation regcm ictp 1
-		corr_iii.append(np.corrcoef(values_ii, values_vi)[0][1])
-		corr_iv.append(np.corrcoef(values_ii, values_vii)[0][1])
+		# calculate kge regcm ictp 1
+		kge_iii.append(compute_kge(values_ii, values_vi))	
+		kge_iv.append(compute_kge(values_ii, values_vii))
 
-		# calculate correlation regcm ictp 2
-		corr_v.append(np.corrcoef(values_iii, values_vi)[0][1])	
-		corr_vi.append(np.corrcoef(values_iii, values_vii)[0][1])
+		# calculate kge regcm ictp 2
+		kge_v.append(compute_kge(values_iii, values_vi))
+		kge_vi.append(compute_kge(values_iii, values_vii))
 
-		# calculate correlation wrf ncar
-		corr_vii.append(np.corrcoef(values_iv, values_vi)[0][1])
-		corr_viii.append(np.corrcoef(values_iv, values_vii)[0][1])
+		# calculate kge wrf ncar
+		kge_vii.append(compute_kge(values_iv, values_vi))	
+		kge_viii.append(compute_kge(values_iv, values_vii))
 
-		# calculate correlation wrf ucan
-		corr_ix.append(np.corrcoef(values_v, values_vi)[0][1])
-		corr_x.append(np.corrcoef(values_v, values_vii)[0][1])
-			
-	return iy, ix, corr_i, corr_ii, corr_iii, corr_iv, corr_v, corr_vi, corr_vii, corr_viii, corr_ix, corr_x
+		# calculate kge wrf ucan
+		kge_ix.append(compute_kge(values_v, values_vi))
+		kge_x.append(compute_kge(values_v, values_vii))
+
+	return iy, ix, kge_i, kge_ii, kge_iii, kge_iv, kge_v, kge_vi, kge_vii, kge_viii, kge_ix, kge_x
 	
 
 def import_smn_ii():
 	
 	iy, ix = [], []
-	corr_i, corr_ii, corr_iii, corr_iv, corr_v, corr_vi, corr_vii, corr_viii, corr_ix, corr_x = [], [], [], [], [], [], [], [], [], []
+	kge_i, kge_ii, kge_iii, kge_iv, kge_v, kge_vi, kge_vii, kge_viii, kge_ix, kge_x = [], [], [], [], [], [], [], [], [], []
 
 	# Select lat and lon 
 	for i in range(1, 86):
@@ -254,10 +287,11 @@ def import_smn_ii():
 		values_v = values_v*86400
 			
 		# Reading smn 
-		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_ii/smn_nc/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
+		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_ii/smn_nc/pre/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.groupby('time.month').mean('time')
 		values_vi = d_vi.values
+		values_vi = values_vi
 		
 		# reading era5 
 		d_vii = xr.open_dataset('{0}/FPS_SESA/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
@@ -266,71 +300,61 @@ def import_smn_ii():
 		d_vii = d_vii.groupby('time.month').mean('time')
 		values_vii = d_vii.values
 
-		# calculate correlation regcm usp
-		corr_i.append(np.corrcoef(values_i, values_vi)[0][1])
-		corr_ii.append(np.corrcoef(values_i, values_vii)[0][1])
+		# calculate kge regcm usp
+		kge_i.append(compute_kge(values_i, values_vi))	
+		kge_ii.append(compute_kge(values_i, values_vii))
 
-		# calculate correlation regcm ictp 1
-		corr_iii.append(np.corrcoef(values_ii, values_vi)[0][1])
-		corr_iv.append(np.corrcoef(values_ii, values_vii)[0][1])
+		# calculate kge regcm ictp 1
+		kge_iii.append(compute_kge(values_ii, values_vi))	
+		kge_iv.append(compute_kge(values_ii, values_vii))
 
-		# calculate correlation regcm ictp 2
-		corr_v.append(np.corrcoef(values_iii, values_vi)[0][1])	
-		corr_vi.append(np.corrcoef(values_iii, values_vii)[0][1])
+		# calculate kge regcm ictp 2
+		kge_v.append(compute_kge(values_iii, values_vi))
+		kge_vi.append(compute_kge(values_iii, values_vii))
 
-		# calculate correlation wrf ncar
-		corr_vii.append(np.corrcoef(values_iv, values_vi)[0][1])
-		corr_viii.append(np.corrcoef(values_iv, values_vii)[0][1])
+		# calculate kge wrf ncar
+		kge_vii.append(compute_kge(values_iv, values_vi))	
+		kge_viii.append(compute_kge(values_iv, values_vii))
 
-		# calculate correlation wrf ucan
-		corr_ix.append(np.corrcoef(values_v, values_vi)[0][1])
-		corr_x.append(np.corrcoef(values_v, values_vii)[0][1])
-			
-	return iy, ix, corr_i, corr_ii, corr_iii, corr_iv, corr_v, corr_vi, corr_vii, corr_viii, corr_ix, corr_x
+		# calculate kge wrf ucan
+		kge_ix.append(compute_kge(values_v, values_vi))
+		kge_x.append(compute_kge(values_v, values_vii))
 
-
-def basemap():
+	return iy, ix, kge_i, kge_ii, kge_iii, kge_iv, kge_v, kge_vi, kge_vii, kge_viii, kge_ix, kge_x
 	
-	my_map = Basemap(projection='cyl', llcrnrlon=-70., llcrnrlat=-40., urcrnrlon=-45.,urcrnrlat=-15., resolution='c')
-	my_map.drawmeridians(np.arange(-70,-45,5), labels=[0,0,0,1], size=font_size, linewidth=0.5, color='black')
-	my_map.drawparallels(np.arange(-40,-15,5), labels=[1,0,0,0], size=font_size, linewidth=0.5, color='black')
-	my_map.readshapefile('{0}/github_projects/shp/shp_america_sul/america_sul'.format(path), 'america_sul', drawbounds=True, color='black', linewidth=.5)
-
-	return my_map
 	
-
 var = 'pr'
 
 # Import dataset
-lat_x, lon_x, corr_i_x, corr_ii_x, corr_iii_x, corr_iv_x, corr_v_x, corr_vi_x, corr_vii_x, corr_viii_x, corr_ix_x, corr_x_x = import_inmet()			
-lat_y, lon_y, corr_i_y, corr_ii_y, corr_iii_y, corr_iv_y, corr_v_y, corr_vi_y, corr_vii_y, corr_viii_y, corr_ix_y, corr_x_y = import_smn_i()			
-lat_z, lon_z, corr_i_z, corr_ii_z, corr_iii_z, corr_iv_z, corr_v_z, corr_vi_z, corr_vii_z, corr_viii_z, corr_ix_z, corr_x_z = import_smn_ii()			
+lat_x, lon_x, kge_i_x, kge_ii_x, kge_iii_x, kge_iv_x, kge_v_x, kge_vi_x, kge_vii_x, kge_viii_x, kge_ix_x, kge_x_x = import_inmet()			
+lat_y, lon_y, kge_i_y, kge_ii_y, kge_iii_y, kge_iv_y, kge_v_y, kge_vi_y, kge_vii_y, kge_viii_y, kge_ix_y, kge_x_y = import_smn_i()			
+lat_z, lon_z, kge_i_z, kge_ii_z, kge_iii_z, kge_iv_z, kge_v_z, kge_vi_z, kge_vii_z, kge_viii_z, kge_ix_z, kge_x_z = import_smn_ii()			
 
 lat_yy = lat_x + lat_y + lat_z
 lon_xx = lon_x + lon_y + lon_z
 
-reg_usp_inmet_smn = corr_i_x + corr_i_y + corr_i_z
-reg_usp_reanalise = corr_ii_x + corr_ii_y + corr_ii_z
+reg_usp_inmet_smn = kge_i_x + kge_i_y + kge_i_z
+reg_usp_reanalise = kge_ii_x + kge_ii_y + kge_ii_z
 
-reg_ictp_i_inmet_smn = corr_iii_x + corr_iii_y + corr_iii_z
-reg_ictp_i_reanalise = corr_iv_x + corr_iv_y + corr_iv_z
+reg_ictp_i_inmet_smn = kge_iii_x + kge_iii_y + kge_iii_z
+reg_ictp_i_reanalise = kge_iv_x + kge_iv_y + kge_iv_z
 
-reg_ictp_ii_inmet_smn = corr_v_x + corr_v_y + corr_v_z
-reg_ictp_ii_reanalise = corr_vi_x + corr_vi_y + corr_vi_z
+reg_ictp_ii_inmet_smn = kge_v_x + kge_v_y + kge_v_z
+reg_ictp_ii_reanalise = kge_vi_x + kge_vi_y + kge_vi_z
 
-wrf_ncar_inmet_smn = corr_vii_x + corr_vii_y + corr_vii_z
-wrf_ncar_reanalise = corr_viii_x + corr_viii_y + corr_viii_z
+wrf_ncar_inmet_smn = kge_vii_x + kge_vii_y + kge_vii_z
+wrf_ncar_reanalise = kge_viii_x + kge_viii_y + kge_viii_z
 
-wrf_ucan_inmet_smn = corr_ix_x + corr_ix_y + corr_ix_z
-wrf_ucan_reanalise = corr_x_x + corr_x_y + corr_x_z
+wrf_ucan_inmet_smn = kge_ix_x + kge_ix_y + kge_ix_z
+wrf_ucan_reanalise = kge_x_x + kge_x_y + kge_x_z
 
 # Plot figure   
 fig = plt.figure(figsize=(11, 4.5))
 
-color='PRGn'
+color = 'PRGn'
 v_min = -0.9
 v_max = 0.9
-legend = 'Correlation of precipitation'
+legend = 'KGE of precipitation'
 font_size = 7
 	
 ax = fig.add_subplot(2, 5, 1)
@@ -395,7 +419,7 @@ plt.xlabel(u'Longitude', labelpad=15, fontsize=font_size, fontweight='bold')
 
 # Path out to save figure
 path_out = '{0}/FPS_SESA/figs/paper_cp'.format(path)
-name_out = 'pyplt_maps_corr_{0}_sesa.png'.format(var)
+name_out = 'pyplt_maps_kge_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()

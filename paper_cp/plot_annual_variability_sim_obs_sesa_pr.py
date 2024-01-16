@@ -8,6 +8,8 @@ __description__ = "This script plot annual cycle"
 import os
 import numpy as np
 import xarray as xr
+import pandas as pd
+import datetime as dt
 import matplotlib.pyplot as plt
 
 from dict_inmet_stations import inmet
@@ -37,7 +39,6 @@ def import_inmet():
 		d_i = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_i = d_i.groupby('time.month').mean('time')
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
@@ -45,7 +46,6 @@ def import_inmet():
 		d_ii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_ii = d_ii.groupby('time.month').mean('time')
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
@@ -53,7 +53,6 @@ def import_inmet():
 		d_iii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iii = d_iii.groupby('time.month').mean('time')
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
@@ -61,7 +60,6 @@ def import_inmet():
 		d_iv = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iv = d_iv.groupby('time.month').mean('time')
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
@@ -69,14 +67,13 @@ def import_inmet():
 		d_v = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_v = d_v.groupby('time.month').mean('time')
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 		
 		# Reading inmet 
 		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/inmet/inmet_nc_sesa/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.groupby('time.month').mean('time')
+		d_vi = d_vi.resample(time='1M').mean()
 		d_vi = d_vi.values
 		mean_vi.append(d_vi*24)
 		
@@ -84,7 +81,6 @@ def import_inmet():
 		d_vii = xr.open_dataset('{0}/FPS_SESA/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_vii = d_vii.groupby('time.month').mean('time')
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				
@@ -111,7 +107,6 @@ def import_smn_i():
 		d_i = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_i = d_i.groupby('time.month').mean('time')
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
@@ -119,7 +114,6 @@ def import_smn_i():
 		d_ii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_ii = d_ii.groupby('time.month').mean('time')
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
@@ -127,7 +121,6 @@ def import_smn_i():
 		d_iii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iii = d_iii.groupby('time.month').mean('time')
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
@@ -135,7 +128,6 @@ def import_smn_i():
 		d_iv = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iv = d_iv.groupby('time.month').mean('time')
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
@@ -143,14 +135,13 @@ def import_smn_i():
 		d_v = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_v = d_v.groupby('time.month').mean('time')
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 						
 		# Reading smn 
 		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.groupby('time.month').mean('time')
+		d_vi = d_vi.resample(time='1M').mean()
 		d_vi = d_vi.values
 		mean_vi.append(d_vi*24)
 		
@@ -158,7 +149,6 @@ def import_smn_i():
 		d_vii = xr.open_dataset('{0}/FPS_SESA/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_vii = d_vii.groupby('time.month').mean('time')
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				
@@ -185,7 +175,6 @@ def import_smn_ii():
 		d_i = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_i = d_i.groupby('time.month').mean('time')
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
 			
@@ -193,7 +182,6 @@ def import_smn_ii():
 		d_ii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_ii = d_ii.groupby('time.month').mean('time')
 		d_ii = d_ii.values
 		mean_ii.append(d_ii*86400)
 		
@@ -201,7 +189,6 @@ def import_smn_ii():
 		d_iii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iii = d_iii.groupby('time.month').mean('time')
 		d_iii = d_iii.values
 		mean_iii.append(d_iii*86400)
 						
@@ -209,7 +196,6 @@ def import_smn_ii():
 		d_iv = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iv = d_iv.groupby('time.month').mean('time')
 		d_iv = d_iv.values
 		mean_iv.append(d_iv*86400)
 			
@@ -217,14 +203,13 @@ def import_smn_ii():
 		d_v = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_v = d_v.groupby('time.month').mean('time')
 		d_v = d_v.values
 		mean_v.append(d_v*86400)
 						
 		# Reading smn 
 		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_ii/smn_nc/pre/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.groupby('time.month').mean('time')
+		d_vi = d_vi.resample(time='1M').mean()
 		d_vi = d_vi.values
 		mean_vi.append(d_vi)
 		
@@ -232,13 +217,12 @@ def import_smn_ii():
 		d_vii = xr.open_dataset('{0}/FPS_SESA/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_vii = d_vii.groupby('time.month').mean('time')
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 	
-	
+		
 var = 'pr'
 
 # Import dataset
@@ -264,7 +248,7 @@ list_hc = [4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 0, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0,
 1, 3, 3, 1, 3, 0, 2, 1, 3, 3, 2, 2, 2, 2, 2, 2, 2, 0, 1, 2, 0, 2, 0, 1, 1, 2,
 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 3, 0, 1, 1, 2, 1, 2, 0, 2, 2, 2, 1, 2,
 2, 2, 0, 4, 3, 4, 4, 3, 4, 4, 0, 4, 0, 4, 4, 4, 3, 4, 4, 1, 2, 2, 0, 1, 1, 0]
- 
+
 print(len(reg_usp))
 print(len(reg_ictp_i))
 print(len(reg_ictp_ii))
@@ -389,100 +373,145 @@ inmet_smn_c   = np.nanmean(inmet_smn, axis=0)
 era5_c        = np.nanmean(era5, axis=0)
 
 # Plot figure
-fig = plt.figure(figsize=(10, 8))
-time = np.arange(0.5, 12 + 0.5)
+fig = plt.figure(figsize=(12, 8))
 font_size = 8
 
+dt = pd.date_range(start="20180601", end="20210531", freq="M")
+
 ax = fig.add_subplot(3, 2, 1)
-plt.plot(time, inmet_smn_c_i,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_i,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_i,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue', label = 'Reg4')
-plt.plot(time, reg_ictp_i_c_i,  linewidth=1.5, linestyle='--', markersize=3, marker='+', markerfacecolor='white', color='gray', label = 'Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_i, linewidth=1.5, linestyle='--', markersize=3, marker='d', markerfacecolor='white', color='brown', label = 'Reg5-UW')
-plt.plot(time, wrf_ncar_c_i,    linewidth=1.5, linestyle='--', markersize=3, marker='x', markerfacecolor='white', color='green', label = 'WRF-NCAR')
-plt.plot(time, wrf_ucan_c_i,    linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='orange', label = 'WRF-UCAN')
+reg_usp_c_i_dt     = pd.Series(data=reg_usp_c_i, index=dt)
+reg_ictp_i_c_i_dt  = pd.Series(data=reg_ictp_i_c_i, index=dt)
+reg_ictp_ii_c_i_dt = pd.Series(data=reg_ictp_i_c_i, index=dt)
+wrf_ncar_c_i_dt    = pd.Series(data=wrf_ncar_c_i, index=dt)
+wrf_ucan_c_i_dt    = pd.Series(data=wrf_ucan_c_i, index=dt)
+inmet_smn_c_i_dt   = pd.Series(data=inmet_smn_c_i, index=dt)
+era5_c_i_dt        = pd.Series(data=era5_c_i, index=dt)
+
+plt.plot(inmet_smn_c_i_dt,   linewidth=1, color='black', label = 'INMET+SMN')
+plt.plot(era5_c_i_dt,        linewidth=1, color='red', label = 'ERA5')
+plt.plot(reg_usp_c_i_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_i_c_i_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
+plt.plot(reg_ictp_ii_c_i_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
+plt.plot(wrf_ncar_c_i_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
+plt.plot(wrf_ucan_c_i_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 10)
-plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
-plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
-plt.legend(loc=9, ncol=2, fontsize=font_size, frameon=False)
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
+plt.legend(loc=9, ncol=4, fontsize=7, frameon=False)
 
 ax = fig.add_subplot(3, 2, 2)
-plt.plot(time, inmet_smn_c_ii,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_ii,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_ii,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue', label = 'Reg4')
-plt.plot(time, reg_ictp_i_c_ii,  linewidth=1.5, linestyle='--', markersize=3, marker='+', markerfacecolor='white', color='gray', label = 'Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_ii, linewidth=1.5, linestyle='--', markersize=3, marker='d', markerfacecolor='white', color='brown', label = 'Reg5-UW')
-plt.plot(time, wrf_ncar_c_ii,    linewidth=1.5, linestyle='--', markersize=3, marker='x', markerfacecolor='white', color='green', label = 'WRF-NCAR')
-plt.plot(time, wrf_ucan_c_ii,    linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='orange', label = 'WRF-UCAN')
+reg_usp_c_ii_dt     = pd.Series(data=reg_usp_c_ii, index=dt)
+reg_ictp_i_c_ii_dt  = pd.Series(data=reg_ictp_i_c_ii, index=dt)
+reg_ictp_ii_c_ii_dt = pd.Series(data=reg_ictp_ii_c_ii, index=dt)
+wrf_ncar_c_ii_dt    = pd.Series(data=wrf_ncar_c_ii, index=dt)
+wrf_ucan_c_ii_dt    = pd.Series(data=wrf_ucan_c_ii, index=dt)
+inmet_smn_c_ii_dt   = pd.Series(data=inmet_smn_c_ii, index=dt)
+era5_c_ii_dt        = pd.Series(data=era5_c_ii, index=dt)
+
+plt.plot(inmet_smn_c_ii_dt,   linewidth=1, color='black', label = 'INMET+SMN')
+plt.plot(era5_c_ii_dt,        linewidth=1, color='red', label = 'ERA5')
+plt.plot(reg_usp_c_ii_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_i_c_ii_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
+plt.plot(reg_ictp_ii_c_ii_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
+plt.plot(wrf_ncar_c_ii_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
+plt.plot(wrf_ucan_c_ii_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
 plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 10)
-plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
-plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
 
 ax = fig.add_subplot(3, 2, 3)
-plt.plot(time, inmet_smn_c_iii,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_iii,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_iii,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue', label = 'Reg4')
-plt.plot(time, reg_ictp_i_c_iii,  linewidth=1.5, linestyle='--', markersize=3, marker='+', markerfacecolor='white', color='gray', label = 'Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_iii, linewidth=1.5, linestyle='--', markersize=3, marker='d', markerfacecolor='white', color='brown', label = 'Reg5-UW')
-plt.plot(time, wrf_ncar_c_iii,    linewidth=1.5, linestyle='--', markersize=3, marker='x', markerfacecolor='white', color='green', label = 'WRF-NCAR')
-plt.plot(time, wrf_ucan_c_iii,    linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='orange', label = 'WRF-UCAN')
+reg_usp_c_iii_dt     = pd.Series(data=reg_usp_c_iii, index=dt)
+reg_ictp_i_c_iii_dt  = pd.Series(data=reg_ictp_i_c_iii, index=dt)
+reg_ictp_ii_c_iii_dt = pd.Series(data=reg_ictp_ii_c_iii, index=dt)
+wrf_ncar_c_iii_dt    = pd.Series(data=wrf_ncar_c_iii, index=dt)
+wrf_ucan_c_iii_dt    = pd.Series(data=wrf_ucan_c_iii, index=dt)
+inmet_smn_c_iii_dt   = pd.Series(data=inmet_smn_c_iii, index=dt)
+era5_c_iii_dt        = pd.Series(data=era5_c_iii, index=dt)
+
+plt.plot(inmet_smn_c_iii_dt,   linewidth=1, color='black', label = 'INMET+SMN')
+plt.plot(era5_c_iii_dt,        linewidth=1, color='red', label = 'ERA5')
+plt.plot(reg_usp_c_iii_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_i_c_iii_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
+plt.plot(reg_ictp_ii_c_iii_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
+plt.plot(wrf_ncar_c_iii_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
+plt.plot(wrf_ucan_c_iii_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
 plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 10)
-plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
-plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
 
 ax = fig.add_subplot(3, 2, 4)
-plt.plot(time, inmet_smn_c_iv,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_iv,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_iv,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue', label = 'Reg4')
-plt.plot(time, reg_ictp_i_c_iv,  linewidth=1.5, linestyle='--', markersize=3, marker='+', markerfacecolor='white', color='gray', label = 'Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_iv, linewidth=1.5, linestyle='--', markersize=3, marker='d', markerfacecolor='white', color='brown', label = 'Reg5-UW')
-plt.plot(time, wrf_ncar_c_iv,    linewidth=1.5, linestyle='--', markersize=3, marker='x', markerfacecolor='white', color='green', label = 'WRF-NCAR')
-plt.plot(time, wrf_ucan_c_iv,    linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='orange', label = 'WRF-UCAN')
+reg_usp_c_iv_dt     = pd.Series(data=reg_usp_c_iv, index=dt)
+reg_ictp_i_c_iv_dt  = pd.Series(data=reg_ictp_i_c_iv, index=dt)
+reg_ictp_ii_c_iv_dt = pd.Series(data=reg_ictp_ii_c_iv, index=dt)
+wrf_ncar_c_iv_dt    = pd.Series(data=wrf_ncar_c_iv, index=dt)
+wrf_ucan_c_iv_dt    = pd.Series(data=wrf_ucan_c_iv, index=dt)
+inmet_smn_c_iv_dt   = pd.Series(data=inmet_smn_c_iv, index=dt)
+era5_c_iv_dt        = pd.Series(data=era5_c_iv, index=dt)
+
+plt.plot(inmet_smn_c_iv_dt,   linewidth=1, color='black', label = 'INMET+SMN')
+plt.plot(era5_c_iv_dt,        linewidth=1, color='red', label = 'ERA5')
+plt.plot(reg_usp_c_iv_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_i_c_iv_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
+plt.plot(reg_ictp_ii_c_iv_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
+plt.plot(wrf_ncar_c_iv_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
+plt.plot(wrf_ucan_c_iv_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
 plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 10)
-plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
-plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
 
 ax = fig.add_subplot(3, 2, 5)
-plt.plot(time, inmet_smn_c_v,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_v,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_v,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue', label = 'Reg4')
-plt.plot(time, reg_ictp_i_c_v,  linewidth=1.5, linestyle='--', markersize=3, marker='+', markerfacecolor='white', color='gray', label = 'Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_v, linewidth=1.5, linestyle='--', markersize=3, marker='d', markerfacecolor='white', color='brown', label = 'Reg5-UW')
-plt.plot(time, wrf_ncar_c_v,    linewidth=1.5, linestyle='--', markersize=3, marker='x', markerfacecolor='white', color='green', label = 'WRF-NCAR')
-plt.plot(time, wrf_ucan_c_v,    linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='orange', label = 'WRF-UCAN')
+reg_usp_c_v_dt     = pd.Series(data=reg_usp_c_v, index=dt)
+reg_ictp_i_c_v_dt  = pd.Series(data=reg_ictp_i_c_v, index=dt)
+reg_ictp_ii_c_v_dt = pd.Series(data=reg_ictp_ii_c_v, index=dt)
+wrf_ncar_c_v_dt    = pd.Series(data=wrf_ncar_c_v, index=dt)
+wrf_ucan_c_v_dt    = pd.Series(data=wrf_ucan_c_v, index=dt)
+inmet_smn_c_v_dt   = pd.Series(data=inmet_smn_c_v, index=dt)
+era5_c_v_dt        = pd.Series(data=era5_c_v, index=dt)
+
+plt.plot(inmet_smn_c_v_dt,   linewidth=1, color='black', label = 'INMET+SMN')
+plt.plot(era5_c_v_dt,        linewidth=1, color='red', label = 'ERA5')
+plt.plot(reg_usp_c_v_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_i_c_v_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
+plt.plot(reg_ictp_ii_c_v_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
+plt.plot(wrf_ncar_c_v_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
+plt.plot(wrf_ucan_c_v_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
 plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
-plt.xlabel('Months', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 10)
-plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
-plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
+plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.xticks(fontsize=7)
 
 ax = fig.add_subplot(3, 2, 6)
-plt.plot(time, inmet_smn_c,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue', label = 'Reg4')
-plt.plot(time, reg_ictp_i_c,  linewidth=1.5, linestyle='--', markersize=3, marker='+', markerfacecolor='white', color='gray', label = 'Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c, linewidth=1.5, linestyle='--', markersize=3, marker='d', markerfacecolor='white', color='brown', label = 'Reg5-UW')
-plt.plot(time, wrf_ncar_c,    linewidth=1.5, linestyle='--', markersize=3, marker='x', markerfacecolor='white', color='green', label = 'WRF-NCAR')
-plt.plot(time, wrf_ucan_c,    linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='orange', label = 'WRF-UCAN')
+reg_usp_c_dt     = pd.Series(data=reg_usp_c, index=dt)
+reg_ictp_i_c_dt  = pd.Series(data=reg_ictp_i_c, index=dt)
+reg_ictp_ii_c_dt = pd.Series(data=reg_ictp_ii_c, index=dt)
+wrf_ncar_c_dt    = pd.Series(data=wrf_ncar_c, index=dt)
+wrf_ucan_c_dt    = pd.Series(data=wrf_ucan_c, index=dt)
+inmet_smn_c_dt   = pd.Series(data=inmet_smn_c, index=dt)
+era5_c_dt        = pd.Series(data=era5_c, index=dt)
+
+plt.plot(inmet_smn_c_dt,   linewidth=1, color='black', label = 'INMET+SMN')
+plt.plot(era5_c_dt,        linewidth=1, color='red', label = 'ERA5')
+plt.plot(reg_usp_c_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_i_c_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
+plt.plot(reg_ictp_ii_c_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
+plt.plot(wrf_ncar_c_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
+plt.plot(wrf_ucan_c_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
 plt.title('(f) All clusters', loc='left', fontsize=font_size, fontweight='bold')
-plt.xlabel('Months', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 10)
-plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
-plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
+plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.xticks(fontsize=7)
 
 # Path out to save figure
 path_out = '{0}/FPS_SESA/figs/paper_cp'.format(path)
-name_out = 'pyplt_annual_cycle_{0}_sesa.png'.format(var)
+name_out = 'pyplt_annual_variability_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()

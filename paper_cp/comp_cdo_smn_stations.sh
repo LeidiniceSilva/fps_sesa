@@ -2,8 +2,8 @@
 
 #__author__      = 'Leidinice Silva'
 #__email__       = 'leidinicesilva@gmail.com'
-#__date__        = 'Nov 13, 2023'
-#__description__ = 'Compute mean temperature'
+#__date__        = 'Jun 16, 2023'
+#__description__ = 'Select only this stations'
 
 echo
 echo "--------------- THE INIT ----------------"

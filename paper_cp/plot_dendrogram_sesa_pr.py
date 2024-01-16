@@ -77,7 +77,7 @@ def import_smn_ii():
 		
 		print('Reading weather station:', i, smn_ii[i][0])
 		# Reading smn 
-		d_i = xr.open_dataset('{0}/database/obs/smn_ii/smn_nc/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
+		d_i = xr.open_dataset('{0}/database/obs/smn_ii/smn_nc/pre/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
 		d_i = d_i.pre.sel(time=slice('2018-01-01','2021-12-31'))
 		d_i = d_i.groupby('time.month').mean('time')
 		values_i = d_i.values
@@ -98,8 +98,10 @@ lat_yy = lat_x + lat_y + lat_z
 
 clim_tot = clim_i_x + clim_i_y + clim_i_z
 df = pd.DataFrame(clim_tot)
-# ~ df = df.dropna(axis=0)
+dp = df.dropna(axis=0)
 
+print(dp)
+print(len(dp))
 print(df)
 print()
 
@@ -125,7 +127,6 @@ dendrogram(z, leaf_rotation=90., leaf_font_size=10., color_threshold=3800)
 plt.title('Dendrogram', fontsize=20) 
 plt.xlabel('Weather stations (INMET+SMN)', fontsize=20) 
 plt.ylabel('Euclidean distances', fontsize=20) 
-# ~ plt.yticks(np.arange(0, 10, 1), fontsize=20)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
