@@ -526,7 +526,7 @@ x_freq_era5_c_vi,        freq_era5_c_vi        = np.unique(filter_era5_c_vi,    
 
 # Plot figure
 fig = plt.figure(figsize=(10, 10))
-font_size = 8
+font_size = 10
 
 ax = fig.add_subplot(3, 2, 1)  
 plt.plot(x_freq_inmet_smn_c_i,   freq_inmet_smn_c_i,   marker='.', markersize=4, mfc='black',  mec='black',  linestyle='None', label='INMET+SMN')
@@ -538,7 +538,7 @@ plt.plot(x_freq_wrf_ncar_c_i,    freq_wrf_ncar_c_i,    marker='.', markersize=4,
 plt.plot(x_freq_wrf_ucan_c_i,    freq_wrf_ucan_c_i,    marker='.', markersize=4, mfc='orange', mec='orange', linestyle='None', label='WRF-UCAN')
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
 plt.yscale('log')
-plt.legend(loc=1, nol=2, frameon=False)
+plt.legend(loc=1, ncol=1, frameon=False)
 
 ax = fig.add_subplot(3, 2, 2)
 plt.plot(x_freq_inmet_smn_c_ii,   freq_inmet_smn_c_ii,   marker='.', markersize=4, mfc='black',  mec='black',  linestyle='None', label='INMET+SMN')
