@@ -33,7 +33,7 @@ for j in range(1, 73):
 	jx.append(smn_i[j][2])
 	jy.append(smn_i[j][1])
 	
-for k in range(1, 86):
+for k in range(1, 128):
 
 	kx.append(smn_ii[k][2])
 	ky.append(smn_ii[k][1])
@@ -44,14 +44,12 @@ fig = plt.figure()
 my_map = Basemap(projection='cyl', llcrnrlon=-90., llcrnrlat=-60., urcrnrlon=-30.,urcrnrlat=20., resolution='c')
 my_map.drawmeridians(np.arange(-90.,-20.,10.), labels=[0,0,0,1], linewidth=0.5, color='black')
 my_map.drawparallels(np.arange(-60.,30.,10.), labels=[1,0,0,0], linewidth=0.5, color='black') 
+my_map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/shp_america_sul/america_sul', 'america_sul', drawbounds=True, color='black', linewidth=1.)
 my_map.plot(ix, iy, 'o', color='blue', label='INMET', markersize=2)
 my_map.plot(jx, jy, 'o', color='gray', label='SMN', markersize=2)
 my_map.plot(kx, ky, 'o', color='gray', markersize=2)
+
 plt.legend(loc=1, fontsize=10)
-
-path = '/afs/ictp.it/home/m/mda_silv/Documents/shp'
-my_map.readshapefile('{0}/lim_pais'.format(path), 'world', drawbounds=True, color='black', linewidth=0.5)
-
 plt.xlabel(u'Longitude', labelpad=20, fontsize=10, fontweight='bold')
 plt.ylabel(u'Latitude', labelpad=30, fontsize=10, fontweight='bold')
 plt.text(-56, -44, u'CSAM', fontsize=10, fontweight='bold')
