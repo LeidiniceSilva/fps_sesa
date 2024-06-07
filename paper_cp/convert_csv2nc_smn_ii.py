@@ -12,9 +12,14 @@ import pandas as pd
 from netCDF4 import Dataset
 from dict_smn_iii_stations import smn_iii
 
-var = 'tmin'
+var = 'pre'
 
-if var == 'tmax':
+if var == 'pre':
+	nc_var = 'pre'
+	unit_var = 'pre'
+	name_var = 'Daily total of precipitation'
+	std_var = 'precipitation'
+elif var == 'tmax':
 	nc_var = 'tmax'
 	unit_var = 'C'
 	name_var = 'Daily mean of maximum temperature'
@@ -24,7 +29,7 @@ else:
 	unit_var = 'C'
 	name_var = 'Daily mean of minimum temperature'
 	std_var = 'minimum temperature'
-	
+
 # create date list
 dt = pd.date_range('1979-01-01','2021-12-31', freq='D').strftime('%Y-%m-%d').tolist()
 
@@ -61,18 +66,18 @@ for idx in list_st:
 	
 	ds.createDimension('time', None)
 
-	time 				= ds.createVariable('time', float, ('time'))
-	time.axis 			= 'L'
-	time.calendar 		= 'standard'
-	time.units			= 'days since {}'.format(data_dates[0])
-	time[:]				= range(len(data_dates))
+	time 		       = ds.createVariable('time', float, ('time'))
+	time.axis 	       = 'L'
+	time.calendar 	       = 'standard'
+	time.units	       = 'days since {}'.format(data_dates[0])
+	time[:]		       = range(len(data_dates))
 
-	var 				= ds.createVariable(nc_var,  float, ('time'))
-	var.units 			= unit_var
-	var.long_name 		= name_var
-	var.standard_name 	= std_var
-	var.missing_value 	= -999
-	var[:] 				= data_values[:]
+	var 		       = ds.createVariable(nc_var,  float, ('time'))
+	var.units 	       = unit_var
+	var.long_name 	       = name_var
+	var.standard_name      = std_var
+	var.missing_value      = -999
+	var[:] 		       = data_values[:]
 
 	ds.close()
 
