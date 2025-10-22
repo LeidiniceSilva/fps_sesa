@@ -2,12 +2,14 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Jun 16, 2023"
+__date__        = "Sept 22, 2025"
 __description__ = "This script plot study area"
 
 import os
 import sys
 import numpy as np
+import cartopy.crs as ccrs
+import cartopy.feature as cfeat
 import matplotlib.pyplot as plt
 
 from matplotlib import gridspec
@@ -16,9 +18,8 @@ from netCDF4 import Dataset as nc
 from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
-from matplotlib.patches import Polygon
-from matplotlib.patches import PathPatch
-from mpl_toolkits.basemap import Basemap, cm
+from cartopy import config
+from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 # Select lat and lon 
 ix = []		  
@@ -44,7 +45,7 @@ for k in range(1, 86):
 	ky.append(smn_ii[k][1])
 	
 # Specify directories 
-dirnc = '/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/database/rcm/reg_usp'
+dirnc = '/home/mda_silv/users/FPS_SESA/database/rcm/reg_usp'
 domname = 'orog_CSAM-4i_ECMWF-ERA5'
 
 # RegCM file
@@ -59,58 +60,51 @@ topo = RCMf.variables['topo'][:,:]
 lonc = RCMf.longitude_of_projection_origin
 latc = RCMf.latitude_of_projection_origin
 RCMf.close()
+	
+# Creating mask of the border
+number = 29
+ny,nx = topo.shape
+border_mask = np.full((ny, nx), np.nan)
+border_mask[:number, :] = 1
+border_mask[-number:, :] = 1
+border_mask[:, :number] = 1
+border_mask[:, -number:] = 1
 
-lat_start  = -35
-lat_end    = -17
-lon_start  = -75
-lon_end    = -48
+lon_bounds = [-75, -45]
+lat_bounds = [-38, -15]
 
 # Plot study area
-fig = plt.figure(figsize=(10, 8)) 
-gs = gridspec.GridSpec(1, 2, width_ratios=[1.5, 3]) 
+fig, ax = plt.subplots(subplot_kw={'projection': ccrs.PlateCarree()})
 font_size = 10
 
-ax = plt.subplot(gs[0])
-my_map = Basemap(ax=ax, llcrnrlon=-82., llcrnrlat=-56, urcrnrlon=-34., urcrnrlat=12, resolution='c', area_thresh=10000., projection='cyl', lon_0=lonc, lat_0=latc, lat_ts=0)	
-my_map.drawparallels(np.arange(-56., 12,  10.), labels=[1,0,0,0], fontsize=font_size, linewidth=1., color='black')
-my_map.drawmeridians(np.arange(-82, -34, 10.), labels=[0,0,0,1], fontsize=font_size, linewidth=1., color='black')                  
-my_map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/shp_america_sul/america_sul', 'america_sul', drawbounds=True, color='black', linewidth=1.)
+ct=ax.contourf(lon, lat, topo, np.arange(0, 3030, 30), cmap='terrain', extend='max')
+ax.plot(ix, iy, 'o', color='white', label='INMET', markersize=5, markeredgecolor='black', markeredgewidth=0.5)
+ax.plot(jx, jy, 'o', color='gray', label='SMN', markersize=5, markeredgecolor='black', markeredgewidth=0.5)	
+ax.plot(kx, ky, 'o', color='gray', markersize=5, markeredgecolor='black', markeredgewidth=0.5)	
+ax.text(-61.15, -16.25, u'SESA', color='black', fontsize=font_size, fontweight='bold')
+ax.text(-74, -17.75, u'\u25B2 \nN', color='black', fontsize=font_size, fontweight='bold')
 
-my_map.plot(ix, iy, 'o', color='blue', label='INMET', markersize=2)
-my_map.plot(jx, jy, 'o', color='gray', label='SMN', markersize=2)	
-my_map.plot(kx, ky, 'o', color='gray', markersize=2)	
-plt.title('(a)', loc='left', fontsize=10, fontweight='bold')
-plt.xlabel(u'Longitude', labelpad=20, fontsize=font_size, fontweight='bold')
-plt.ylabel(u'Latitude', labelpad=30, fontsize=font_size, fontweight='bold')
-plt.text(-40, 6, u'\u25B2 \nN', fontsize=font_size, fontweight='bold')
-plt.text(-56, -44, u'CSAM', color='black', fontsize=font_size, fontweight='bold')
-plt.legend(loc=4, fontsize=font_size, frameon=False)
+ax.legend(loc=4, ncol=1, fontsize=8, frameon=True)
 
-# CSAM
-a1,b1 = (-70,-40)
-a2,b2 = (-70,-15)
-a3,b3 = (-45,-15)
-a4,b4 = (-45,-40)
-poly1 = Polygon([(a1,b1),(a2,b2),(a3,b3),(a4,b4)], facecolor='none', edgecolor='black', linewidth=1.)
-plt.gca().add_patch(poly1)
+ax.set_xlabel(u'Longitude', fontweight='bold')
+ax.set_ylabel(u'Latitude', fontweight='bold')
+ax.set_extent([lon_bounds[0], lon_bounds[1], lat_bounds[0], lat_bounds[1]], crs=ccrs.PlateCarree())
+ax.set_xticks(np.arange(lon_bounds[0], lon_bounds[1], 5), crs=ccrs.PlateCarree())
+ax.set_yticks(np.arange(lat_bounds[0], lat_bounds[1], 5), crs=ccrs.PlateCarree())
+ax.xaxis.set_major_formatter(LongitudeFormatter())
+ax.yaxis.set_major_formatter(LatitudeFormatter())
+ax.grid(c='k', ls='--', alpha=0.5)  
 
-ax = plt.subplot(gs[1])
-my_map = Basemap(ax=ax, llcrnrlon=-75, llcrnrlat=-39, urcrnrlon=-45, urcrnrlat=-14, resolution='c', area_thresh=10000., projection='cyl', lon_0=lonc, lat_0=latc, lat_ts=0)	
-my_map.drawparallels(np.arange(-40, -15,  5.), labels=[1,0,0,0], fontsize=font_size, linewidth=1., color='black')
-my_map.drawmeridians(np.arange(-75, -45, 5.), labels=[0,0,0,1], fontsize=font_size, linewidth=1., color='black')                   
-my_map.readshapefile('/afs/ictp.it/home/m/mda_silv/Documents/github_projects/shp/shp_america_sul/america_sul', 'america_sul', drawbounds=True, color='black', linewidth=1.)
-x, y = my_map(lon,lat)
-
-llevels = (0, 1, 25, 50, 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000)
-im = my_map.contourf(x, y, topo, llevels, cmap=plt.cm.terrain, extend='max')
-plt.title('(b)', loc='left', fontsize=10, fontweight='bold')
-plt.xlabel(u'Longitude', labelpad=20, fontsize=font_size, fontweight='bold')
-plt.ylabel(u'Latitude', labelpad=30, fontsize=font_size, fontweight='bold')
-cbar = fig.colorbar(im, drawedges=True, fraction=0.030, pad=0.04, aspect=20)
-cbar.set_label('Topography (meters)', fontsize=font_size, fontweight='bold')
+states_provinces = cfeat.NaturalEarthFeature(category='cultural', name='admin_1_states_provinces_lines', scale='50m', facecolor='none')
+ax.add_feature(states_provinces, edgecolor='0.1')
+ax.add_feature(cfeat.BORDERS, linewidth=0.75)
+ax.coastlines(linewidth=0.75)
+	
+cbar = plt.colorbar(ct, ax=ax, orientation='vertical', shrink=0.7, pad=0.05)
+cbar.set_label('Topography (m)', fontweight='bold')
 
 # Path out to save figure
-path_out = '/afs/ictp.it/home/m/mda_silv/Documents/FPS_SESA/figs/paper_cp'
+path_out = '/home/mda_silv/users/FPS_SESA/figs/paper_cp'
 name_out = 'pyplt_maps_study_area_sesa.png'
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
