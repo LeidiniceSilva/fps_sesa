@@ -371,7 +371,7 @@ wrf_ucan_reanalise = kge_x_x + kge_x_y + kge_x_z
 fig, axes = plt.subplots(2,5, figsize=(13, 4), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4, ax5), (ax6, ax7, ax8, ax9, ax10) = axes
 
-color = 'PRGn'
+color = 'managua'
 v_min = -0.9
 v_max = 0.9
 legend = 'KGE of precipitation'

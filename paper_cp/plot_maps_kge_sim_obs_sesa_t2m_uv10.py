@@ -20,7 +20,7 @@ from matplotlib.patches import Polygon
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
-var = 'uv10' # t2m or uv10
+var = 't2m' # t2m or uv10
 font_size = 7
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -216,15 +216,13 @@ lat_yy, lon_xx, reg_usp_inmet_smn, reg_usp_reanalise, reg_ictp_i_inmet_smn, reg_
 fig, axes = plt.subplots(2,5, figsize=(12, 5), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4, ax5), (ax6, ax7, ax8, ax9, ax10) = axes
 
+color='managua'
+v_min = -0.9
+v_max = 0.9
+	
 if var == 't2m':
-	color='PRGn'
-	v_min = -0.9
-	v_max = 0.9
 	legend = 'KGE of temperature'
 else:
-	color='PRGn'
-	v_min = -0.9
-	v_max = 0.9
 	legend = 'KGE of wind 10m'
 
 st1 = ax1.scatter(lon_xx, lat_yy, 20, reg_usp_inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
