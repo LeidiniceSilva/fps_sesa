@@ -104,11 +104,11 @@ def import_inmet():
 		values_v = values_v*86400
 			
 		# Reading inmet 
-		d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+		d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/pre/'.format(path) + 'pre_{0}_D_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.groupby('time.month').mean('time')
 		values_vi = d_vi.values
-		values_vi = values_vi*24
+		values_vi = values_vi
 		
 		# reading era5 
 		d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
@@ -324,7 +324,7 @@ def import_smn_ii():
 def configure_subplot(ax):
 
 	lon_bounds = [-70, -46]
-	lat_bounds = [-36, -18]
+	lat_bounds = [-36, -16]
 
 	states_provinces = cfeat.NaturalEarthFeature(category='cultural', name='admin_1_states_provinces_lines', scale='50m', facecolor='none')
 

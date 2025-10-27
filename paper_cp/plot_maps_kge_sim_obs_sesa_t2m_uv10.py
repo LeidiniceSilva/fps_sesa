@@ -189,7 +189,7 @@ def import_inmet():
 def configure_subplot(ax):
 
 	lon_bounds = [-62, -46]
-	lat_bounds = [-36, -18]
+	lat_bounds = [-36, -16]
 
 	states_provinces = cfeat.NaturalEarthFeature(category='cultural', name='admin_1_states_provinces_lines', scale='50m', facecolor='none')
 

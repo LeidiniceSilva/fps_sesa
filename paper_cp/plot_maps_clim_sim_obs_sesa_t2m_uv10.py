@@ -21,7 +21,7 @@ from matplotlib.patches import Polygon
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
-var = 'uv10' # t2m or uv10
+var = 't2m' # t2m or uv10
 font_size = 8
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -157,7 +157,7 @@ def import_inmet():
 def configure_subplot(ax):
 
 	lon_bounds = [-62, -46]
-	lat_bounds = [-36, -18]
+	lat_bounds = [-36, -16]
 
 	states_provinces = cfeat.NaturalEarthFeature(category='cultural', name='admin_1_states_provinces_lines', scale='50m', facecolor='none')
 
