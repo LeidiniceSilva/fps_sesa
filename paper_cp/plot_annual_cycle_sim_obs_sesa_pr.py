@@ -2,7 +2,7 @@
 
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
-__date__        = "Jun 16, 2023"
+__date__        = "Sept 22, 2025"
 __description__ = "This script plot annual cycle"
 
 import os
@@ -14,8 +14,7 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
-path = '/afs/ictp.it/home/m/mda_silv/Documents'
-
+path = '/home/mda_silv/users/FPS_SESA'
 
 def import_inmet():
 	
@@ -28,13 +27,13 @@ def import_inmet():
 	mean_vii = []
 
 	# Select lat and lon 
-	for i in range(1, 100):
+	for i in range(1, 99):
 		yy=inmet[i][2]
 		xx=inmet[i][3]
 		
 		print('Reading weather station:', i, inmet[i][0])		
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.groupby('time.month').mean('time')
@@ -42,7 +41,7 @@ def import_inmet():
 		mean_i.append(d_i*86400)
 			
 		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
+		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_ii = d_ii.groupby('time.month').mean('time')
@@ -50,7 +49,7 @@ def import_inmet():
 		mean_ii.append(d_ii*86400)
 		
 		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
+		d_iii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_iii = d_iii.groupby('time.month').mean('time')
@@ -58,7 +57,7 @@ def import_inmet():
 		mean_iii.append(d_iii*86400)
 						
 		# reading wrf ncar 
-		d_iv = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
+		d_iv = xr.open_dataset('{0}/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_iv = d_iv.groupby('time.month').mean('time')
@@ -66,7 +65,7 @@ def import_inmet():
 		mean_iv.append(d_iv*86400)
 			
 		# reading wrf ucan 
-		d_v = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
+		d_v = xr.open_dataset('{0}/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_v = d_v.groupby('time.month').mean('time')
@@ -74,14 +73,14 @@ def import_inmet():
 		mean_v.append(d_v*86400)
 		
 		# Reading inmet 
-		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/inmet/inmet_nc_sesa/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+		d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/pre/'.format(path) + 'pre_{0}_D_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.groupby('time.month').mean('time')
 		d_vi = d_vi.values
-		mean_vi.append(d_vi*24)
+		mean_vi.append(d_vi)
 		
 		# reading era5 
-		d_vii = xr.open_dataset('{0}/FPS_SESA/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+		d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_vii = d_vii.groupby('time.month').mean('time')
@@ -102,13 +101,13 @@ def import_smn_i():
 	mean_vii = []
 	
 	# Select lat and lon 
-	for i in range(1, 73):
+	for i in range(1, 72):
 		yy=smn_i[i][1]
 		xx=smn_i[i][2]
 		
 		print('Reading weather station:', i, smn_i[i][0])	
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.groupby('time.month').mean('time')
@@ -116,7 +115,7 @@ def import_smn_i():
 		mean_i.append(d_i*86400)
 			
 		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
+		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_ii = d_ii.groupby('time.month').mean('time')
@@ -124,7 +123,7 @@ def import_smn_i():
 		mean_ii.append(d_ii*86400)
 		
 		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
+		d_iii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_iii = d_iii.groupby('time.month').mean('time')
@@ -132,7 +131,7 @@ def import_smn_i():
 		mean_iii.append(d_iii*86400)
 						
 		# reading wrf ncar 
-		d_iv = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
+		d_iv = xr.open_dataset('{0}/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_iv = d_iv.groupby('time.month').mean('time')
@@ -140,7 +139,7 @@ def import_smn_i():
 		mean_iv.append(d_iv*86400)
 			
 		# reading wrf ucan 
-		d_v = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
+		d_v = xr.open_dataset('{0}/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_v = d_v.groupby('time.month').mean('time')
@@ -148,14 +147,14 @@ def import_smn_i():
 		mean_v.append(d_v*86400)
 						
 		# Reading smn 
-		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
+		d_vi = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.groupby('time.month').mean('time')
 		d_vi = d_vi.values
 		mean_vi.append(d_vi*24)
 		
 		# reading era5 
-		d_vii = xr.open_dataset('{0}/FPS_SESA/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+		d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_vii = d_vii.groupby('time.month').mean('time')
@@ -182,7 +181,7 @@ def import_smn_ii():
 		
 		print('Reading weather station:', i, smn_ii[i][0])	
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.groupby('time.month').mean('time')
@@ -190,7 +189,7 @@ def import_smn_ii():
 		mean_i.append(d_i*86400)
 			
 		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
+		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_ii = d_ii.groupby('time.month').mean('time')
@@ -198,7 +197,7 @@ def import_smn_ii():
 		mean_ii.append(d_ii*86400)
 		
 		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('{0}/FPS_SESA/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
+		d_iii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_iii = d_iii.groupby('time.month').mean('time')
@@ -206,7 +205,7 @@ def import_smn_ii():
 		mean_iii.append(d_iii*86400)
 						
 		# reading wrf ncar 
-		d_iv = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
+		d_iv = xr.open_dataset('{0}/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_iv = d_iv.groupby('time.month').mean('time')
@@ -214,7 +213,7 @@ def import_smn_ii():
 		mean_iv.append(d_iv*86400)
 			
 		# reading wrf ucan 
-		d_v = xr.open_dataset('{0}/FPS_SESA/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
+		d_v = xr.open_dataset('{0}/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_v = d_v.groupby('time.month').mean('time')
@@ -222,14 +221,14 @@ def import_smn_ii():
 		mean_v.append(d_v*86400)
 						
 		# Reading smn 
-		d_vi = xr.open_dataset('{0}/FPS_SESA/database/obs/smn_ii/smn_nc/pre/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
+		d_vi = xr.open_dataset('{0}/database/obs/smn_ii/smn_nc/pre/'.format(path) + 'pre_{0}_D_1979-01-01_2021-12-31.nc'.format(smn_ii[i][0]))
 		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.groupby('time.month').mean('time')
 		d_vi = d_vi.values
 		mean_vi.append(d_vi)
 		
 		# reading era5 
-		d_vii = xr.open_dataset('{0}/FPS_SESA/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+		d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_vii = d_vii.groupby('time.month').mean('time')
@@ -254,16 +253,7 @@ wrf_ucan    = clim_v_x   + clim_v_y   + clim_v_z
 inmet_smn   = clim_vi_x  + clim_vi_y  + clim_vi_z
 era5        = clim_vii_x + clim_vii_y + clim_vii_z
 
-list_hc = [4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 0, 4, 0, 4, 0, 0, 0, 0, 4, 0, 0, 0, 
-4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 3, 0, 0, 1, 0, 0,
-0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 3, 0, 1, 1, 0, 1, 0, 1, 3, 3, 3, 3, 1, 1, 1, 3,
-1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 
-3, 3, 3, 3, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
-3, 1, 2, 4, 0, 4, 4, 4, 3, 4, 4, 4, 1, 4, 4, 2, 4, 4, 3, 1, 3, 3, 3, 3, 0, 3,
-3, 3, 3, 1, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 0, 2, 2,
-1, 3, 3, 1, 3, 0, 2, 1, 3, 3, 2, 2, 2, 2, 2, 2, 2, 0, 1, 2, 0, 2, 0, 1, 1, 2,
-2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 3, 0, 1, 1, 2, 1, 2, 0, 2, 2, 2, 1, 2,
-2, 2, 0, 4, 3, 4, 4, 3, 4, 4, 0, 4, 0, 4, 4, 4, 3, 4, 4, 1, 2, 2, 0, 1, 1, 0]
+list_hc = [4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 0, 4, 0, 4, 0, 0, 0, 0, 4, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 2, 0, 2, 3, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 4, 3, 4, 4, 4, 3, 4, 4, 4, 3, 4, 4, 1, 4, 4, 3, 2, 3, 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 2, 2, 1, 1, 1, 2, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 3, 3, 3, 2, 1, 2, 3, 1, 2, 0, 0, 3, 0, 1, 1, 0, 2, 1, 3, 2, 0, 2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 0, 1, 2, 1, 1, 0, 4, 3, 3, 4, 3, 3, 4, 0, 3, 0, 4, 3, 4, 3, 3, 3]
  
 print(len(reg_usp))
 print(len(reg_ictp_i))
@@ -348,6 +338,18 @@ wrf_ucan_c_i    = np.nanmean(wrf_ucan_i, axis=0)
 inmet_smn_c_i   = np.nanmean(inmet_smn_i, axis=0)
 era5_c_i        = np.nanmean(era5_i, axis=0)
 
+r_reg_usp_inmet_ci = corrcoef(reg_usp_c_i, inmet_smn_c_i)
+r_reg_ictp_i_inmet_ci = corrcoef(reg_ictp_i_c_i, inmet_smn_c_i)
+r_reg_ictp_ii_inmet_ci = corrcoef(reg_ictp_ii_c_i, inmet_smn_c_i)
+r_wrf_ncar_i_inmet_ci = corrcoef(wrf_ncar_i_c_i, inmet_smn_c_i)
+r_wrf_ucan_i_inmet_ci = corrcoef(wrf_ucan_i_c_i, inmet_smn_c_i)
+
+r_reg_usp_era5_ci = corrcoef(reg_usp_c_i, era5_c_i)
+r_reg_ictp_i_era_ci = corrcoef(reg_ictp_i_c_i, era5_c_i)
+r_reg_ictp_ii_era5_ci = corrcoef(reg_ictp_ii_c_i, era5_c_i)
+r_wrf_ncar_i_era5_ci = corrcoef(wrf_ncar_i_c_i, era5_c_i)
+r_wrf_ucan_i_era5_ci = corrcoef(wrf_ucan_i_c_i, era5_c_i)
+
 reg_usp_c_ii     = np.nanmean(reg_usp_ii, axis=0)
 reg_ictp_i_c_ii  = np.nanmean(reg_ictp_i_ii, axis=0)
 reg_ictp_ii_c_ii = np.nanmean(reg_ictp_ii_ii, axis=0)
@@ -355,6 +357,18 @@ wrf_ncar_c_ii    = np.nanmean(wrf_ncar_ii, axis=0)
 wrf_ucan_c_ii    = np.nanmean(wrf_ucan_ii, axis=0)
 inmet_smn_c_ii   = np.nanmean(inmet_smn_ii, axis=0)
 era5_c_ii        = np.nanmean(era5_ii, axis=0)
+
+r_reg_usp_inmet_cii = corrcoef(reg_usp_c_ii, inmet_smn_c_ii)
+r_reg_ictp_i_inmet_cii = corrcoef(reg_ictp_i_c_ii, inmet_smn_c_ii)
+r_reg_ictp_ii_inmet_cii = corrcoef(reg_ictp_ii_c_ii, inmet_smn_c_ii)
+r_wrf_ncar_i_inmet_cii = corrcoef(wrf_ncar_i_c_ii, inmet_smn_c_ii)
+r_wrf_ucan_i_inmet_cii = corrcoef(wrf_ucan_i_c_ii, inmet_smn_c_ii)
+
+r_reg_usp_era5_cii = corrcoef(reg_usp_c_ii, era5_c_ii)
+r_reg_ictp_i_era_cii = corrcoef(reg_ictp_i_c_ii, era5_c_ii)
+r_reg_ictp_ii_era5_cii = corrcoef(reg_ictp_ii_c_ii, era5_c_ii)
+r_wrf_ncar_i_era5_cii = corrcoef(wrf_ncar_i_c_ii, era5_c_ii)
+r_wrf_ucan_i_era5_cii = corrcoef(wrf_ucan_i_c_ii, era5_c_ii)
 
 reg_usp_c_iii     = np.nanmean(reg_usp_iii, axis=0)
 reg_ictp_i_c_iii  = np.nanmean(reg_ictp_i_iii, axis=0)
@@ -364,6 +378,18 @@ wrf_ucan_c_iii    = np.nanmean(wrf_ucan_iii, axis=0)
 inmet_smn_c_iii   = np.nanmean(inmet_smn_iii, axis=0)
 era5_c_iii        = np.nanmean(era5_iii, axis=0)
 
+r_reg_usp_inmet_ciii = corrcoef(reg_usp_c_iii, inmet_smn_c_iii)
+r_reg_ictp_i_inmet_ciii = corrcoef(reg_ictp_i_c_iii, inmet_smn_c_iii)
+r_reg_ictp_ii_inmet_ciii = corrcoef(reg_ictp_ii_c_iii, inmet_smn_c_iii)
+r_wrf_ncar_i_inmet_ciii = corrcoef(wrf_ncar_i_c_iii, inmet_smn_c_iii)
+r_wrf_ucan_i_inmet_ciii = corrcoef(wrf_ucan_i_c_iii, inmet_smn_c_iii)
+
+r_reg_usp_era5_ciii = corrcoef(reg_usp_c_iii, era5_c_iii)
+r_reg_ictp_i_era_ciii = corrcoef(reg_ictp_i_c_iii, era5_c_iii)
+r_reg_ictp_ii_era5_ciii = corrcoef(reg_ictp_ii_c_iii, era5_c_iii)
+r_wrf_ncar_i_era5_ciii = corrcoef(wrf_ncar_i_c_iii, era5_c_iii)
+r_wrf_ucan_i_era5_ciii = corrcoef(wrf_ucan_i_c_iii, era5_c_iii)
+
 reg_usp_c_iv     = np.nanmean(reg_usp_iv, axis=0)
 reg_ictp_i_c_iv  = np.nanmean(reg_ictp_i_iv, axis=0)
 reg_ictp_ii_c_iv = np.nanmean(reg_ictp_ii_iv, axis=0)
@@ -372,6 +398,18 @@ wrf_ucan_c_iv    = np.nanmean(wrf_ucan_iv, axis=0)
 inmet_smn_c_iv   = np.nanmean(inmet_smn_iv, axis=0)
 era5_c_iv        = np.nanmean(era5_iv, axis=0)
 
+r_reg_usp_inmet_civ = corrcoef(reg_usp_c_iv, inmet_smn_c_iv)
+r_reg_ictp_i_inmet_civ = corrcoef(reg_ictp_i_c_iv, inmet_smn_c_iv)
+r_reg_ictp_ii_inmet_civ = corrcoef(reg_ictp_ii_c_iv, inmet_smn_c_iv)
+r_wrf_ncar_i_inmet_civ = corrcoef(wrf_ncar_i_c_iv, inmet_smn_c_iv)
+r_wrf_ucan_i_inmet_civ = corrcoef(wrf_ucan_i_c_iv, inmet_smn_c_iv)
+
+r_reg_usp_era5_civ = corrcoef(reg_usp_c_iv, era5_c_iv)
+r_reg_ictp_i_era_civ = corrcoef(reg_ictp_i_c_iv, era5_c_iv)
+r_reg_ictp_ii_era5_civ = corrcoef(reg_ictp_ii_c_iv, era5_c_iv)
+r_wrf_ncar_i_era5_civ = corrcoef(wrf_ncar_i_c_iv, era5_c_iv)
+r_wrf_ucan_i_era5_civ = corrcoef(wrf_ucan_i_c_iv, era5_c_iv)
+
 reg_usp_c_v     = np.nanmean(reg_usp_v, axis=0)
 reg_ictp_i_c_v  = np.nanmean(reg_ictp_i_v, axis=0)
 reg_ictp_ii_c_v = np.nanmean(reg_ictp_ii_v, axis=0)
@@ -379,6 +417,18 @@ wrf_ncar_c_v    = np.nanmean(wrf_ncar_v, axis=0)
 wrf_ucan_c_v    = np.nanmean(wrf_ucan_v, axis=0)
 inmet_smn_c_v   = np.nanmean(inmet_smn_v, axis=0)
 era5_c_v        = np.nanmean(era5_v, axis=0)
+
+r_reg_usp_inmet_cv = corrcoef(reg_usp_c_v, inmet_smn_c_v)
+r_reg_ictp_i_inmet_cv = corrcoef(reg_ictp_i_c_v, inmet_smn_c_v)
+r_reg_ictp_ii_inmet_cv = corrcoef(reg_ictp_ii_c_v, inmet_smn_c_v)
+r_wrf_ncar_i_inmet_cv = corrcoef(wrf_ncar_i_c_v, inmet_smn_c_v)
+r_wrf_ucan_i_inmet_cv = corrcoef(wrf_ucan_i_c_v, inmet_smn_c_v)
+
+r_reg_usp_era5_cv = corrcoef(reg_usp_c_v, era5_c_v)
+r_reg_ictp_i_era_cv = corrcoef(reg_ictp_i_c_v, era5_c_v)
+r_reg_ictp_ii_era5_cv = corrcoef(reg_ictp_ii_c_v, era5_c_v)
+r_wrf_ncar_i_era5_cv = corrcoef(wrf_ncar_i_c_v, era5_c_v)
+r_wrf_ucan_i_era5_cv = corrcoef(wrf_ucan_i_c_v, era5_c_v)
 
 reg_usp_c     = np.nanmean(reg_usp, axis=0)
 reg_ictp_i_c  = np.nanmean(reg_ictp_i, axis=0)
@@ -401,11 +451,22 @@ plt.plot(time, reg_ictp_i_c_i,  linewidth=1.5, linestyle='--', markersize=3, mar
 plt.plot(time, reg_ictp_ii_c_i, linewidth=1.5, linestyle='--', markersize=3, marker='d', markerfacecolor='white', color='brown', label = 'Reg5-UW')
 plt.plot(time, wrf_ncar_c_i,    linewidth=1.5, linestyle='--', markersize=3, marker='x', markerfacecolor='white', color='green', label = 'WRF-NCAR')
 plt.plot(time, wrf_ucan_c_i,    linewidth=1.5, linestyle='--', markersize=3, marker='^', markerfacecolor='white', color='orange', label = 'WRF-UCAN')
+plt.text(3, 11, 'r (Reg4) = {0}'.format(r_reg_usp_inmet_ci), fontsize=font_size, color='black')
+plt.text(3, 10, 'r (Reg5-Holt) = {0}'.format(r_reg_ictp_i_inmet_ci), fontsize=font_size, color='black')
+plt.text(3, 9, 'r (Reg5-UW = {0}'.format(r_reg_ictp_ii_inmet_ci), fontsize=font_size, color='black')
+plt.text(3, 8, 'r (WRF-NCAR) = {0}'.format(r_wrf_ncar_inmet_ci), fontsize=font_size, color='black')
+plt.text(3, 7, 'r (WRF-UCAN) = {0}'.format(r_wrf_ucan_inmet_ci), fontsize=font_size, color='black')
+plt.text(8, 11, 'r (Reg4) = {0}'.format(r_reg_usp_era5_ci), fontsize=font_size, color='red')
+plt.text(8, 10, 'r (Reg5-Holt) = {0}'.format(r_reg_ictp_i_era5_ci), fontsize=font_size, color='red')
+plt.text(8, 9, 'r (Reg5-UW = {0}'.format(r_reg_ictp_ii_era5_ci), fontsize=font_size, color='red')
+plt.text(8, 8, 'r (WRF-NCAR) = {0}'.format(r_wrf_ncar_era5_ci), fontsize=font_size, color='red')
+plt.text(8, 7, 'r (WRF-UCAN) = {0}'.format(r_erf_ucan_era5_ci), fontsize=font_size, color='red')
+
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 10)
-plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
+plt.ylim(0, 12)
+plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
-plt.legend(loc=9, ncol=2, fontsize=font_size, frameon=False)
+#plt.legend(loc=9, ncol=2, fontsize=font_size, frameon=False)
 plt.setp(ax.get_xticklabels(), visible=False)
 
 ax = fig.add_subplot(3, 2, 2)
@@ -481,7 +542,7 @@ plt.yticks(np.arange(0, 11, 1), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
 
 # Path out to save figure
-path_out = '{0}/FPS_SESA/figs/paper_cp'.format(path)
+path_out = '{0}/figs/paper_cp'.format(path)
 name_out = 'pyplt_annual_cycle_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()

@@ -346,7 +346,7 @@ wrf_ucan_inmet_smn = bias_ix_x + bias_ix_y + bias_ix_z
 wrf_ucan_reanalise = bias_x_x + bias_x_y + bias_x_z
 
 # Plot figure   
-fig, axes = plt.subplots(2,5, figsize=(13, 4), subplot_kw={"projection": ccrs.PlateCarree()})
+fig, axes = plt.subplots(2,5, figsize=(13, 4.5), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4, ax5), (ax6, ax7, ax8, ax9, ax10) = axes
 
 color = cm.BrBG
