@@ -323,6 +323,10 @@ wrf_ucan_c_i    = np.nanmean(wrf_ucan_i, axis=0)
 inmet_smn_c_i   = np.nanmean(inmet_smn_i, axis=0)
 era5_c_i        = np.nanmean(era5_i, axis=0)
 
+print()
+print(len(reg_usp_c_i))
+print(reg_usp_c_i)
+
 # Bias
 b_reg_usp_inmet_ci     = np.nanmean(reg_usp_c_i - inmet_smn_c_i)
 b_reg_ictp_i_inmet_ci  = np.nanmean(reg_ictp_i_c_i - inmet_smn_c_i)
@@ -344,7 +348,7 @@ r_wrf_ncar_inmet_ci    = np.corrcoef(wrf_ncar_c_i, inmet_smn_c_i)[0, 1]
 r_wrf_ucan_inmet_ci    = np.corrcoef(wrf_ucan_c_i, inmet_smn_c_i)[0, 1]
 
 r_reg_usp_era5_ci     = np.corrcoef(reg_usp_c_i, era5_c_i)[0, 1]
-r_reg_ictp_i_era5_ci  = np.corrcoef(reg_ictp_i_c_i, era5_c_i)[0, 1]
+r_reg_ictp_i_era5_ci   = np.corrcoef(reg_ictp_i_c_i, era5_c_i)[0, 1]
 r_reg_ictp_ii_era5_ci = np.corrcoef(reg_ictp_ii_c_i, era5_c_i)[0, 1]
 r_wrf_ncar_era5_ci    = np.corrcoef(wrf_ncar_c_i, era5_c_i)[0, 1]
 r_wrf_ucan_era5_ci    = np.corrcoef(wrf_ucan_c_i, era5_c_i)[0, 1]
@@ -412,8 +416,8 @@ b_wrf_ucan_era5_ciii    = np.nanmean(wrf_ucan_c_iii - era5_c_iii)
 r_reg_usp_inmet_ciii     = np.corrcoef(reg_usp_c_iii, inmet_smn_c_iii)[0, 1]
 r_reg_ictp_i_inmet_ciii  = np.corrcoef(reg_ictp_i_c_iii, inmet_smn_c_iii)[0, 1]
 r_reg_ictp_ii_inmet_ciii = np.corrcoef(reg_ictp_ii_c_iii, inmet_smn_c_iii)[0, 1]
-r_wrf_ncar_inmet_ciii    = np.corrcoef(wrf_ncar_c_iii, inmet_smn_c_iii)[0, 1]
-r_wrf_ucan_inmet_ciii    = np.corrcoef(wrf_ucan_c_iii, inmet_smn_c_iii)[0, 1]
+r_wrf_ncar_inmet_ciii  = np.corrcoef(wrf_ncar_c_iii, inmet_smn_c_iii)[0, 1]
+r_wrf_ucan_inmet_ciii  = np.corrcoef(wrf_ucan_c_iii, inmet_smn_c_iii)[0, 1]
 
 r_reg_usp_era5_ciii     = np.corrcoef(reg_usp_c_iii, era5_c_iii)[0, 1]
 r_reg_ictp_i_era5_ciii  = np.corrcoef(reg_ictp_i_c_iii, era5_c_iii)[0, 1]
@@ -452,7 +456,7 @@ r_wrf_ncar_inmet_civ    = np.corrcoef(wrf_ncar_c_iv, inmet_smn_c_iv)[0, 1]
 r_wrf_ucan_inmet_civ    = np.corrcoef(wrf_ucan_c_iv, inmet_smn_c_iv)[0, 1]
 
 r_reg_usp_era5_civ     = np.corrcoef(reg_usp_c_iv, era5_c_iv)[0, 1]
-r_reg_ictp_i_era5_civ  = np.corrcoef(reg_ictp_i_c_iv, era5_c_iv)[0, 1]
+r_reg_ictp_i_era5_civ   = np.corrcoef(reg_ictp_i_c_iv, era5_c_iv)[0, 1]
 r_reg_ictp_ii_era5_civ = np.corrcoef(reg_ictp_ii_c_iv, era5_c_iv)[0, 1]
 r_wrf_ncar_era5_civ    = np.corrcoef(wrf_ncar_c_iv, era5_c_iv)[0, 1]
 r_wrf_ucan_era5_civ    = np.corrcoef(wrf_ucan_c_iv, era5_c_iv)[0, 1]
@@ -488,7 +492,7 @@ r_wrf_ncar_inmet_cv    = np.corrcoef(wrf_ncar_c_v, inmet_smn_c_v)[0, 1]
 r_wrf_ucan_inmet_cv    = np.corrcoef(wrf_ucan_c_v, inmet_smn_c_v)[0, 1]
 
 r_reg_usp_era5_cv     = np.corrcoef(reg_usp_c_v, era5_c_v)[0, 1]
-r_reg_ictp_i_era5_cv  = np.corrcoef(reg_ictp_i_c_v, era5_c_v)[0, 1]
+r_reg_ictp_i_era5_cv   = np.corrcoef(reg_ictp_i_c_v, era5_c_v)[0, 1]
 r_reg_ictp_ii_era5_cv = np.corrcoef(reg_ictp_ii_c_v, era5_c_v)[0, 1]
 r_wrf_ncar_era5_cv    = np.corrcoef(wrf_ncar_c_v, era5_c_v)[0, 1]
 r_wrf_ucan_era5_cv    = np.corrcoef(wrf_ucan_c_v, era5_c_v)[0, 1]
@@ -530,10 +534,16 @@ r_wrf_ncar_era5_c    = np.corrcoef(wrf_ncar_c, era5_c)[0, 1]
 r_wrf_ucan_era5_c    = np.corrcoef(wrf_ucan_c, era5_c)[0, 1]
 
 # Plot figure
+fig = plt.figure(figsize=(10, 8))
+time = np.arange(0.5, 12 + 0.5)
+font_size = 8
+
+
+# Plot figure
 fig = plt.figure(figsize=(12, 8))
 font_size = 8
 
-dt = pd.date_range(start="20180601", end="20210531", freq="ME")
+dt = pd.date_range(start="20180601", end="20210531", freq="M")
 
 ax = fig.add_subplot(3, 2, 1)
 reg_usp_c_i_dt     = pd.Series(data=reg_usp_c_i, index=dt)
@@ -550,16 +560,16 @@ plt.plot(reg_ictp_i_c_i_dt,  linewidth=1, linestyle='--', color='gray', label = 
 plt.plot(reg_ictp_ii_c_i_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_i_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_i_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_ci:.2f}({r_reg_usp_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_ci:.2f}({r_reg_ictp_i_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_ci:.2f}({r_reg_ictp_ii_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_ci:.2f}({r_wrf_ncar_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_ci:.2f}({r_wrf_ucan_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_ci:.2f}({r_reg_usp_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_ci:.2f}({r_reg_ictp_i_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_ci:.2f}({r_reg_ictp_ii_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_ci:.2f}({r_wrf_ncar_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_ci:.2f}({r_wrf_ucan_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(1, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_ci, 2), round(r_reg_usp_inmet_ci, 2)), fontsize=font_size, color='black')
+plt.text(1, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_ci, 2), round(r_reg_ictp_i_inmet_ci, 2)), fontsize=font_size, color='black')
+plt.text(1, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_ci, 2), round(r_reg_ictp_ii_inmet_ci, 2)), fontsize=font_size, color='black')
+plt.text(1, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_ci, 2), round(r_wrf_ncar_inmet_ci, 2)), fontsize=font_size, color='black')
+plt.text(1, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_ci, 2), round(r_wrf_ucan_inmet_ci, 2)), fontsize=font_size, color='black')
+plt.text(6, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_era5_ci, 2), round(r_reg_usp_era5_ci, 2)), fontsize=font_size, color='red')
+plt.text(6, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_era5_ci, 2), round(r_reg_ictp_i_era5_ci, 2)), fontsize=font_size, color='red')
+plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_ci, 2), round(r_reg_ictp_ii_era5_ci, 2)), fontsize=font_size, color='red')
+plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_ci, 2), round(r_wrf_ncar_era5_ci, 2)), fontsize=font_size, color='red')
+plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_ci, 2), round(r_wrf_ucan_era5_ci, 2)), fontsize=font_size, color='red')
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
@@ -580,16 +590,16 @@ plt.plot(reg_ictp_i_c_ii_dt,  linewidth=1, linestyle='--', color='gray', label =
 plt.plot(reg_ictp_ii_c_ii_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_ii_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_ii_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_cii:.2f}({r_reg_usp_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_cii:.2f}({r_reg_ictp_i_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_cii:.2f}({r_reg_ictp_ii_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_cii:.2f}({r_wrf_ncar_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_cii:.2f}({r_wrf_ucan_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_cii:.2f}({r_reg_usp_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_cii:.2f}({r_reg_ictp_i_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_cii:.2f}({r_reg_ictp_ii_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_cii:.2f}({r_wrf_ncar_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_cii:.2f}({r_wrf_ucan_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(1, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_cii, 2), round(r_reg_usp_inmet_cii, 2)), fontsize=font_size, color='black')
+plt.text(1, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_cii, 2), round(r_reg_ictp_i_inmet_cii, 2)), fontsize=font_size, color='black')
+plt.text(1, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_cii, 2), round(r_reg_ictp_ii_inmet_cii, 2)), fontsize=font_size, color='black')
+plt.text(1, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_cii, 2), round(r_wrf_ncar_inmet_cii, 2)), fontsize=font_size, color='black')
+plt.text(1, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_cii, 2), round(r_wrf_ucan_inmet_cii, 2)), fontsize=font_size, color='black')
+plt.text(6, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_era5_cii, 2), round(r_reg_usp_era5_cii, 2)), fontsize=font_size, color='red')
+plt.text(6, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_era5_cii, 2), round(r_reg_ictp_i_era5_cii, 2)), fontsize=font_size, color='red')
+plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_cii, 2), round(r_reg_ictp_ii_era5_cii, 2)), fontsize=font_size, color='red')
+plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_cii, 2), round(r_wrf_ncar_era5_cii, 2)), fontsize=font_size, color='red')
+plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_cii, 2), round(r_wrf_ucan_era5_cii, 2)), fontsize=font_size, color='red')
 plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
@@ -610,16 +620,16 @@ plt.plot(reg_ictp_i_c_iii_dt,  linewidth=1, linestyle='--', color='gray', label 
 plt.plot(reg_ictp_ii_c_iii_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_iii_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_iii_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_ciii:.2f}({r_reg_usp_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_ciii:.2f}({r_reg_ictp_i_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_ciii:.2f}({r_reg_ictp_ii_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_ciii:.2f}({r_wrf_ncar_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_ciii:.2f}({r_wrf_ucan_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_ciii:.2f}({r_reg_usp_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_ciii:.2f}({r_reg_ictp_i_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_ciii:.2f}({r_reg_ictp_ii_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_ciii:.2f}({r_wrf_ncar_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_ciii:.2f}({r_wrf_ucan_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(1, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_ciii, 2), round(r_reg_usp_inmet_ciii, 2)), fontsize=font_size, color='black')
+plt.text(1, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_ciii, 2), round(r_reg_ictp_i_inmet_ciii, 2)), fontsize=font_size, color='black')
+plt.text(1, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_ciii, 2), round(r_reg_ictp_ii_inmet_ciii, 2)), fontsize=font_size, color='black')
+plt.text(1, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_ciii, 2), round(r_wrf_ncar_inmet_ciii, 2)), fontsize=font_size, color='black')
+plt.text(1, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_ciii, 2), round(r_wrf_ucan_inmet_ciii, 2)), fontsize=font_size, color='black')
+plt.text(6, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_era5_ciii, 2), round(r_reg_usp_era5_ciii, 2)), fontsize=font_size, color='red')
+plt.text(6, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_era5_ciii, 2), round(r_reg_ictp_i_era5_ciii, 2)), fontsize=font_size, color='red')
+plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_ciii, 2), round(r_reg_ictp_ii_era5_ciii, 2)), fontsize=font_size, color='red')
+plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_ciii, 2), round(r_wrf_ncar_era5_ciii, 2)), fontsize=font_size, color='red')
+plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_ciii, 2), round(r_wrf_ucan_era5_ciii, 2)), fontsize=font_size, color='red')
 plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
@@ -641,16 +651,16 @@ plt.plot(reg_ictp_i_c_iv_dt,  linewidth=1, linestyle='--', color='gray', label =
 plt.plot(reg_ictp_ii_c_iv_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_iv_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_iv_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_civ:.2f}({r_reg_usp_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_civ:.2f}({r_reg_ictp_i_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_civ:.2f}({r_reg_ictp_ii_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_civ:.2f}({r_wrf_ncar_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_civ:.2f}({r_wrf_ucan_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_civ:.2f}({r_reg_usp_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_civ:.2f}({r_reg_ictp_i_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_civ:.2f}({r_reg_ictp_ii_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_civ:.2f}({r_wrf_ncar_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_civ:.2f}({r_wrf_ucan_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(1, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_civ, 2), round(r_reg_usp_inmet_civ, 2)), fontsize=font_size, color='black')
+plt.text(1, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_civ, 2), round(r_reg_ictp_i_inmet_civ, 2)), fontsize=font_size, color='black')
+plt.text(1, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_civ, 2), round(r_reg_ictp_ii_inmet_civ, 2)), fontsize=font_size, color='black')
+plt.text(1, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_civ, 2), round(r_wrf_ncar_inmet_civ, 2)), fontsize=font_size, color='black')
+plt.text(1, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_civ, 2), round(r_wrf_ucan_inmet_civ, 2)), fontsize=font_size, color='black')
+plt.text(6, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_era5_civ, 2), round(r_reg_usp_era5_civ, 2)), fontsize=font_size, color='red')
+plt.text(6, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_era5_civ, 2), round(r_reg_ictp_i_era5_civ, 2)), fontsize=font_size, color='red')
+plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_civ, 2), round(r_reg_ictp_ii_era5_civ, 2)), fontsize=font_size, color='red')
+plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_civ, 2), round(r_wrf_ncar_era5_civ, 2)), fontsize=font_size, color='red')
+plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_civ, 2), round(r_wrf_ucan_era5_civ, 2)), fontsize=font_size, color='red')
 plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
@@ -672,16 +682,16 @@ plt.plot(reg_ictp_i_c_v_dt,  linewidth=1, linestyle='--', color='gray', label = 
 plt.plot(reg_ictp_ii_c_v_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_v_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_v_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_cv:.2f}({r_reg_usp_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_cv:.2f}({r_reg_ictp_i_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_cv:.2f}({r_reg_ictp_ii_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_cv:.2f}({r_wrf_ncar_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_cv:.2f}({r_wrf_ucan_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_cv:.2f}({r_reg_usp_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_cv:.2f}({r_reg_ictp_i_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_cv:.2f}({r_reg_ictp_ii_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_cv:.2f}({r_wrf_ncar_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_cv:.2f}({r_wrf_ucan_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(1, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_cv, 2), round(r_reg_usp_inmet_cv, 2)), fontsize=font_size, color='black')
+plt.text(1, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_cv, 2), round(r_reg_ictp_i_inmet_cv, 2)), fontsize=font_size, color='black')
+plt.text(1, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_cv, 2), round(r_reg_ictp_ii_inmet_cv, 2)), fontsize=font_size, color='black')
+plt.text(1, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_cv, 2), round(r_wrf_ncar_inmet_cv, 2)), fontsize=font_size, color='black')
+plt.text(1, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_cv, 2), round(r_wrf_ucan_inmet_cv, 2)), fontsize=font_size, color='black')
+plt.text(6, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_era5_cv, 2), round(r_reg_usp_era5_cv, 2)), fontsize=font_size, color='red')
+plt.text(6, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_era5_cv, 2), round(r_reg_ictp_i_era5_cv, 2)), fontsize=font_size, color='red')
+plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_cv, 2), round(r_reg_ictp_ii_era5_cv, 2)), fontsize=font_size, color='red')
+plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_cv, 2), round(r_wrf_ncar_era5_cv, 2)), fontsize=font_size, color='red')
+plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_cv, 2), round(r_wrf_ucan_era5_cv, 2)), fontsize=font_size, color='red')
 plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
@@ -703,26 +713,26 @@ plt.plot(reg_ictp_i_c_dt,  linewidth=1, linestyle='--', color='gray', label = 'R
 plt.plot(reg_ictp_ii_c_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_c:.2f}({r_reg_usp_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_c:.2f}({r_reg_ictp_i_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_c:.2f}({r_reg_ictp_ii_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_c:.2f}({r_wrf_ncar_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_c:.2f}({r_wrf_ucan_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_c:.2f}({r_reg_usp_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_c:.2f}({r_reg_ictp_i_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_c:.2f}({r_reg_ictp_ii_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_c:.2f}({r_wrf_ncar_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_c:.2f}({r_wrf_ucan_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(1, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_c, 2), round(r_reg_usp_inmet_c, 2)), fontsize=font_size, color='black')
+plt.text(1, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_c, 2), round(r_reg_ictp_i_inmet_c, 2)), fontsize=font_size, color='black')
+plt.text(1, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_c, 2), round(r_reg_ictp_ii_inmet_c, 2)), fontsize=font_size, color='black')
+plt.text(1, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_c, 2), round(r_wrf_ncar_inmet_c, 2)), fontsize=font_size, color='black')
+plt.text(1, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_c, 2), round(r_wrf_ucan_inmet_c, 2)), fontsize=font_size, color='black')
+plt.text(6, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_era5_c, 2), round(r_reg_usp_era5_c, 2)), fontsize=font_size, color='red')
+plt.text(6, 10, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_era5_c, 2), round(r_reg_ictp_i_era5_c, 2)), fontsize=font_size, color='red')
+plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_c, 2), round(r_reg_ictp_ii_era5_c, 2)), fontsize=font_size, color='red')
+plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_c, 2), round(r_wrf_ncar_era5_c, 2)), fontsize=font_size, color='red')
+plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_c, 2), round(r_wrf_ucan_era5_c, 2)), fontsize=font_size, color='red')
 plt.title('(f) All clusters', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(fontsize=7)
 
-plt.legend(ncol=7, fontsize=font_size, loc=(-1., -0.35))
+plt.legend(ncol=7, fontsize=font_size, loc=(-1.15, -0.35))
 
 # Path out to save figure
-path_out = '{0}/figs/paper_cp'.format(path)
+path_out = '{0}/FPS_SESA/figs/paper_cp'.format(path)
 name_out = 'pyplt_annual_variability_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
