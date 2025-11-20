@@ -21,7 +21,6 @@ from matplotlib.patches import Polygon
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
-var = 'uv10' # t2m or uv10
 font_size = 7
 path = '/home/mda_silv/users/FPS_SESA'
 

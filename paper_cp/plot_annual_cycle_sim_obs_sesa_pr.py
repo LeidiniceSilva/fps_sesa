@@ -14,7 +14,9 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
+var = 'pr'
 path = '/home/mda_silv/users/FPS_SESA'
+
 
 def import_inmet():
 	
@@ -238,8 +240,6 @@ def import_smn_ii():
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 	
 	
-var = 'pr'
-
 # Import dataset
 clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x = import_inmet()			
 clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y = import_smn_i()			
@@ -594,6 +594,7 @@ plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_cii, 2), rou
 plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_cii, 2), round(r_wrf_ncar_era5_cii, 2)), fontsize=font_size, color='red')
 plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_cii, 2), round(r_wrf_ucan_era5_cii, 2)), fontsize=font_size, color='red')
 plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
@@ -618,7 +619,6 @@ plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_ciii, 2), ro
 plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_ciii, 2), round(r_wrf_ncar_era5_ciii, 2)), fontsize=font_size, color='red')
 plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_ciii, 2), round(r_wrf_ucan_era5_ciii, 2)), fontsize=font_size, color='red')
 plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
@@ -668,6 +668,7 @@ plt.text(6, 9, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_era5_cv, 2), roun
 plt.text(6, 8, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_era5_cv, 2), round(r_wrf_ncar_era5_cv, 2)), fontsize=font_size, color='red')
 plt.text(6, 7, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_era5_cv, 2), round(r_wrf_ucan_era5_cv, 2)), fontsize=font_size, color='red')
 plt.title('(d) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.xlabel('Months', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)

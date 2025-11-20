@@ -16,6 +16,7 @@ from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import linkage, dendrogram
+from scipy.spatial.distance import pdist, squareform
 
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -96,6 +97,13 @@ lat_z, lon_z, clim_i_z = import_smn_ii()
 lon_xx = lon_x + lon_y + lon_z
 lat_yy = lat_x + lat_y + lat_z
 
+# Create the instituction list
+inst_x = ['INMET'] * len(clim_i_x)
+inst_y = ['SMN I'] * len(clim_i_y)
+inst_z = ['SMN II'] * len(clim_i_z)
+
+inst_tot = inst_x + inst_y + inst_z
+
 # Combine all climatology data
 clim_tot = clim_i_x + clim_i_y + clim_i_z
 df = pd.DataFrame(clim_tot)
@@ -108,6 +116,7 @@ dp = dp.replace([np.inf, -np.inf], np.nan).dropna()
 valid_idx = dp.index
 lat_yy_clean = [lat_yy[i] for i in valid_idx]
 lon_xx_clean = [lon_xx[i] for i in valid_idx]
+inst_clean = [inst_tot[i] for i in valid_idx]
 
 print("\nOriginal stations:", len(df))
 print("Valid stations after cleaning:", len(dp))
@@ -115,10 +124,15 @@ print("Valid stations after cleaning:", len(dp))
 # Safety check
 assert len(dp) == len(lat_yy_clean) == len(lon_xx_clean), "Mismatch between data and coordinates!"
 
+# Use correlation distance
+#df_norm = dp.div(dp.sum(axis=1), axis=0)
+#dist_corr = pdist(df_norm.values, metric='correlation')
+#z = linkage(dist_corr, method='ward')
+#Agg_hc = AgglomerativeClustering(n_clusters=5, metric='precomputed', linkage='average')
+#y_hc = Agg_hc.fit_predict(squareform(dist_corr))
+
 # Linkage hierarchical clustering
 z = linkage(dp, method='ward', metric='euclidean')
-
-# Agglomerative clustering
 Agg_hc = AgglomerativeClustering(n_clusters=5, metric='euclidean', linkage='ward')
 y_hc = Agg_hc.fit_predict(dp)
 
@@ -131,7 +145,22 @@ print("Lon:", lon_xx_clean)
 print()
 print("Lat/Lon count:", len(lat_yy_clean), len(lon_xx_clean))
 print("\nTotal clusters:", len(set(y_hc)))
+print()
 
+# Create the df
+df_clusters = pd.DataFrame({
+    'Cluster': y_hc,
+    'Latitude': lat_yy_clean,
+    'Longitude': lon_xx_clean,
+    'Institution': inst_clean
+})
+
+for cl in sorted(set(y_hc)):
+    subset = df_clusters[df_clusters['Cluster'] == cl]
+    print(f"\nCluster {cl}:")
+    print(subset['Institution'].value_counts())
+    
+    
 # Plot figure  
 plt.figure(figsize=(30, 10))
 

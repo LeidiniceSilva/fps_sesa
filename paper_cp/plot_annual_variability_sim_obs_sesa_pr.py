@@ -15,7 +15,9 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
+var = 'pr'
 path = '/home/mda_silv/users/FPS_SESA'
+
 
 def import_inmet():
 	
@@ -221,8 +223,6 @@ def import_smn_ii():
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 	
 	
-var = 'pr'
-
 # Import dataset
 clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x = import_inmet()			
 clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y = import_smn_i()			
@@ -561,6 +561,7 @@ ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_ci:.2f}({r_reg_ictp_ii_era5_c
 ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_ci:.2f}({r_wrf_ncar_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_ci:.2f}({r_wrf_ucan_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -652,7 +653,6 @@ ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_civ:.2f}({r_reg_ictp_ii_era5_
 ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_civ:.2f}({r_wrf_ncar_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_civ:.2f}({r_wrf_ucan_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
@@ -684,6 +684,7 @@ ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_cv:.2f}({r_wrf_ncar_era5_cv:.2f
 ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_cv:.2f}({r_wrf_ucan_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
+plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(fontsize=7)
