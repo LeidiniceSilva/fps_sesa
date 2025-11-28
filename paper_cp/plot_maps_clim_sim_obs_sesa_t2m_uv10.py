@@ -18,10 +18,11 @@ import matplotlib.cm as cm
 from matplotlib.path import Path
 from dict_inmet_stations import inmet
 from matplotlib.patches import Polygon
+from matplotlib.colors import BoundaryNorm
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
-var = 'uv10' # t2m or uv10
+var = 't2m' # t2m or uv10
 font_size = 8
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -187,46 +188,53 @@ fig.delaxes(ax3)
 fig.delaxes(ax9)
 
 if var == 't2m':
-	color=cm.Reds
-	v_min = 10
-	v_max = 30
+	vmin = 6
+	vmax = 30
+	n_classes = 16
+	bins = np.linspace(vmin, vmax, n_classes + 1)
+	cmap = cm.get_cmap('jet', n_classes)
+	norm = BoundaryNorm(bins, cmap.N)
 	legend = 'Temperature (°C)'
 else:
 	color=cm.Greens
-	v_min = 0
-	v_max = 6
-	legend = 'Wind 10m (m s⁻¹)'
-	
-st1 = ax1.scatter(lon_xx, lat_yy, 20, inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+	vmin = 0
+	vmax = 6
+	n_classes = 16
+	bins = np.linspace(vmin, vmax, n_classes + 1)
+	cmap = cm.get_cmap('viridis_r', n_classes)
+	norm = BoundaryNorm(bins, cmap.N)
+	legend = 'Wind 10m (m s⁻¹)'   
+	    
+st1 = ax1.scatter(lon_xx, lat_yy, 20, inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax1.set_title('(a) INMET', loc='left', fontsize=font_size, fontweight='bold')
 ax1.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
 
-st2 = ax2.scatter(lon_xx, lat_yy, 20, era5, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st2 = ax2.scatter(lon_xx, lat_yy, 20, era5, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax2.set_title('(b) ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-st4 = ax4.scatter(lon_xx, lat_yy, 20, reg_usp, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st4 = ax4.scatter(lon_xx, lat_yy, 20, reg_usp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax4.set_title('(c) Reg4', loc='left', fontsize=font_size, fontweight='bold')
 ax4.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax4)
 
-st5 = ax5.scatter(lon_xx, lat_yy, 20, reg_ictp_i, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st5 = ax5.scatter(lon_xx, lat_yy, 20, reg_ictp_i, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax5.set_title('(d) Reg5-Holt', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 
-st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_ictp_ii, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_ictp_ii, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax6.set_title('(e) Reg5-UW', loc='left', fontsize=font_size, fontweight='bold')
 ax6.set_xlabel(u'Longitude',fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
-st7 = ax7.scatter(lon_xx, lat_yy, 20, wrf_ncar, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st7 = ax7.scatter(lon_xx, lat_yy, 20, wrf_ncar, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax7.set_title('(f) WRF-NCAR', loc='left', fontsize=font_size, fontweight='bold')
 ax7.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 ax7.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax7)
 
-st8 = ax8.scatter(lon_xx, lat_yy, 20, wrf_ucan, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st8 = ax8.scatter(lon_xx, lat_yy, 20, wrf_ucan, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax8.set_title('(g) WRF-UCAN', loc='left', fontsize=font_size, fontweight='bold')
 ax8.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax8)

@@ -12,14 +12,15 @@ import pandas as pd
 import xarray as xr
 import cartopy.crs as ccrs
 import cartopy.feature as cfeat
-import matplotlib.pyplot as plt
+import matplotlib.colors
 import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 
-from matplotlib.path import Path
 from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
-from matplotlib.patches import Polygon
+from matplotlib.path import Path
+from matplotlib.colors import BoundaryNorm
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
@@ -93,7 +94,7 @@ def import_inmet():
 		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_vii = d_vii.groupby('time.year').mean('time')
-		d_vii = np.nanmean(d_vii.values)
+		d_vii = np.nanmean(d_vii.values)		
 		mean_vii.append(d_vii)
 				
 	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
@@ -286,42 +287,46 @@ fig, axes = plt.subplots(3,3, figsize=(10, 8), subplot_kw={"projection": ccrs.Pl
 fig.delaxes(ax3)
 fig.delaxes(ax9)
 
-v_min = 0
-v_max = 8
-color = cm.Blues
+vmin = 0
+vmax = 6
+n_classes = 16
+bins = np.linspace(vmin, vmax, n_classes + 1)
+cmap = cm.get_cmap('terrain_r', n_classes)
+norm = BoundaryNorm(bins, cmap.N)
+	
 legend = 'Precipitation (mm d⁻¹)'
 states_provinces = cfeat.NaturalEarthFeature(category='cultural', name='admin_1_states_provinces_lines', scale='50m', facecolor='none')
 
-st1 = ax1.scatter(lon_xx, lat_yy, 20, inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st1 = ax1.scatter(lon_xx, lat_yy, 20, inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax1.set_title('(a) INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 ax1.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
 
-st2 = ax2.scatter(lon_xx, lat_yy, 20, era5, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st2 = ax2.scatter(lon_xx, lat_yy, 20, era5, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax2.set_title('(b) ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-st4 = ax4.scatter(lon_xx, lat_yy, 20, reg_usp, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st4 = ax4.scatter(lon_xx, lat_yy, 20, reg_usp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax4.set_title('(c) Reg4', loc='left', fontsize=font_size, fontweight='bold')
 ax4.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax4)
 
-st5 = ax5.scatter(lon_xx, lat_yy, 20, reg_ictp_i, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st5 = ax5.scatter(lon_xx, lat_yy, 20, reg_ictp_i, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax5.set_title('(d) Reg5-Holt', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 
-st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_ictp_ii, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_ictp_ii, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax6.set_title('(e) Reg5-UW', loc='left', fontsize=font_size, fontweight='bold')
 ax6.set_xlabel(u'Longitude',fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
-st7 = ax7.scatter(lon_xx, lat_yy, 20, wrf_ncar, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st7 = ax7.scatter(lon_xx, lat_yy, 20, wrf_ncar, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax7.set_title('(f) WRF-NCAR', loc='left', fontsize=font_size, fontweight='bold')
 ax7.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 ax7.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax7)
 
-st8 = ax8.scatter(lon_xx, lat_yy, 20, wrf_ucan, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st8 = ax8.scatter(lon_xx, lat_yy, 20, wrf_ucan, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax8.set_title('(g) WRF-UCAN', loc='left', fontsize=font_size, fontweight='bold')
 ax8.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax8)
