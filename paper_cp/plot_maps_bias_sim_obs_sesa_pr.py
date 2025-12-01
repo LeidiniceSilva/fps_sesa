@@ -20,6 +20,7 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 from matplotlib.patches import Polygon
+from matplotlib.colors import BoundaryNorm
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
@@ -349,54 +350,57 @@ wrf_ucan_reanalise = bias_x_x + bias_x_y + bias_x_z
 fig, axes = plt.subplots(2,5, figsize=(13, 4.5), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4, ax5), (ax6, ax7, ax8, ax9, ax10) = axes
 
-color = cm.BrBG
-v_min = -3
-v_max = 3
+vmin = -3
+vmax = 3
+n_classes = 16
+bins = np.linspace(vmin, vmax, n_classes + 1)
+cmap = cm.get_cmap('BrBG', n_classes)
+norm = BoundaryNorm(bins, cmap.N)
 legend = 'Bias of precipitation (mm d⁻¹)'
 
-st1 = ax1.scatter(lon_xx, lat_yy, 20, reg_usp_inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st1 = ax1.scatter(lon_xx, lat_yy, 20, reg_usp_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax1.set_title('(a) Reg4 - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 ax1.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
 
-st2 = ax2.scatter(lon_xx, lat_yy, 20, reg_ictp_i_inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st2 = ax2.scatter(lon_xx, lat_yy, 20, reg_ictp_i_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax2.set_title('(b) Reg5-Holt - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-st3 = ax3.scatter(lon_xx, lat_yy, 20, reg_ictp_ii_inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st3 = ax3.scatter(lon_xx, lat_yy, 20, reg_ictp_ii_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax3.set_title('(c) Reg5-UW - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax3)
 
-st4 = ax4.scatter(lon_xx, lat_yy, 20, wrf_ncar_inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st4 = ax4.scatter(lon_xx, lat_yy, 20, wrf_ncar_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax4.set_title('(d) WRF-NCAR - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax4)
 
-st5 = ax5.scatter(lon_xx, lat_yy, 20, wrf_ucan_inmet_smn, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st5 = ax5.scatter(lon_xx, lat_yy, 20, wrf_ucan_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax5.set_title('(e) WRF-UCAN - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 
-st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_usp_reanalise, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_usp_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax6.set_title('(f) Reg4 - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax6.set_xlabel(u'Longitude',fontsize=font_size, fontweight='bold')
 ax6.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
-st7 = ax7.scatter(lon_xx, lat_yy, 20, reg_ictp_i_reanalise, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st7 = ax7.scatter(lon_xx, lat_yy, 20, reg_ictp_i_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax7.set_title('(g) Reg5-Holt - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax7.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax7)
 
-st8 = ax8.scatter(lon_xx, lat_yy, 20, reg_ictp_ii_reanalise, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st8 = ax8.scatter(lon_xx, lat_yy, 20, reg_ictp_ii_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax8.set_title('(h) Reg5-UW - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax8.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax8)
 
-st9 = ax9.scatter(lon_xx, lat_yy, 20, wrf_ncar_reanalise, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st9 = ax9.scatter(lon_xx, lat_yy, 20, wrf_ncar_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax9.set_title('(i) WRF-NCAR - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax9.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax9)
 
-st10 = ax10.scatter(lon_xx, lat_yy, 20, wrf_ucan_reanalise, cmap=color, marker='o', edgecolor='black', linewidth=0.5, vmin=v_min, vmax=v_max)
+st10 = ax10.scatter(lon_xx, lat_yy, 20, wrf_ucan_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
 ax10.set_title('(j) WRF-UCAN - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 ax10.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax10)

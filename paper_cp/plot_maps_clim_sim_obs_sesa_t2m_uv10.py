@@ -22,7 +22,7 @@ from matplotlib.colors import BoundaryNorm
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
-var = 't2m' # t2m or uv10
+var = 'uv10' # t2m or uv10
 font_size = 8
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -188,8 +188,8 @@ fig.delaxes(ax3)
 fig.delaxes(ax9)
 
 if var == 't2m':
-	vmin = 6
-	vmax = 30
+	vmin = 4
+	vmax = 28
 	n_classes = 16
 	bins = np.linspace(vmin, vmax, n_classes + 1)
 	cmap = cm.get_cmap('jet', n_classes)
@@ -198,7 +198,7 @@ if var == 't2m':
 else:
 	color=cm.Greens
 	vmin = 0
-	vmax = 6
+	vmax = 
 	n_classes = 16
 	bins = np.linspace(vmin, vmax, n_classes + 1)
 	cmap = cm.get_cmap('viridis_r', n_classes)
