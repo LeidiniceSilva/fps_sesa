@@ -32,7 +32,7 @@ path = '/home/mda_silv/users/FPS_SESA'
 def import_inmet():
 
 	iy, ix = [], []
-	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], []
+	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], [], []
 
 	# Select lat and lon 
 	for i in range(1, 99):
@@ -43,12 +43,20 @@ def import_inmet():
 		
 		print('Reading weather station:', i, inmet[i][0], inmet[i][1])		
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_0 = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_0 = d_0.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_0 = d_0.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+		d_0 = d_0.groupby('time.year').mean('time')
+		d_0 = np.nanmean(d_0.values)
+		mean_.append(d_0*86400)
+				
+		# reading regcm ictp pbl 1 3 km 
+		d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.groupby('time.year').mean('time')
 		d_i = np.nanmean(d_i.values)
-		mean_i.append(d_i*86400)
+		mean_i.append(d_i)
 
 		# reading regcm ictp pbl 1 
 		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
@@ -97,13 +105,13 @@ def import_inmet():
 		d_vii = np.nanmean(d_vii.values)		
 		mean_vii.append(d_vii)
 				
-	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
+	return iy, ix, mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
 
 def import_smn_i():
 
 	iy, ix = [], []
-	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], []
+	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], [], []
 
 	# Select lat and lon 
 	for i in range(1, 72):
@@ -114,12 +122,20 @@ def import_smn_i():
 		
 		print('Reading weather station:', i, smn_i[i][0])		
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_0 = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_0 = d_0.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_0 = d_0.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+		d_0 = d_0.groupby('time.year').mean('time')
+		d_0 = np.nanmean(d_0.values)
+		mean_.append(d_0*86400)
+				
+		# reading regcm ictp pbl 1 3 km 
+		d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.groupby('time.year').mean('time')
 		d_i = np.nanmean(d_i.values)
-		mean_i.append(d_i*86400)
+		mean_i.append(d_i)
 				
 		# reading regcm ictp pbl 1 
 		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
@@ -168,13 +184,13 @@ def import_smn_i():
 		d_vii = np.nanmean(d_vii.values)
 		mean_vii.append(d_vii)
 				
-	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
+	return iy, ix, mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
 
 def import_smn_ii():
 	
 	iy, ix = [], []
-	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], []
+	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], [], []
 
 	# Select lat and lon 
 	for i in range(1, 86):
@@ -185,12 +201,20 @@ def import_smn_ii():
 		
 		print('Reading weather station:', i, smn_ii[i][0])		
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_0 = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_0 = d_0.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_0 = d_0.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+		d_0 = d_0.groupby('time.year').mean('time')
+		d_0 = np.nanmean(d_0.values)
+		mean_.append(d_0*86400)
+				
+		# reading regcm ictp pbl 1 3 km 
+		d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.groupby('time.year').mean('time')
 		d_i = np.nanmean(d_i.values)
-		mean_i.append(d_i*86400)
+		mean_i.append(d_i)
 				
 		# reading regcm ictp pbl 1 
 		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
@@ -239,7 +263,7 @@ def import_smn_ii():
 		d_vii = np.nanmean(d_vii.values)
 		mean_vii.append(d_vii)
 				
-	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
+	return iy, ix, mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
 
 def configure_subplot(ax):
@@ -266,14 +290,15 @@ def configure_subplot(ax):
 	
 
 # Import dataset
-lat_x, lon_x, clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x = import_inmet()			
-lat_y, lon_y, clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y = import_smn_i()			
-lat_z, lon_z, clim_i_z, clim_ii_z, clim_iii_z, clim_iv_z, clim_v_z, clim_vi_z, clim_vii_z = import_smn_ii()			
+lat_x, lon_x, clim_0_x, clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x = import_inmet()			
+lat_y, lon_y, clim_0_y, clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y = import_smn_i()			
+lat_z, lon_z, clim_0_z, clim_i_z, clim_ii_z, clim_iii_z, clim_iv_z, clim_v_z, clim_vi_z, clim_vii_z = import_smn_ii()			
 
 lat_yy = lat_x + lat_y + lat_z
 lon_xx = lon_x + lon_y + lon_z
 
-reg_usp = clim_i_x + clim_i_y + clim_i_z
+reg_usp = clim_0_x + clim_0_y + clim_0_z
+reg_ictp = clim_i_x + clim_i_y + clim_i_z
 reg_ictp_i = clim_ii_x + clim_ii_y + clim_ii_z
 reg_ictp_ii = clim_iii_x + clim_iii_y + clim_iii_z
 wrf_ncar = clim_iv_x + clim_iv_y + clim_iv_z
@@ -284,7 +309,6 @@ era5 = clim_vii_x + clim_vii_y + clim_vii_z
 # Plot figure   
 fig, axes = plt.subplots(3,3, figsize=(10, 8), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9) = axes
-fig.delaxes(ax3)
 fig.delaxes(ax9)
 
 vmin = 0
@@ -306,17 +330,21 @@ st2 = ax2.scatter(lon_xx, lat_yy, 20, era5, cmap=cmap, norm=norm, marker='o', ed
 ax2.set_title('(b) ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-st4 = ax4.scatter(lon_xx, lat_yy, 20, reg_usp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax4.set_title('(c) Reg4', loc='left', fontsize=font_size, fontweight='bold')
+st3 = ax3.scatter(lon_xx, lat_yy, 20, reg_usp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax3.set_title('(c) Reg4', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax3)
+
+st4 = ax4.scatter(lon_xx, lat_yy, 20, reg_ictp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax4.set_title('(d) Reg5-Holt3', loc='left', fontsize=font_size, fontweight='bold')
 ax4.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax4)
 
 st5 = ax5.scatter(lon_xx, lat_yy, 20, reg_ictp_i, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax5.set_title('(d) Reg5-Holt', loc='left', fontsize=font_size, fontweight='bold')
+ax5.set_title('(e) Reg5-Holt', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 
 st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_ictp_ii, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax6.set_title('(e) Reg5-UW', loc='left', fontsize=font_size, fontweight='bold')
+ax6.set_title('(f) Reg5-UW', loc='left', fontsize=font_size, fontweight='bold')
 ax6.set_xlabel(u'Longitude',fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
