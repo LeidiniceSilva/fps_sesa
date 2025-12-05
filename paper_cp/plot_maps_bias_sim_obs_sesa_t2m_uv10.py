@@ -22,7 +22,7 @@ from matplotlib.colors import BoundaryNorm
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
-var = 't2m' # t2m or uv10
+var = 'uv10' # t2m or uv10
 font_size = 7
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -115,17 +115,15 @@ def import_inmet():
 			d_0 = d_0.sfcWind.sel(time=slice('2018-06-01','2021-05-31'))
 			d_0 = d_0.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 			d_0 = d_0.groupby('time.year').mean('time')
-			d_0 = np.nanmean(d_0.values)
-			mean_.append(d_0)
+			values_0 = np.nanmean(d_0.values)
 				
 			# reading regcm ictp pbl 1 3 km 
 			d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'sfcWind_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
 			d_i = d_i.sfcWind.sel(time=slice('2018-06-01','2021-05-31'))
 			d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 			d_i = d_i.groupby('time.year').mean('time')
-			d_i = np.nanmean(d_i.values)
-			mean_i.append(d_i)
-					
+			values_i = np.nanmean(d_i.values)
+	
 			# reading regcm ictp pbl 1 
 			d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'sfcWind_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 			d_ii = d_ii.uas.sel(time=slice('2018-06-01','2021-05-31'))
@@ -221,7 +219,7 @@ def configure_subplot(ax):
 lat_yy, lon_xx, reg_usp_inmet_smn, reg_usp_reanalise, reg_ictp_inmet_smn, reg_ictp_reanalise, reg_ictp_i_inmet_smn, reg_ictp_i_reanalise, reg_ictp_ii_inmet_smn, reg_ictp_ii_reanalise, wrf_ncar_inmet_smn, wrf_ncar_reanalise, wrf_ucan_inmet_smn, wrf_ucan_reanalise = import_inmet()			
 
 # Plot figure   
-fig, axes = plt.subplots(3,4, figsize=(9, 7), subplot_kw={"projection": ccrs.PlateCarree()})
+fig, axes = plt.subplots(3,4, figsize=(9, 8), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12) = axes
 
 vmin = -3
@@ -234,7 +232,7 @@ if var == 't2m':
 	norm = BoundaryNorm(bins, cmap.N)
 	legend = 'Bias of temperature (°C)'
 else:
-	cmap = cm.get_cmap('PuOr', n_classes)
+	cmap = cm.get_cmap('PRGn', n_classes)
 	norm = BoundaryNorm(bins, cmap.N)
 	legend = 'Bias of wind 10m (m s⁻¹)'
 
