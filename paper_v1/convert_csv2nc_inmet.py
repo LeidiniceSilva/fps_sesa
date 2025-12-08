@@ -12,10 +12,11 @@ import pandas as pd
 from netCDF4 import Dataset
 from dict_inmet_stations import inmet
 
-freq='hourly'
+freq='daily'
 path = '/home/mda_silv/users/FPS_SESA/database/obs/inmet/inmet_br'
 
-skip_list = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] # 2018-2021
+#skip_list = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] # 2018-2021
+skip_list = [0]
 
 if freq == 'hourly':	
 	freq_i='H'
