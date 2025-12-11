@@ -28,82 +28,99 @@ var = 'pr'
 font_size = 8
 path = '/home/mda_silv/users/FPS_SESA'
 
+skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
+	
+skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 35, 38, 40, 41, 44, 45, 48, 52, 54, 55, 56, 59, 60, 62, 64, 68, 
+70, 77, 79, 80, 82, 83, 92, 93, 96, 100, 106, 107, 111, 113, 120, 127, 130, 133, 135, 136, 140, 141, 144, 152, 154, 155, 160, 161, 163, 167, 168, 
+173, 177, 180, 181, 182, 184, 186, 187, 188, 193, 197, 199, 204, 206, 207, 210, 212, 215, 216, 219, 220, 224, 225, 226, 229, 233, 237, 239, 240, 
+241, 243, 248, 249, 251, 253, 254, 256, 261, 262, 264, 266, 269, 275, 276, 277, 280, 281, 282, 293, 295, 296, 298, 300, 303, 306, 308, 314, 315, 
+316, 317, 319, 322, 325, 330, 331, 334, 337, 341, 344, 347, 348, 350, 353, 354, 357, 358, 360, 361, 362, 364, 370, 383, 384, 385, 389, 390, 392, 
+393, 395, 396, 400, 401, 402, 404, 405, 408, 415, 416, 418, 423, 424, 427, 434, 440, 441, 443, 446, 448, 450, 451, 454, 455, 459, 465, 467, 471, 
+474, 477, 481, 483, 488, 489, 492, 496, 504, 509, 513, 514, 516, 518, 519, 520, 523, 526, 528, 534, 538, 541, 544, 546, 552, 553, 557, 559]
+
+skip_list_smn_ii = [39, 51, 55, 58, 64, 65, 66, 72, 75, 83, 86, 90, 91, 92]
+
 
 def import_inmet():
 
 	iy, ix = [], []
 	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], [], []
+	
+	for i in range(1, 567):
+		if i in skip_list_inmet_i:
+			continue
+		if i in skip_list_inmet_ii:
+			continue
 
-	# Select lat and lon 
-	for i in range(1, 99):
-		yy=inmet[i][2]
-		xx=inmet[i][3]
-		iy.append(inmet[i][2])
-		ix.append(inmet[i][3])
-		
-		print('Reading weather station:', i, inmet[i][0], inmet[i][1])		
-		# reading regcm usp 
-		d_0 = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
-		d_0 = d_0.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_0 = d_0.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_0 = d_0.groupby('time.year').mean('time')
-		d_0 = np.nanmean(d_0.values)
-		mean_.append(d_0*86400)
+		yy = float(inmet[i][2]) 
+		xx = float(inmet[i][3])  
+		if xx <= -48 and yy <= -16.5:
+			iy.append(yy)
+			ix.append(xx)
+					
+			print('Reading weather station:', i, inmet[i][0], inmet[i][1])		
+			# reading regcm usp 
+			d_0 = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+			d_0 = d_0.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_0 = d_0.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_0 = d_0.groupby('time.year').mean('time')
+			d_0 = np.nanmean(d_0.values)
+			mean_.append(d_0*86400)
 				
-		# reading regcm ictp pbl 1 3 km 
-		d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
-		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_i = d_i.groupby('time.year').mean('time')
-		d_i = np.nanmean(d_i.values)
-		mean_i.append(d_i)
+			# reading regcm ictp pbl 1 3 km 
+			d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
+			d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_i = d_i.groupby('time.year').mean('time')
+			d_i = np.nanmean(d_i.values)
+			mean_i.append(d_i)
 
-		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
-		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_ii = d_ii.groupby('time.year').mean('time')
-		d_ii = np.nanmean(d_ii.values)
-		mean_ii.append(d_ii*86400)
+			# reading regcm ictp pbl 1 
+			d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
+			d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_ii = d_ii.groupby('time.year').mean('time')
+			d_ii = np.nanmean(d_ii.values)
+			mean_ii.append(d_ii*86400)
 		
-		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
-		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iii = d_iii.groupby('time.year').mean('time')
-		d_iii = np.nanmean(d_iii.values)
-		mean_iii.append(d_iii*86400)
+			# reading regcm ictp pbl 2
+			d_iii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
+			d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_iii = d_iii.groupby('time.year').mean('time')
+			d_iii = np.nanmean(d_iii.values)
+			mean_iii.append(d_iii*86400)
 						
-		# reading wrf ncar 
-		d_iv = xr.open_dataset('{0}/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
-		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iv = d_iv.groupby('time.year').mean('time')
-		d_iv = np.nanmean(d_iv.values)
-		mean_iv.append(d_iv*86400)
+			# reading wrf ncar 
+			d_iv = xr.open_dataset('{0}/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
+			d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_iv = d_iv.groupby('time.year').mean('time')
+			d_iv = np.nanmean(d_iv.values)
+			mean_iv.append(d_iv*86400)
 			
-		# reading wrf ucan 
-		d_v = xr.open_dataset('{0}/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
-		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_v = d_v.groupby('time.year').mean('time')
-		d_v = np.nanmean(d_v.values)
-		mean_v.append(d_v*86400)
+			# reading wrf ucan 
+			d_v = xr.open_dataset('{0}/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
+			d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_v = d_v.groupby('time.year').mean('time')
+			d_v = np.nanmean(d_v.values)
+			mean_v.append(d_v*86400)
 		
-		# Reading inmet 
-		d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/pre/'.format(path) + 'pre_{0}_D_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.groupby('time.year').mean('time')
-		d_vi = np.nanmean(d_vi.values)
-		mean_vi.append(d_vi)
+			# Reading inmet 
+			d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/pre/'.format(path) + 'pre_{0}_D_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+			d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vi = d_vi.groupby('time.year').mean('time')
+			d_vi = np.nanmean(d_vi.values)
+			mean_vi.append(d_vi)
 		
-		# reading era5 
-		d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
-		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_vii = d_vii.groupby('time.year').mean('time')
-		d_vii = np.nanmean(d_vii.values)		
-		mean_vii.append(d_vii)
+			# reading era5 
+			d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+			d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_vii = d_vii.groupby('time.year').mean('time')
+			d_vii = np.nanmean(d_vii.values)		
+			mean_vii.append(d_vii)
 				
 	return iy, ix, mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
@@ -113,8 +130,7 @@ def import_smn_i():
 	iy, ix = [], []
 	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], [], []
 
-	# Select lat and lon 
-	for i in range(1, 72):
+	for i in range(1, 73):
 		yy=smn_i[i][1]
 		xx=smn_i[i][2]
 		iy.append(smn_i[i][1])
@@ -188,12 +204,13 @@ def import_smn_i():
 
 
 def import_smn_ii():
-	
+		
 	iy, ix = [], []
 	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii = [], [], [], [], [], [], [], []
 
-	# Select lat and lon 
-	for i in range(1, 86):
+	for i in range(1, 110):
+		if i in skip_list_smn_ii:
+			continue
 		yy=smn_ii[i][1]
 		xx=smn_ii[i][2]
 		iy.append(smn_ii[i][1])

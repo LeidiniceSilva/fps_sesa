@@ -41,11 +41,6 @@ skip_list_smn_ii = [39, 51, 55, 58, 64, 65, 66, 72, 75, 83, 86, 90, 91, 92]
 
 def import_inmet():
 	
-	ix = []		  
-	iy = []
-	clim_i = []
-	clim_ii = []
-
 	lat, lon, clim_i, clim_ii = [], [], [], []		  
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
