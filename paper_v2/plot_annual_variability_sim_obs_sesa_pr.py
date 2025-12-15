@@ -17,94 +17,109 @@ from dict_smn_ii_stations import smn_ii
 
 var = 'pr'
 path = '/home/mda_silv/users/FPS_SESA'
+	
+skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
+	
+skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 35, 38, 40, 41, 44, 45, 48, 52, 54, 55, 56, 59, 60, 62, 64, 68, 
+70, 77, 79, 80, 82, 83, 92, 93, 96, 100, 106, 107, 111, 113, 120, 127, 130, 133, 135, 136, 140, 141, 144, 152, 154, 155, 160, 161, 163, 167, 168, 
+173, 177, 180, 181, 182, 184, 186, 187, 188, 193, 197, 199, 204, 206, 207, 210, 212, 215, 216, 219, 220, 224, 225, 226, 229, 233, 237, 239, 240, 
+241, 243, 248, 249, 251, 253, 254, 256, 261, 262, 264, 266, 269, 275, 276, 277, 280, 281, 282, 293, 295, 296, 298, 300, 303, 306, 308, 314, 315, 
+316, 317, 319, 322, 325, 330, 331, 334, 337, 341, 344, 347, 348, 350, 353, 354, 357, 358, 360, 361, 362, 364, 370, 383, 384, 385, 389, 390, 392, 
+393, 395, 396, 400, 401, 402, 404, 405, 408, 415, 416, 418, 423, 424, 427, 434, 440, 441, 443, 446, 448, 450, 451, 454, 455, 459, 465, 467, 471, 
+474, 477, 481, 483, 488, 489, 492, 496, 504, 509, 513, 514, 516, 518, 519, 520, 523, 526, 528, 534, 538, 541, 544, 546, 552, 553, 557, 559]
+
+skip_list_smn_ii = [39, 51, 55, 58, 64, 65, 66, 72, 75, 83, 86, 90, 91, 92]
 
 
 def import_inmet():
 	
-	mean_i = []
-	mean_ii = []
-	mean_iii = []
-	mean_iv = []
-	mean_v = []
-	mean_vi = []
-	mean_vii = []
+	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii  = [], [], [], [], [], [], [], []
+	for i in range(1, 567):
+		if i in skip_list_inmet_i:
+			continue
+		if i in skip_list_inmet_ii:
+			continue
+		if inmet[i][3] <= -48 and inmet[i][2] <= -16.5:
+			yy=inmet[i][2]
+			xx=inmet[i][3]
+		
+			print('Reading weather station:', i, inmet[i][0])		
+			# reading regcm usp 
+			d_ = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+			d_ = d_.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ = d_.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_ = d_.values
+			mean_.append(d_*86400)
 
-	# Select lat and lon 
-	for i in range(1, 99):
-		yy=inmet[i][2]
-		xx=inmet[i][3]
-		
-		print('Reading weather station:', i, inmet[i][0])		
-		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
-		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_i = d_i.values
-		mean_i.append(d_i*86400)
-			
-		# reading regcm ictp pbl 1 
-		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
-		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_ii = d_ii.values
-		mean_ii.append(d_ii*86400)
-		
-		# reading regcm ictp pbl 2
-		d_iii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
-		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iii = d_iii.values
-		mean_iii.append(d_iii*86400)
-						
-		# reading wrf ncar 
-		d_iv = xr.open_dataset('{0}/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
-		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_iv = d_iv.values
-		mean_iv.append(d_iv*86400)
-			
-		# reading wrf ucan 
-		d_v = xr.open_dataset('{0}/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
-		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_v = d_v.values
-		mean_v.append(d_v*86400)
-		
-		# Reading inmet 
-		d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/pre/'.format(path) + 'pre_{0}_D_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.resample(time='1ME').mean()
-		d_vi = d_vi.values
-		mean_vi.append(d_vi)
-		
-		# reading era5 
-		d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
-		d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
-		d_vii = d_vii.values
-		mean_vii.append(d_vii)
+			# reading regcm ictp pbl 1 3 km 
+			d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
+			d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_i = d_i.values
+			mean_i.append(d_i*86400)
 				
-	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
+			# reading regcm ictp pbl 1 
+			d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
+			d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ii = d_ii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_ii = d_ii.values
+			mean_ii.append(d_ii*86400)
+		
+			# reading regcm ictp pbl 2
+			d_iii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0_mon_20180601-20211231.nc')
+			d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iii = d_iii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_iii = d_iii.values
+			mean_iii.append(d_iii*86400)
+						
+			# reading wrf ncar 
+			d_iv = xr.open_dataset('{0}/database/rcm/wrf_ncar/'.format(path) + 'pr_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_mon_20180101-20211231.nc')
+			d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iv = d_iv.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_iv = d_iv.values
+			mean_iv.append(d_iv*86400)
+			
+			# reading wrf ucan 
+			d_v = xr.open_dataset('{0}/database/rcm/wrf_ucan/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_mon_20180601-20210531.nc')
+			d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_v = d_v.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_v = d_v.values
+			mean_v.append(d_v*86400)
+		
+			# Reading inmet 
+			d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/pre/'.format(path) + 'pre_{0}_D_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+			d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vi = d_vi.resample(time='1ME').mean()
+			d_vi = d_vi.values
+			mean_vi.append(d_vi)
+		
+			# reading era5 
+			d_vii = xr.open_dataset('{0}/database/obs/era5/'.format(path) + 'tp_era5_csam_4km_mon_20180101-20211231.nc')
+			d_vii = d_vii.tp.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vii = d_vii.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+			d_vii = d_vii.values
+			mean_vii.append(d_vii)
+				
+	return mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
 
 def import_smn_i():
 	
-	mean_i = []
-	mean_ii = []
-	mean_iii = []
-	mean_iv = []
-	mean_v = []
-	mean_vi = []
-	mean_vii = []
-	
-	# Select lat and lon 
-	for i in range(1, 72):
+	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii  = [], [], [], [], [], [], [], []
+	for i in range(1, 73):
 		yy=smn_i[i][1]
 		xx=smn_i[i][2]
 		
 		print('Reading weather station:', i, smn_i[i][0])	
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_ = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_ = d_.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_ = d_.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+		d_ = d_.values
+		mean_.append(d_*86400)
+
+		# reading regcm ictp pbl 1 3 km 
+		d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.values
@@ -152,32 +167,33 @@ def import_smn_i():
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				
-	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
+	return mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
 
 def import_smn_ii():
 	
-	mean_i = []
-	mean_ii = []
-	mean_iii = []
-	mean_iv = []
-	mean_v = []
-	mean_vi = []
-	mean_vii = []
-	
-	# Select lat and lon 
-	for i in range(1, 86):
+	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii  = [], [], [], [], [], [], [], []
+	for i in range(1, 110):
+		if i in skip_list_smn_ii:
+			continue
 		yy=smn_ii[i][1]
 		xx=smn_ii[i][2]
 		
 		print('Reading weather station:', i, smn_ii[i][0])	
 		# reading regcm usp 
-		d_i = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_ = xr.open_dataset('{0}/database/rcm/reg_usp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1-USP-RegCM471_v0_mon_20180601_20211231.nc')
+		d_ = d_.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_ = d_.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
+		d_ = d_.values
+		mean_.append(d_*86400)
+
+		# reading regcm ictp pbl 1 3 km 
+		d_i = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v1_mon_20180601-20211231.nc')
 		d_i = d_i.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(lat=slice(yy-0.04,yy+0.04),lon=slice(xx-0.04,xx+0.04)).mean(('lat','lon'))
 		d_i = d_i.values
 		mean_i.append(d_i*86400)
-			
+		
 		# reading regcm ictp pbl 1 
 		d_ii = xr.open_dataset('{0}/database/rcm/reg_ictp/'.format(path) + 'pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_mon_20180601-20211231.nc')
 		d_ii = d_ii.pr.sel(time=slice('2018-06-01','2021-05-31'))
@@ -220,25 +236,27 @@ def import_smn_ii():
 		d_vii = d_vii.values
 		mean_vii.append(d_vii)
 				
-	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
+	return mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 	
 	
 # Import dataset
-clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x = import_inmet()			
-clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y = import_smn_i()			
-clim_i_z, clim_ii_z, clim_iii_z, clim_iv_z, clim_v_z, clim_vi_z, clim_vii_z = import_smn_ii()			
+clim_0_x, clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x = import_inmet()			
+clim_0_y, clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y = import_smn_i()			
+clim_0_z, clim_i_z, clim_ii_z, clim_iii_z, clim_iv_z, clim_v_z, clim_vi_z, clim_vii_z = import_smn_ii()			
 
-reg_usp     = clim_i_x   + clim_i_y   + clim_i_z
-reg_ictp_i  = clim_ii_x  + clim_ii_y  + clim_ii_z
+reg_usp = clim_0_x + clim_0_y + clim_0_z
+reg_ictp = clim_i_x + clim_i_y + clim_i_z
+reg_ictp_i = clim_ii_x + clim_ii_y + clim_ii_z
 reg_ictp_ii = clim_iii_x + clim_iii_y + clim_iii_z
-wrf_ncar    = clim_iv_x  + clim_iv_y  + clim_iv_z
-wrf_ucan    = clim_v_x   + clim_v_y   + clim_v_z
-inmet_smn   = clim_vi_x  + clim_vi_y  + clim_vi_z
-era5        = clim_vii_x + clim_vii_y + clim_vii_z
+wrf_ncar = clim_iv_x + clim_iv_y + clim_iv_z
+wrf_ucan = clim_v_x + clim_v_y + clim_v_z
+inmet_smn = clim_vi_x + clim_vi_y + clim_vi_z
+era5 = clim_vii_x + clim_vii_y + clim_vii_z
 
-list_hc = [4, 4, 4, 4, 4, 0, 0, 4, 4, 0, 0, 4, 0, 4, 0, 0, 0, 0, 4, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 2, 0, 2, 3, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 1, 4, 3, 4, 4, 4, 3, 4, 4, 4, 3, 4, 4, 1, 4, 4, 3, 2, 3, 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 2, 2, 1, 1, 1, 2, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 3, 3, 3, 2, 1, 2, 3, 1, 2, 0, 0, 3, 0, 1, 1, 0, 2, 1, 3, 2, 0, 2, 2, 1, 1, 2, 1, 1, 2, 1, 2, 0, 1, 2, 1, 1, 0, 4, 3, 3, 4, 3, 3, 4, 0, 3, 0, 4, 3, 4, 3, 3, 3]
+list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
  
 print(len(reg_usp))
+print(len(reg_ictp))
 print(len(reg_ictp_i))
 print(len(reg_ictp_ii))
 print(len(wrf_ncar))
@@ -261,6 +279,7 @@ for count, idx in enumerate(list_hc):
 		count_v.append(count)
 
 reg_usp_i,     reg_usp_ii,     reg_usp_iii,     reg_usp_iv,     reg_usp_v     = [], [], [], [], []
+reg_ictp_i,    reg_ictp_ii,    reg_ictp_iii,    reg_ictp_iv,    reg_ictp_v    = [], [], [], [], []
 reg_ictp_i_i,  reg_ictp_i_ii,  reg_ictp_i_iii,  reg_ictp_i_iv,  reg_ictp_i_v  = [], [], [], [], []
 reg_ictp_ii_i, reg_ictp_ii_ii, reg_ictp_ii_iii, reg_ictp_ii_iv, reg_ictp_ii_v = [], [], [], [], []
 wrf_ncar_i,    wrf_ncar_ii,    wrf_ncar_iii,    wrf_ncar_iv,    wrf_ncar_v    = [], [], [], [], []
@@ -270,6 +289,7 @@ era5_i,        era5_ii,        era5_iii,        era5_iv,        era5_v        = 
 
 for c_i in count_i:
 	reg_usp_i.append(reg_usp[c_i])
+	reg_ictp_i.append(reg_ictp[c_i])
 	reg_ictp_i_i.append(reg_ictp_i[c_i])
 	reg_ictp_ii_i.append(reg_ictp_ii[c_i])
 	wrf_ncar_i.append(wrf_ncar[c_i])
@@ -279,6 +299,7 @@ for c_i in count_i:
 
 for c_ii in count_ii:
 	reg_usp_ii.append(reg_usp[c_ii])
+	reg_ictp_ii.append(reg_ictp[c_ii])
 	reg_ictp_i_ii.append(reg_ictp_i[c_ii])
 	reg_ictp_ii_ii.append(reg_ictp_ii[c_ii])
 	wrf_ncar_ii.append(wrf_ncar[c_ii])
@@ -288,6 +309,7 @@ for c_ii in count_ii:
 	
 for c_iii in count_iii:
 	reg_usp_iii.append(reg_usp[c_iii])
+	reg_ictp_iii.append(reg_ictp[c_iii])
 	reg_ictp_i_iii.append(reg_ictp_i[c_iii])
 	reg_ictp_ii_iii.append(reg_ictp_ii[c_iii])
 	wrf_ncar_iii.append(wrf_ncar[c_iii])
@@ -297,6 +319,7 @@ for c_iii in count_iii:
 	
 for c_iv in count_iv:
 	reg_usp_iv.append(reg_usp[c_iv])
+	reg_ictp_iv.append(reg_ictp[c_iv])
 	reg_ictp_i_iv.append(reg_ictp_i[c_iv])
 	reg_ictp_ii_iv.append(reg_ictp_ii[c_iv])
 	wrf_ncar_iv.append(wrf_ncar[c_iv])
@@ -306,16 +329,18 @@ for c_iv in count_iv:
 	
 for c_v in count_v:
 	reg_usp_v.append(reg_usp[c_v])
+	reg_ictp_v.append(reg_ictp[c_v])
 	reg_ictp_i_v.append(reg_ictp_i[c_v])
 	reg_ictp_ii_v.append(reg_ictp_ii[c_v])
 	wrf_ncar_v.append(wrf_ncar[c_v])
 	wrf_ucan_v.append(wrf_ucan[c_v])
 	inmet_smn_v.append(inmet_smn[c_v])
 	era5_v.append(era5[c_v])
-
+	
 # Group I
 # Average
 reg_usp_c_i     = np.nanmean(reg_usp_i, axis=0)
+reg_ictp_c_i    = np.nanmean(reg_ictp_i, axis=0)
 reg_ictp_i_c_i  = np.nanmean(reg_ictp_i_i, axis=0)
 reg_ictp_ii_c_i = np.nanmean(reg_ictp_ii_i, axis=0)
 wrf_ncar_c_i    = np.nanmean(wrf_ncar_i, axis=0)
@@ -325,12 +350,14 @@ era5_c_i        = np.nanmean(era5_i, axis=0)
 
 # Bias
 b_reg_usp_inmet_ci     = np.nanmean(reg_usp_c_i - inmet_smn_c_i)
+b_reg_ictp_inmet_ci    = np.nanmean(reg_ictp_c_i - inmet_smn_c_i)
 b_reg_ictp_i_inmet_ci  = np.nanmean(reg_ictp_i_c_i - inmet_smn_c_i)
 b_reg_ictp_ii_inmet_ci = np.nanmean(reg_ictp_ii_c_i - inmet_smn_c_i)
 b_wrf_ncar_inmet_ci    = np.nanmean(wrf_ncar_c_i - inmet_smn_c_i)
 b_wrf_ucan_inmet_ci    = np.nanmean(wrf_ucan_c_i - inmet_smn_c_i)
 
 b_reg_usp_era5_ci     = np.nanmean(reg_usp_c_i - era5_c_i)
+b_reg_ictp_era5_ci    = np.nanmean(reg_ictp_c_i - era5_c_i)
 b_reg_ictp_i_era5_ci  = np.nanmean(reg_ictp_i_c_i - era5_c_i)
 b_reg_ictp_ii_era5_ci = np.nanmean(reg_ictp_ii_c_i - era5_c_i)
 b_wrf_ncar_era5_ci    = np.nanmean(wrf_ncar_c_i - era5_c_i)
@@ -338,12 +365,14 @@ b_wrf_ucan_era5_ci    = np.nanmean(wrf_ucan_c_i - era5_c_i)
 
 # Correlation
 r_reg_usp_inmet_ci     = np.corrcoef(reg_usp_c_i, inmet_smn_c_i)[0, 1]
+r_reg_ictp_inmet_ci    = np.corrcoef(reg_ictp_c_i, inmet_smn_c_i)[0, 1]
 r_reg_ictp_i_inmet_ci  = np.corrcoef(reg_ictp_i_c_i, inmet_smn_c_i)[0, 1]
 r_reg_ictp_ii_inmet_ci = np.corrcoef(reg_ictp_ii_c_i, inmet_smn_c_i)[0, 1]
 r_wrf_ncar_inmet_ci    = np.corrcoef(wrf_ncar_c_i, inmet_smn_c_i)[0, 1]
 r_wrf_ucan_inmet_ci    = np.corrcoef(wrf_ucan_c_i, inmet_smn_c_i)[0, 1]
 
 r_reg_usp_era5_ci     = np.corrcoef(reg_usp_c_i, era5_c_i)[0, 1]
+r_reg_ictp_era5_ci    = np.corrcoef(reg_ictp_c_i, era5_c_i)[0, 1]
 r_reg_ictp_i_era5_ci  = np.corrcoef(reg_ictp_i_c_i, era5_c_i)[0, 1]
 r_reg_ictp_ii_era5_ci = np.corrcoef(reg_ictp_ii_c_i, era5_c_i)[0, 1]
 r_wrf_ncar_era5_ci    = np.corrcoef(wrf_ncar_c_i, era5_c_i)[0, 1]
@@ -352,6 +381,7 @@ r_wrf_ucan_era5_ci    = np.corrcoef(wrf_ucan_c_i, era5_c_i)[0, 1]
 # Group II
 # Average
 reg_usp_c_ii     = np.nanmean(reg_usp_ii, axis=0)
+reg_ictp_c_ii    = np.nanmean(reg_ictp_ii, axis=0)
 reg_ictp_i_c_ii  = np.nanmean(reg_ictp_i_ii, axis=0)
 reg_ictp_ii_c_ii = np.nanmean(reg_ictp_ii_ii, axis=0)
 wrf_ncar_c_ii    = np.nanmean(wrf_ncar_ii, axis=0)
@@ -361,12 +391,14 @@ era5_c_ii        = np.nanmean(era5_ii, axis=0)
 
 # Bias
 b_reg_usp_inmet_cii     = np.nanmean(reg_usp_c_ii - inmet_smn_c_ii)
+b_reg_ictp_inmet_cii    = np.nanmean(reg_ictp_c_ii - inmet_smn_c_ii)
 b_reg_ictp_i_inmet_cii  = np.nanmean(reg_ictp_i_c_ii - inmet_smn_c_ii)
 b_reg_ictp_ii_inmet_cii = np.nanmean(reg_ictp_ii_c_ii - inmet_smn_c_ii)
 b_wrf_ncar_inmet_cii    = np.nanmean(wrf_ncar_c_ii - inmet_smn_c_ii)
 b_wrf_ucan_inmet_cii    = np.nanmean(wrf_ucan_c_ii - inmet_smn_c_ii)
 
 b_reg_usp_era5_cii     = np.nanmean(reg_usp_c_ii - era5_c_ii)
+b_reg_ictp_era5_cii    = np.nanmean(reg_ictp_c_ii - era5_c_ii)
 b_reg_ictp_i_era5_cii  = np.nanmean(reg_ictp_i_c_ii - era5_c_ii)
 b_reg_ictp_ii_era5_cii = np.nanmean(reg_ictp_ii_c_ii - era5_c_ii)
 b_wrf_ncar_era5_cii    = np.nanmean(wrf_ncar_c_ii - era5_c_ii)
@@ -374,13 +406,15 @@ b_wrf_ucan_era5_cii    = np.nanmean(wrf_ucan_c_ii - era5_c_ii)
 
 # Correlation
 r_reg_usp_inmet_cii     = np.corrcoef(reg_usp_c_ii, inmet_smn_c_ii)[0, 1]
+r_reg_ictp_inmet_cii    = np.corrcoef(reg_ictp_c_ii, inmet_smn_c_ii)[0, 1]
 r_reg_ictp_i_inmet_cii  = np.corrcoef(reg_ictp_i_c_ii, inmet_smn_c_ii)[0, 1]
 r_reg_ictp_ii_inmet_cii = np.corrcoef(reg_ictp_ii_c_ii, inmet_smn_c_ii)[0, 1]
 r_wrf_ncar_inmet_cii    = np.corrcoef(wrf_ncar_c_ii, inmet_smn_c_ii)[0, 1]
 r_wrf_ucan_inmet_cii    = np.corrcoef(wrf_ucan_c_ii, inmet_smn_c_ii)[0, 1]
 
 r_reg_usp_era5_cii     = np.corrcoef(reg_usp_c_ii, era5_c_ii)[0, 1]
-r_reg_ictp_i_era5_cii   = np.corrcoef(reg_ictp_i_c_ii, era5_c_ii)[0, 1]
+r_reg_ictp_era5_cii    = np.corrcoef(reg_ictp_c_ii, era5_c_ii)[0, 1]
+r_reg_ictp_i_era5_cii  = np.corrcoef(reg_ictp_i_c_ii, era5_c_ii)[0, 1]
 r_reg_ictp_ii_era5_cii = np.corrcoef(reg_ictp_ii_c_ii, era5_c_ii)[0, 1]
 r_wrf_ncar_era5_cii    = np.corrcoef(wrf_ncar_c_ii, era5_c_ii)[0, 1]
 r_wrf_ucan_era5_cii    = np.corrcoef(wrf_ucan_c_ii, era5_c_ii)[0, 1]
@@ -388,6 +422,7 @@ r_wrf_ucan_era5_cii    = np.corrcoef(wrf_ucan_c_ii, era5_c_ii)[0, 1]
 # Group III
 # Average
 reg_usp_c_iii     = np.nanmean(reg_usp_iii, axis=0)
+reg_ictp_c_iii    = np.nanmean(reg_ictp_iii, axis=0)
 reg_ictp_i_c_iii  = np.nanmean(reg_ictp_i_iii, axis=0)
 reg_ictp_ii_c_iii = np.nanmean(reg_ictp_ii_iii, axis=0)
 wrf_ncar_c_iii    = np.nanmean(wrf_ncar_iii, axis=0)
@@ -397,12 +432,14 @@ era5_c_iii        = np.nanmean(era5_iii, axis=0)
 
 # Bias
 b_reg_usp_inmet_ciii     = np.nanmean(reg_usp_c_iii - inmet_smn_c_iii)
+b_reg_ictp_inmet_ciii    = np.nanmean(reg_ictp_c_iii - inmet_smn_c_iii)
 b_reg_ictp_i_inmet_ciii  = np.nanmean(reg_ictp_i_c_iii - inmet_smn_c_iii)
 b_reg_ictp_ii_inmet_ciii = np.nanmean(reg_ictp_ii_c_iii - inmet_smn_c_iii)
 b_wrf_ncar_inmet_ciii    = np.nanmean(wrf_ncar_c_iii - inmet_smn_c_iii)
 b_wrf_ucan_inmet_ciii    = np.nanmean(wrf_ucan_c_iii - inmet_smn_c_iii)
 
 b_reg_usp_era5_ciii     = np.nanmean(reg_usp_c_iii - era5_c_iii)
+b_reg_ictp_era5_ciii    = np.nanmean(reg_ictp_c_iii - era5_c_iii)
 b_reg_ictp_i_era5_ciii  = np.nanmean(reg_ictp_i_c_iii - era5_c_iii)
 b_reg_ictp_ii_era5_ciii = np.nanmean(reg_ictp_ii_c_iii - era5_c_iii)
 b_wrf_ncar_era5_ciii    = np.nanmean(wrf_ncar_c_iii - era5_c_iii)
@@ -410,12 +447,14 @@ b_wrf_ucan_era5_ciii    = np.nanmean(wrf_ucan_c_iii - era5_c_iii)
 
 # Correlation
 r_reg_usp_inmet_ciii     = np.corrcoef(reg_usp_c_iii, inmet_smn_c_iii)[0, 1]
+r_reg_ictp_inmet_ciii    = np.corrcoef(reg_ictp_c_iii, inmet_smn_c_iii)[0, 1]
 r_reg_ictp_i_inmet_ciii  = np.corrcoef(reg_ictp_i_c_iii, inmet_smn_c_iii)[0, 1]
 r_reg_ictp_ii_inmet_ciii = np.corrcoef(reg_ictp_ii_c_iii, inmet_smn_c_iii)[0, 1]
 r_wrf_ncar_inmet_ciii    = np.corrcoef(wrf_ncar_c_iii, inmet_smn_c_iii)[0, 1]
 r_wrf_ucan_inmet_ciii    = np.corrcoef(wrf_ucan_c_iii, inmet_smn_c_iii)[0, 1]
 
 r_reg_usp_era5_ciii     = np.corrcoef(reg_usp_c_iii, era5_c_iii)[0, 1]
+r_reg_ictp_era5_ciii    = np.corrcoef(reg_ictp_c_iii, era5_c_iii)[0, 1]
 r_reg_ictp_i_era5_ciii  = np.corrcoef(reg_ictp_i_c_iii, era5_c_iii)[0, 1]
 r_reg_ictp_ii_era5_ciii = np.corrcoef(reg_ictp_ii_c_iii, era5_c_iii)[0, 1]
 r_wrf_ncar_era5_ciii    = np.corrcoef(wrf_ncar_c_iii, era5_c_iii)[0, 1]
@@ -424,6 +463,7 @@ r_wrf_ucan_era5_ciii    = np.corrcoef(wrf_ucan_c_iii, era5_c_iii)[0, 1]
 # Group IV
 # Average
 reg_usp_c_iv     = np.nanmean(reg_usp_iv, axis=0)
+reg_ictp_c_iv    = np.nanmean(reg_ictp_iv, axis=0)
 reg_ictp_i_c_iv  = np.nanmean(reg_ictp_i_iv, axis=0)
 reg_ictp_ii_c_iv = np.nanmean(reg_ictp_ii_iv, axis=0)
 wrf_ncar_c_iv    = np.nanmean(wrf_ncar_iv, axis=0)
@@ -433,12 +473,14 @@ era5_c_iv        = np.nanmean(era5_iv, axis=0)
 
 # Bias
 b_reg_usp_inmet_civ     = np.nanmean(reg_usp_c_iv - inmet_smn_c_iv)
+b_reg_ictp_inmet_civ    = np.nanmean(reg_ictp_c_iv - inmet_smn_c_iv)
 b_reg_ictp_i_inmet_civ  = np.nanmean(reg_ictp_i_c_iv - inmet_smn_c_iv)
 b_reg_ictp_ii_inmet_civ = np.nanmean(reg_ictp_ii_c_iv - inmet_smn_c_iv)
 b_wrf_ncar_inmet_civ    = np.nanmean(wrf_ncar_c_iv - inmet_smn_c_iv)
 b_wrf_ucan_inmet_civ    = np.nanmean(wrf_ucan_c_iv - inmet_smn_c_iv)
 
 b_reg_usp_era5_civ     = np.nanmean(reg_usp_c_iv - era5_c_iv)
+b_reg_ictp_era5_civ    = np.nanmean(reg_ictp_c_iv - era5_c_iv)
 b_reg_ictp_i_era5_civ  = np.nanmean(reg_ictp_i_c_iv - era5_c_iv)
 b_reg_ictp_ii_era5_civ = np.nanmean(reg_ictp_ii_c_iv - era5_c_iv)
 b_wrf_ncar_era5_civ    = np.nanmean(wrf_ncar_c_iv - era5_c_iv)
@@ -446,12 +488,14 @@ b_wrf_ucan_era5_civ    = np.nanmean(wrf_ucan_c_iv - era5_c_iv)
 
 # Correlation
 r_reg_usp_inmet_civ     = np.corrcoef(reg_usp_c_iv, inmet_smn_c_iv)[0, 1]
+r_reg_ictp_inmet_civ    = np.corrcoef(reg_ictp_c_iv, inmet_smn_c_iv)[0, 1]
 r_reg_ictp_i_inmet_civ  = np.corrcoef(reg_ictp_i_c_iv, inmet_smn_c_iv)[0, 1]
 r_reg_ictp_ii_inmet_civ = np.corrcoef(reg_ictp_ii_c_iv, inmet_smn_c_iv)[0, 1]
 r_wrf_ncar_inmet_civ    = np.corrcoef(wrf_ncar_c_iv, inmet_smn_c_iv)[0, 1]
 r_wrf_ucan_inmet_civ    = np.corrcoef(wrf_ucan_c_iv, inmet_smn_c_iv)[0, 1]
 
 r_reg_usp_era5_civ     = np.corrcoef(reg_usp_c_iv, era5_c_iv)[0, 1]
+r_reg_ictp_era5_civ    = np.corrcoef(reg_ictp_c_iv, era5_c_iv)[0, 1]
 r_reg_ictp_i_era5_civ  = np.corrcoef(reg_ictp_i_c_iv, era5_c_iv)[0, 1]
 r_reg_ictp_ii_era5_civ = np.corrcoef(reg_ictp_ii_c_iv, era5_c_iv)[0, 1]
 r_wrf_ncar_era5_civ    = np.corrcoef(wrf_ncar_c_iv, era5_c_iv)[0, 1]
@@ -460,6 +504,7 @@ r_wrf_ucan_era5_civ    = np.corrcoef(wrf_ucan_c_iv, era5_c_iv)[0, 1]
 # Group V
 # Average
 reg_usp_c_v     = np.nanmean(reg_usp_v, axis=0)
+reg_ictp_c_v    = np.nanmean(reg_ictp_v, axis=0)
 reg_ictp_i_c_v  = np.nanmean(reg_ictp_i_v, axis=0)
 reg_ictp_ii_c_v = np.nanmean(reg_ictp_ii_v, axis=0)
 wrf_ncar_c_v    = np.nanmean(wrf_ncar_v, axis=0)
@@ -469,12 +514,14 @@ era5_c_v        = np.nanmean(era5_v, axis=0)
 
 # Bias
 b_reg_usp_inmet_cv     = np.nanmean(reg_usp_c_v - inmet_smn_c_v)
+b_reg_ictp_inmet_cv    = np.nanmean(reg_ictp_c_v - inmet_smn_c_v)
 b_reg_ictp_i_inmet_cv  = np.nanmean(reg_ictp_i_c_v - inmet_smn_c_v)
 b_reg_ictp_ii_inmet_cv = np.nanmean(reg_ictp_ii_c_v - inmet_smn_c_v)
 b_wrf_ncar_inmet_cv    = np.nanmean(wrf_ncar_c_v - inmet_smn_c_v)
 b_wrf_ucan_inmet_cv    = np.nanmean(wrf_ucan_c_v - inmet_smn_c_v)
 
 b_reg_usp_era5_cv     = np.nanmean(reg_usp_c_v - era5_c_v)
+b_reg_ictp_era5_cv    = np.nanmean(reg_ictp_c_v - era5_c_v)
 b_reg_ictp_i_era5_cv  = np.nanmean(reg_ictp_i_c_v - era5_c_v)
 b_reg_ictp_ii_era5_cv = np.nanmean(reg_ictp_ii_c_v - era5_c_v)
 b_wrf_ncar_era5_cv    = np.nanmean(wrf_ncar_c_v - era5_c_v)
@@ -482,12 +529,14 @@ b_wrf_ucan_era5_cv    = np.nanmean(wrf_ucan_c_v - era5_c_v)
 
 # Correlation
 r_reg_usp_inmet_cv     = np.corrcoef(reg_usp_c_v, inmet_smn_c_v)[0, 1]
+r_reg_ictp_inmet_cv    = np.corrcoef(reg_ictp_c_v, inmet_smn_c_v)[0, 1]
 r_reg_ictp_i_inmet_cv  = np.corrcoef(reg_ictp_i_c_v, inmet_smn_c_v)[0, 1]
 r_reg_ictp_ii_inmet_cv = np.corrcoef(reg_ictp_ii_c_v, inmet_smn_c_v)[0, 1]
 r_wrf_ncar_inmet_cv    = np.corrcoef(wrf_ncar_c_v, inmet_smn_c_v)[0, 1]
 r_wrf_ucan_inmet_cv    = np.corrcoef(wrf_ucan_c_v, inmet_smn_c_v)[0, 1]
 
 r_reg_usp_era5_cv     = np.corrcoef(reg_usp_c_v, era5_c_v)[0, 1]
+r_reg_ictp_era5_cv    = np.corrcoef(reg_ictp_c_v, era5_c_v)[0, 1]
 r_reg_ictp_i_era5_cv  = np.corrcoef(reg_ictp_i_c_v, era5_c_v)[0, 1]
 r_reg_ictp_ii_era5_cv = np.corrcoef(reg_ictp_ii_c_v, era5_c_v)[0, 1]
 r_wrf_ncar_era5_cv    = np.corrcoef(wrf_ncar_c_v, era5_c_v)[0, 1]
@@ -496,6 +545,7 @@ r_wrf_ucan_era5_cv    = np.corrcoef(wrf_ucan_c_v, era5_c_v)[0, 1]
 # All groups 
 # Average
 reg_usp_c     = np.nanmean(reg_usp, axis=0)
+reg_ictp_c    = np.nanmean(reg_ictp, axis=0)
 reg_ictp_i_c  = np.nanmean(reg_ictp_i, axis=0)
 reg_ictp_ii_c = np.nanmean(reg_ictp_ii, axis=0)
 wrf_ncar_c    = np.nanmean(wrf_ncar, axis=0)
@@ -505,12 +555,14 @@ era5_c        = np.nanmean(era5, axis=0)
 
 # Bias
 b_reg_usp_inmet_c     = np.nanmean(reg_usp_c - inmet_smn_c)
+b_reg_ictp_inmet_c    = np.nanmean(reg_ictp_c - inmet_smn_c)
 b_reg_ictp_i_inmet_c  = np.nanmean(reg_ictp_i_c - inmet_smn_c)
 b_reg_ictp_ii_inmet_c = np.nanmean(reg_ictp_ii_c - inmet_smn_c)
 b_wrf_ncar_inmet_c    = np.nanmean(wrf_ncar_c - inmet_smn_c)
 b_wrf_ucan_inmet_c    = np.nanmean(wrf_ucan_c - inmet_smn_c)
 
 b_reg_usp_era5_c     = np.nanmean(reg_usp_c - era5_c)
+b_reg_ictp_era5_c    = np.nanmean(reg_ictp_c - era5_c)
 b_reg_ictp_i_era5_c  = np.nanmean(reg_ictp_i_c - era5_c)
 b_reg_ictp_ii_era5_c = np.nanmean(reg_ictp_ii_c - era5_c)
 b_wrf_ncar_era5_c    = np.nanmean(wrf_ncar_c - era5_c)
@@ -518,13 +570,15 @@ b_wrf_ucan_era5_c    = np.nanmean(wrf_ucan_c - era5_c)
 
 # Correlation
 r_reg_usp_inmet_c     = np.corrcoef(reg_usp_c, inmet_smn_c)[0, 1]
+r_reg_ictp_inmet_c    = np.corrcoef(reg_ictp_c, inmet_smn_c)[0, 1]
 r_reg_ictp_i_inmet_c  = np.corrcoef(reg_ictp_i_c, inmet_smn_c)[0, 1]
 r_reg_ictp_ii_inmet_c = np.corrcoef(reg_ictp_ii_c, inmet_smn_c)[0, 1]
 r_wrf_ncar_inmet_c    = np.corrcoef(wrf_ncar_c, inmet_smn_c)[0, 1]
 r_wrf_ucan_inmet_c    = np.corrcoef(wrf_ucan_c, inmet_smn_c)[0, 1]
 
 r_reg_usp_era5_c     = np.corrcoef(reg_usp_c, era5_c)[0, 1]
-r_reg_ictp_i_era5_c   = np.corrcoef(reg_ictp_i_c, era5_c)[0, 1]
+r_reg_ictp_era5_c    = np.corrcoef(reg_ictp_c, era5_c)[0, 1]
+r_reg_ictp_i_era5_   = np.corrcoef(reg_ictp_i_c, era5_c)[0, 1]
 r_reg_ictp_ii_era5_c = np.corrcoef(reg_ictp_ii_c, era5_c)[0, 1]
 r_wrf_ncar_era5_c    = np.corrcoef(wrf_ncar_c, era5_c)[0, 1]
 r_wrf_ucan_era5_c    = np.corrcoef(wrf_ucan_c, era5_c)[0, 1]
@@ -546,20 +600,17 @@ era5_c_i_dt        = pd.Series(data=era5_c_i, index=dt)
 plt.plot(inmet_smn_c_i_dt,   linewidth=1, color='black', label = 'INMET+SMN')
 plt.plot(era5_c_i_dt,        linewidth=1, color='red', label = 'ERA5')
 plt.plot(reg_usp_c_i_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_c_i_dt,    linewidth=1, linestyle='--', color='red', label = 'Reg5-Holt3')
 plt.plot(reg_ictp_i_c_i_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
 plt.plot(reg_ictp_ii_c_i_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_i_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_i_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_ci:.2f}({r_reg_usp_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_ci:.2f}({r_reg_ictp_i_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_ci:.2f}({r_reg_ictp_ii_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_ci:.2f}({r_wrf_ncar_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_ci:.2f}({r_wrf_ucan_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_ci:.2f}({r_reg_usp_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_ci:.2f}({r_reg_ictp_i_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_ci:.2f}({r_reg_ictp_ii_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_ci:.2f}({r_wrf_ncar_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_ci:.2f}({r_wrf_ucan_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(0.3, 0.95, r'Reg4 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_usp_inmet_ci, 2),round(r_reg_usp_inmet_ci, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.85, r'Reg5-Holt3 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_inmet_ci, 2),round(r_reg_ictp_inmet_ci, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.75, r'Reg5-Holt = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_i_inmet_ci, 2),round(r_reg_ictp_i_inmet_ci, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.65, r'Reg5-UW = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_ii_inmet_ci, 2),round(r_reg_ictp_ii_inmet_ci, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.55, r'WRF-NCAR = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ncar_inmet_ci, 2),round(r_wrf_ncar_inmet_ci, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.45, r'WRF-UCAN = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ucan_inmet_ci, 2),round(r_wrf_ucan_inmet_ci, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
@@ -577,20 +628,17 @@ era5_c_ii_dt        = pd.Series(data=era5_c_ii, index=dt)
 plt.plot(inmet_smn_c_ii_dt,   linewidth=1, color='black', label = 'INMET+SMN')
 plt.plot(era5_c_ii_dt,        linewidth=1, color='red', label = 'ERA5')
 plt.plot(reg_usp_c_ii_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_c_ii_dt,    linewidth=1, linestyle='--', color='red', label = 'Reg5-Holt3')
 plt.plot(reg_ictp_i_c_ii_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
 plt.plot(reg_ictp_ii_c_ii_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_ii_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_ii_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_cii:.2f}({r_reg_usp_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_cii:.2f}({r_reg_ictp_i_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_cii:.2f}({r_reg_ictp_ii_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_cii:.2f}({r_wrf_ncar_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_cii:.2f}({r_wrf_ucan_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_cii:.2f}({r_reg_usp_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_cii:.2f}({r_reg_ictp_i_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_cii:.2f}({r_reg_ictp_ii_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_cii:.2f}({r_wrf_ncar_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_cii:.2f}({r_wrf_ucan_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(0.3, 0.95, r'Reg4 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_usp_inmet_cii, 2),round(r_reg_usp_inmet_cii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.85, r'Reg5-Holt3 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_inmet_cii, 2),round(r_reg_ictp_inmet_cii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.75, r'Reg5-Holt = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_i_inmet_cii, 2),round(r_reg_ictp_i_inmet_cii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.65, r'Reg5-UW = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_ii_inmet_cii, 2),round(r_reg_ictp_ii_inmet_cii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.55, r'WRF-NCAR = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ncar_inmet_cii, 2),round(r_wrf_ncar_inmet_cii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.45, r'WRF-UCAN = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ucan_inmet_cii, 2),round(r_wrf_ucan_inmet_cii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
 plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
@@ -607,20 +655,17 @@ era5_c_iii_dt        = pd.Series(data=era5_c_iii, index=dt)
 plt.plot(inmet_smn_c_iii_dt,   linewidth=1, color='black', label = 'INMET+SMN')
 plt.plot(era5_c_iii_dt,        linewidth=1, color='red', label = 'ERA5')
 plt.plot(reg_usp_c_iii_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_c_iii_dt,    linewidth=1, linestyle='--', color='red', label = 'Reg5-Holt3')
 plt.plot(reg_ictp_i_c_iii_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
 plt.plot(reg_ictp_ii_c_iii_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_iii_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_iii_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_ciii:.2f}({r_reg_usp_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_ciii:.2f}({r_reg_ictp_i_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_ciii:.2f}({r_reg_ictp_ii_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_ciii:.2f}({r_wrf_ncar_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_ciii:.2f}({r_wrf_ucan_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_ciii:.2f}({r_reg_usp_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_ciii:.2f}({r_reg_ictp_i_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_ciii:.2f}({r_reg_ictp_ii_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_ciii:.2f}({r_wrf_ncar_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_ciii:.2f}({r_wrf_ucan_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(0.3, 0.95, r'Reg4 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_usp_inmet_ciii, 2),round(r_reg_usp_inmet_ciii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.85, r'Reg5-Holt3 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_inmet_ciii, 2),round(r_reg_ictp_inmet_ciii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.75, r'Reg5-Holt = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_i_inmet_ciii, 2),round(r_reg_ictp_i_inmet_ciii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.65, r'Reg5-UW = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_ii_inmet_cii, 2),round(r_reg_ictp_ii_inmet_ciii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.55, r'WRF-NCAR = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ncar_inmet_ciii, 2),round(r_wrf_ncar_inmet_ciii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.45, r'WRF-UCAN = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ucan_inmet_ciii, 2),round(r_wrf_ucan_inmet_ciii, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
 plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
@@ -638,20 +683,17 @@ era5_c_iv_dt        = pd.Series(data=era5_c_iv, index=dt)
 plt.plot(inmet_smn_c_iv_dt,   linewidth=1, color='black', label = 'INMET+SMN')
 plt.plot(era5_c_iv_dt,        linewidth=1, color='red', label = 'ERA5')
 plt.plot(reg_usp_c_iv_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_c_iv_dt,    linewidth=1, linestyle='--', color='red', label = 'Reg5-Holt3')
 plt.plot(reg_ictp_i_c_iv_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
 plt.plot(reg_ictp_ii_c_iv_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_iv_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_iv_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_civ:.2f}({r_reg_usp_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_civ:.2f}({r_reg_ictp_i_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_civ:.2f}({r_reg_ictp_ii_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_civ:.2f}({r_wrf_ncar_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_civ:.2f}({r_wrf_ucan_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_civ:.2f}({r_reg_usp_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_civ:.2f}({r_reg_ictp_i_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_civ:.2f}({r_reg_ictp_ii_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_civ:.2f}({r_wrf_ncar_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_civ:.2f}({r_wrf_ucan_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(0.3, 0.95, r'Reg4 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_usp_inmet_civ, 2),round(r_reg_usp_inmet_civ, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.85, r'Reg5-Holt3 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_inmet_civ, 2),round(r_reg_ictp_inmet_civ, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.75, r'Reg5-Holt = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_i_inmet_civ, 2),round(r_reg_ictp_i_inmet_civ, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.65, r'Reg5-UW = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_ii_inmet_civ, 2),round(r_reg_ictp_ii_inmet_civ, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.55, r'WRF-NCAR = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ncar_inmet_civ, 2),round(r_wrf_ncar_inmet_civ, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.45, r'WRF-UCAN = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ucan_inmet_civ, 2),round(r_wrf_ucan_inmet_civ, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
 plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
@@ -668,20 +710,17 @@ era5_c_v_dt        = pd.Series(data=era5_c_v, index=dt)
 plt.plot(inmet_smn_c_v_dt,   linewidth=1, color='black', label = 'INMET+SMN')
 plt.plot(era5_c_v_dt,        linewidth=1, color='red', label = 'ERA5')
 plt.plot(reg_usp_c_v_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_c_v_dt,    linewidth=1, linestyle='--', color='red', label = 'Reg5-Holt3')
 plt.plot(reg_ictp_i_c_v_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
 plt.plot(reg_ictp_ii_c_v_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_v_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_v_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_cv:.2f}({r_reg_usp_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_cv:.2f}({r_reg_ictp_i_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_cv:.2f}({r_reg_ictp_ii_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_cv:.2f}({r_wrf_ncar_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_cv:.2f}({r_wrf_ucan_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_cv:.2f}({r_reg_usp_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_cv:.2f}({r_reg_ictp_i_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_cv:.2f}({r_reg_ictp_ii_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_cv:.2f}({r_wrf_ncar_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_cv:.2f}({r_wrf_ucan_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(0.3, 0.95, r'Reg4 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_usp_inmet_cv, 2),round(r_reg_usp_inmet_cv, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.85, r'Reg5-Holt3 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_inmet_cv, 2),round(r_reg_ictp_inmet_cv, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.75, r'Reg5-Holt = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_i_inmet_cv, 2),round(r_reg_ictp_i_inmet_cv, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.65, r'Reg5-UW = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_ii_inmet_cv, 2),round(r_reg_ictp_ii_inmet_cv, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.55, r'WRF-NCAR = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ncar_inmet_cv, 2),round(r_wrf_ncar_inmet_cv, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.45, r'WRF-UCAN = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ucan_inmet_cv, 2),round(r_wrf_ucan_inmet_cv, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
 plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
@@ -700,20 +739,18 @@ era5_c_dt        = pd.Series(data=era5_c, index=dt)
 plt.plot(inmet_smn_c_dt,   linewidth=1, color='black', label = 'INMET+SMN')
 plt.plot(era5_c_dt,        linewidth=1, color='red', label = 'ERA5')
 plt.plot(reg_usp_c_dt,     linewidth=1, linestyle='--', color='blue', label = 'Reg4')
+plt.plot(reg_ictp_c_dt,    linewidth=1, linestyle='--', color='red', label = 'Reg5-Holt3')
 plt.plot(reg_ictp_i_c_dt,  linewidth=1, linestyle='--', color='gray', label = 'Reg5-Holt')
 plt.plot(reg_ictp_ii_c_dt, linewidth=1, linestyle='--', color='brown', label = 'Reg5-UW')
 plt.plot(wrf_ncar_c_dt,    linewidth=1, linestyle='--', color='green', label = 'WRF-NCAR')
 plt.plot(wrf_ucan_c_dt,    linewidth=1, linestyle='--', color='orange', label = 'WRF-UCAN')
-ax.text(0.1, 0.95, f"Reg4 = {b_reg_usp_inmet_c:.2f}({r_reg_usp_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.85, f"Reg5-Holt = {b_reg_ictp_i_inmet_c:.2f}({r_reg_ictp_i_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.75, f"Reg5-UW = {b_reg_ictp_ii_inmet_c:.2f}({r_reg_ictp_ii_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.65, f"WRF-NCAR = {b_wrf_ncar_inmet_c:.2f}({r_wrf_ncar_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.1, 0.55, f"WRF-UCAN = {b_wrf_ucan_inmet_c:.2f}({r_wrf_ucan_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(0.5, 0.95, f"Reg4 = {b_reg_usp_era5_c:.2f}({r_reg_usp_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.85, f"Reg5-Holt = {b_reg_ictp_i_era5_c:.2f}({r_reg_ictp_i_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.75, f"Reg5-UW = {b_reg_ictp_ii_era5_c:.2f}({r_reg_ictp_ii_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.65, f"WRF-NCAR = {b_wrf_ncar_era5_c:.2f}({r_wrf_ncar_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(0.5, 0.55, f"WRF-UCAN = {b_wrf_ucan_era5_c:.2f}({r_wrf_ucan_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
+plt.text(0.3, 0.95, r'Reg4 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_usp_inmet_c, 2),round(r_reg_usp_inmet_c, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.85, r'Reg5-Holt3 = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_inmet_c, 2),round(r_reg_ictp_inmet_c, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.75, r'Reg5-Holt = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_i_inmet_c, 2),round(r_reg_ictp_i_inmet_c, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.65, r'Reg5-UW = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_reg_ictp_ii_inmet_c, 2),round(r_reg_ictp_ii_inmet_c, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.55, r'WRF-NCAR = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ncar_inmet_c, 2),round(r_wrf_ncar_inmet_c, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+plt.text(0.3, 0.45, r'WRF-UCAN = $\color{{black}}{{{0}}}$ ($\color{{red}}{{{1}}}$)'.format(round(b_wrf_ucan_inmet_c, 2),round(r_wrf_ucan_inmet_c, 2)), transform=ax.transAxes, ha='left', va='top', fontsize=font_size)
+
 plt.title('(f) All clusters', loc='left', fontsize=font_size, fontweight='bold')
 plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
