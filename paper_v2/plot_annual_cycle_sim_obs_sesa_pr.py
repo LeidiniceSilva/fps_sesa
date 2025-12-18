@@ -274,7 +274,7 @@ inmet_smn    = clim_vi_x + clim_vi_y + clim_vi_z
 era5         = clim_vii_x + clim_vii_y + clim_vii_z
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
- 
+
 print(len(reg_usp))
 print(len(reg_ictp))
 print(len(reg_ictp_i_))
@@ -566,8 +566,8 @@ r_wrf_ucan_era5_cv    = np.corrcoef(wrf_ucan_c_v, era5_c_v)[0, 1]
 # Average
 reg_usp_c     = np.nanmean(reg_usp, axis=0)
 reg_ictp_c    = np.nanmean(reg_ictp, axis=0)
-reg_ictp_i_c  = np.nanmean(reg_ictp_i, axis=0)
-reg_ictp_ii_c = np.nanmean(reg_ictp_ii, axis=0)
+reg_ictp_i_c  = np.nanmean(reg_ictp_i_, axis=0)
+reg_ictp_ii_c = np.nanmean(reg_ictp_ii_, axis=0)
 wrf_ncar_c    = np.nanmean(wrf_ncar, axis=0)
 wrf_ucan_c    = np.nanmean(wrf_ucan, axis=0)
 inmet_smn_c   = np.nanmean(inmet_smn, axis=0)
@@ -657,6 +657,7 @@ plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_cii, 2), round(r_reg_ic
 plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_cii, 2), round(r_reg_ictp_ii_era5_cii, 2)), fontsize=font_size, color='red')
 plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_cii, 2), round(r_wrf_ncar_era5_cii, 2)), fontsize=font_size, color='red')
 plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_cii, 2), round(r_wrf_ucan_era5_cii, 2)), fontsize=font_size, color='red')
+plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
@@ -711,6 +712,7 @@ plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_civ, 2), round(r_reg_ic
 plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_civ, 2), round(r_reg_ictp_ii_era5_civ, 2)), fontsize=font_size, color='red')
 plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_civ, 2), round(r_wrf_ncar_era5_civ, 2)), fontsize=font_size, color='red')
 plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_civ, 2), round(r_wrf_ucan_era5_civ, 2)), fontsize=font_size, color='red')
+plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
@@ -737,7 +739,7 @@ plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_cv, 2), round(r_reg_ict
 plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_cv, 2), round(r_reg_ictp_ii_era5_cv, 2)), fontsize=font_size, color='red')
 plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_cv, 2), round(r_wrf_ncar_era5_cv, 2)), fontsize=font_size, color='red')
 plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_cv, 2), round(r_wrf_ucan_era5_cv, 2)), fontsize=font_size, color='red')
-plt.title('(d) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
+plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
 plt.xlabel('Months', fontsize=font_size, fontweight='bold')
 plt.ylim(0, 12)

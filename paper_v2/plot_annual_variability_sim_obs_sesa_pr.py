@@ -546,8 +546,8 @@ r_wrf_ucan_era5_cv    = np.corrcoef(wrf_ucan_c_v, era5_c_v)[0, 1]
 # Average
 reg_usp_c     = np.nanmean(reg_usp, axis=0)
 reg_ictp_c    = np.nanmean(reg_ictp, axis=0)
-reg_ictp_i_c  = np.nanmean(reg_ictp_i, axis=0)
-reg_ictp_ii_c = np.nanmean(reg_ictp_ii, axis=0)
+reg_ictp_i_c  = np.nanmean(reg_ictp_i_, axis=0)
+reg_ictp_ii_c = np.nanmean(reg_ictp_ii_, axis=0)
 wrf_ncar_c    = np.nanmean(wrf_ncar, axis=0)
 wrf_ucan_c    = np.nanmean(wrf_ucan, axis=0)
 inmet_smn_c   = np.nanmean(inmet_smn, axis=0)
@@ -578,7 +578,7 @@ r_wrf_ucan_inmet_c    = np.corrcoef(wrf_ucan_c, inmet_smn_c)[0, 1]
 
 r_reg_usp_era5_c     = np.corrcoef(reg_usp_c, era5_c)[0, 1]
 r_reg_ictp_era5_c    = np.corrcoef(reg_ictp_c, era5_c)[0, 1]
-r_reg_ictp_i_era5_c   = np.corrcoef(reg_ictp_i_c, era5_c)[0, 1]
+r_reg_ictp_i_era5_c  = np.corrcoef(reg_ictp_i_c, era5_c)[0, 1]
 r_reg_ictp_ii_era5_c = np.corrcoef(reg_ictp_ii_c, era5_c)[0, 1]
 r_wrf_ncar_era5_c    = np.corrcoef(wrf_ncar_c, era5_c)[0, 1]
 r_wrf_ucan_era5_c    = np.corrcoef(wrf_ucan_c, era5_c)[0, 1]
@@ -798,7 +798,7 @@ plt.ylim(0, 12)
 plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
 plt.xticks(fontsize=7)
 
-plt.legend(ncol=8, fontsize=font_size, loc=(-1.25, -0.35))
+plt.legend(ncol=8, fontsize=font_size, loc=(-1.15, -0.35))
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
