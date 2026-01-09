@@ -90,8 +90,30 @@ def import_smn_ii():
 		clim_i.append(values_i)
 		
 	return lat, lon, clim_i
-	
 
+
+def to_roman(n):
+
+	romans = {1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V'}
+	
+	return romans[n]
+    
+
+def link_color_func(node_id):
+
+	node_id = int(node_id)
+	members = node_members.get(node_id, set())
+    
+	if not members:
+		return 'k'
+	
+	labels = y_hc[list(members)]
+	vals, counts = np.unique(labels, return_counts=True)
+	majority_label = int(vals[np.argmax(counts)])
+    
+	return cluster_colors[majority_label]
+	
+	
 var = 'pr'
 	
 # Import latitude, longitude and database
@@ -123,11 +145,11 @@ lat_yy_clean = [lat_yy[i] for i in valid_idx]
 lon_xx_clean = [lon_xx[i] for i in valid_idx]
 inst_clean = [inst_tot[i] for i in valid_idx]
 
-print("\nOriginal stations:", len(df))
-print("Valid stations after cleaning:", len(dp))
+print('\nOriginal stations:', len(df))
+print('Valid stations after cleaning:', len(dp))
 
 # Safety check
-assert len(dp) == len(lat_yy_clean) == len(lon_xx_clean), "Mismatch between data and coordinates!"
+assert len(dp) == len(lat_yy_clean) == len(lon_xx_clean), 'Mismatch between data and coords!'
 
 # Linkage hierarchical clustering
 z = linkage(dp, method='ward', metric='euclidean')
@@ -136,29 +158,29 @@ y_hc = Agg_hc.fit_predict(dp)
 
 print(z)
 print()
-print("\nCluster labels:")
-print(", ".join(map(str, y_hc)))
+print('\nCluster labels:')
+print(', '.join(map(str, y_hc)))
 print()
-print("Lat:", lat_yy_clean)
+print('Lat:', lat_yy_clean)
 print()
-print("Lon:", lon_xx_clean)
+print('Lon:', lon_xx_clean)
 print()
-print("Lat/Lon count:", len(lat_yy_clean), len(lon_xx_clean))
-print("\nTotal clusters:", len(set(y_hc)))
+print('Lat/Lon count:', len(lat_yy_clean), len(lon_xx_clean))
+print('\nTotal clusters:', len(set(y_hc)))
 print()
 
 # Create the df
 df_clusters = pd.DataFrame({
-    'Cluster': y_hc,
-    'Latitude': lat_yy_clean,
-    'Longitude': lon_xx_clean,
-    'Institution': inst_clean
+	'Cluster': y_hc,
+	'Latitude': lat_yy_clean,
+	'Longitude': lon_xx_clean,
+	'Institution': inst_clean
 })
 
 for cl in sorted(set(y_hc)):
-    subset = df_clusters[df_clusters['Cluster'] == cl]
-    print(f"\nCluster {cl}:")
-    print(subset['Institution'].value_counts())
+	subset = df_clusters[df_clusters['Cluster'] == cl]
+	print(f'\nCluster {cl}:')
+	print(subset['Institution'].value_counts())
     
     
 # Plot figure  
@@ -169,36 +191,22 @@ cluster_colors = ['blue', 'red', 'green', 'gray', 'orange']
 
 n_leaves = dp.shape[0]
 linkage_matrix = z.astype(float)
-node_members = {i: {i} for i in range(n_leaves)}  # initial: each leaf maps to itself
+node_members = {i: {i} for i in range(n_leaves)}  
 for i, row in enumerate(linkage_matrix):
-    left = int(row[0])
-    right = int(row[1])
-    new_node_id = n_leaves + i
-    members = set()
-    members.update(node_members[left])
-    members.update(node_members[right])
-    node_members[new_node_id] = members
-
-def link_color_func(node_id):
-    node_id = int(node_id)
-    members = node_members.get(node_id, set())
-    
-    if not members:
-        return 'k'
-	
-    labels = y_hc[list(members)]
-    vals, counts = np.unique(labels, return_counts=True)
-    majority_label = int(vals[np.argmax(counts)])
-    
-    return cluster_colors[majority_label]
+	left = int(row[0])
+	right = int(row[1])
+	new_node_id = n_leaves + i
+	members = set()
+	members.update(node_members[left])
+	members.update(node_members[right])
+	node_members[new_node_id] = members
 
 d_data = dendrogram(z, leaf_rotation=90., leaf_font_size=8., link_color_func=link_color_func, no_labels=False, color_threshold=None)
 plt.xlabel('Weather stations (INMET + SMN)', fontsize=20)
 plt.ylabel('Euclidean distance', fontsize=20)
 
-# Create legend mapping
 for i, color in enumerate(cluster_colors):
-    plt.plot([], [], color=color, label=f'Cluster {i+1}')
+	plt.plot([], [], color=color, label=f'Cluster {to_roman(i+1)}')
 plt.legend(loc='upper right', fontsize=20)
 
 # Path out to save figure
