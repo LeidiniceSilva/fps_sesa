@@ -14,8 +14,9 @@ import matplotlib.pyplot as plt
 from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
+from matplotlib.patches import Polygon
 
-var = 'uv10' # t2m or uv10
+var = 't2m' # t2m or uv10
 path = '/home/mda_silv/users/FPS_SESA'
 
 skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
@@ -159,6 +160,39 @@ def import_inmet():
 	return mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
 
 
+def portrait_diagram(ax, columns, data, line_label='Bias (Correlation)'):
+
+	n_rows = 1  
+	n_cols = len(columns)
+	cell_width = 1
+	cell_height = 1
+
+	for j in range(n_cols):
+		x = j * cell_width
+		y = 0  
+		era5_text, inmet_text = data[j]
+
+		# ERA5
+		era5_triangle = Polygon([[x, y+cell_height], [x, y], [x+cell_width, y+cell_height]], color='lightgray')
+		ax.add_patch(era5_triangle)
+		ax.text(x + 0.3*cell_width, y + 0.7*cell_height, era5_text, ha='center', va='center', fontsize=8)
+	
+		# INMET
+		inmet_triangle = Polygon([[x, y], [x+cell_width, y], [x+cell_width, y+cell_height]], color='white')
+		ax.add_patch(inmet_triangle)
+		ax.text(x + 0.7*cell_width, y + 0.3*cell_height, inmet_text, ha='center', va='center', fontsize=8)
+
+		ax.plot([x, x+cell_width, x+cell_width, x, x], [y, y, y+cell_height, y+cell_height, y], color='black')
+
+	ax.set_xlim(0, n_cols*cell_width)
+	ax.set_ylim(0, n_rows*cell_height)
+	ax.set_xticks([x + cell_width/2 for x in range(n_cols)])
+	ax.set_xticklabels(columns, fontsize=8)
+	ax.set_yticks([0.5])
+	ax.set_yticklabels([line_label], rotation=90, va='center', fontsize=8, fontweight='bold')
+	ax.invert_yaxis()
+	
+	
 # Import dataset
 clim_0_x, clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x = import_inmet()			
 
@@ -173,7 +207,6 @@ era5         = clim_vii_x
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
 list_hc = list_hc[:len(inmet_smn)]
-print(list_hc)
 
 print(len(reg_usp))
 print(len(reg_ictp))
@@ -503,8 +536,46 @@ r_reg_ictp_ii_era5_c = np.corrcoef(reg_ictp_ii_c, era5_c)[0, 1]
 r_wrf_ncar_era5_c    = np.corrcoef(wrf_ncar_c, era5_c)[0, 1]
 r_wrf_ucan_era5_c    = np.corrcoef(wrf_ucan_c, era5_c)[0, 1]
 
+data_c_i = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_ci,  b_reg_ictp_era5_ci,  b_reg_ictp_i_era5_ci,  b_reg_ictp_ii_era5_ci,  b_wrf_ncar_era5_ci,  b_wrf_ucan_era5_ci],
+        [b_reg_usp_inmet_ci, b_reg_ictp_inmet_ci, b_reg_ictp_i_inmet_ci, b_reg_ictp_ii_inmet_ci, b_wrf_ncar_inmet_ci, b_wrf_ucan_inmet_ci],
+        [r_reg_usp_era5_ci,  r_reg_ictp_era5_ci,  r_reg_ictp_i_era5_ci,  r_reg_ictp_ii_era5_ci,  r_wrf_ncar_era5_ci,  r_wrf_ucan_era5_ci],
+        [r_reg_usp_inmet_ci, r_reg_ictp_inmet_ci, r_reg_ictp_i_inmet_ci, r_reg_ictp_ii_inmet_ci, r_wrf_ncar_inmet_ci, r_wrf_ucan_inmet_ci])]
+
+data_c_ii = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_cii,  b_reg_ictp_era5_cii,  b_reg_ictp_i_era5_cii,  b_reg_ictp_ii_era5_cii,  b_wrf_ncar_era5_cii,  b_wrf_ucan_era5_cii],
+        [b_reg_usp_inmet_cii, b_reg_ictp_inmet_cii, b_reg_ictp_i_inmet_cii, b_reg_ictp_ii_inmet_cii, b_wrf_ncar_inmet_cii, b_wrf_ucan_inmet_cii],
+        [r_reg_usp_era5_cii,  r_reg_ictp_era5_cii,  r_reg_ictp_i_era5_cii,  r_reg_ictp_ii_era5_cii,  r_wrf_ncar_era5_cii,  r_wrf_ucan_era5_cii],
+        [r_reg_usp_inmet_cii, r_reg_ictp_inmet_cii, r_reg_ictp_i_inmet_cii, r_reg_ictp_ii_inmet_cii, r_wrf_ncar_inmet_cii, r_wrf_ucan_inmet_cii])]
+
+
+data_c_iii = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip(	[b_reg_usp_era5_ciii,  b_reg_ictp_era5_ciii,  b_reg_ictp_i_era5_ciii,  b_reg_ictp_ii_era5_ciii,  b_wrf_ncar_era5_ciii,  b_wrf_ucan_era5_ciii],
+        [b_reg_usp_inmet_ciii, b_reg_ictp_inmet_ciii, b_reg_ictp_i_inmet_ciii, b_reg_ictp_ii_inmet_ciii, b_wrf_ncar_inmet_ciii, b_wrf_ucan_inmet_ciii],
+        [r_reg_usp_era5_ciii,  r_reg_ictp_era5_ciii,  r_reg_ictp_i_era5_ciii,  r_reg_ictp_ii_era5_ciii,  r_wrf_ncar_era5_ciii,  r_wrf_ucan_era5_ciii],
+        [r_reg_usp_inmet_ciii, r_reg_ictp_inmet_ciii, r_reg_ictp_i_inmet_ciii, r_reg_ictp_ii_inmet_ciii, r_wrf_ncar_inmet_ciii, r_wrf_ucan_inmet_ciii])]
+
+
+data_c_iv = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_civ,  b_reg_ictp_era5_civ,  b_reg_ictp_i_era5_civ,  b_reg_ictp_ii_era5_civ,  b_wrf_ncar_era5_civ,  b_wrf_ucan_era5_civ],
+        [b_reg_usp_inmet_civ, b_reg_ictp_inmet_civ, b_reg_ictp_i_inmet_civ, b_reg_ictp_ii_inmet_civ, b_wrf_ncar_inmet_civ, b_wrf_ucan_inmet_civ],
+        [r_reg_usp_era5_civ,  r_reg_ictp_era5_civ,  r_reg_ictp_i_era5_civ,  r_reg_ictp_ii_era5_civ,  r_wrf_ncar_era5_civ,  r_wrf_ucan_era5_civ],
+        [r_reg_usp_inmet_civ, r_reg_ictp_inmet_civ, r_reg_ictp_i_inmet_civ, r_reg_ictp_ii_inmet_civ, r_wrf_ncar_inmet_civ, r_wrf_ucan_inmet_civ])]
+
+data_c_v = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_cv,  b_reg_ictp_era5_cv,  b_reg_ictp_i_era5_cv,  b_reg_ictp_ii_era5_cv,  b_wrf_ncar_era5_cv,  b_wrf_ucan_era5_cv],
+        [b_reg_usp_inmet_cv, b_reg_ictp_inmet_cv, b_reg_ictp_i_inmet_cv, b_reg_ictp_ii_inmet_cv, b_wrf_ncar_inmet_cv, b_wrf_ucan_inmet_cv],
+        [r_reg_usp_era5_cv,  r_reg_ictp_era5_cv,  r_reg_ictp_i_era5_cv,  r_reg_ictp_ii_era5_cv,  r_wrf_ncar_era5_cv,  r_wrf_ucan_era5_cv],
+        [r_reg_usp_inmet_cv, r_reg_ictp_inmet_cv, r_reg_ictp_i_inmet_cv, r_reg_ictp_ii_inmet_cv, r_wrf_ncar_inmet_cv, r_wrf_ucan_inmet_cv])]
+
+data_c = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_c,  b_reg_ictp_era5_c,  b_reg_ictp_i_era5_c,  b_reg_ictp_ii_era5_c,  b_wrf_ncar_era5_c,  b_wrf_ucan_era5_c],
+        [b_reg_usp_inmet_c, b_reg_ictp_inmet_c, b_reg_ictp_i_inmet_c, b_reg_ictp_ii_inmet_c, b_wrf_ncar_inmet_c, b_wrf_ucan_inmet_c],
+        [r_reg_usp_era5_c,  r_reg_ictp_era5_c,  r_reg_ictp_i_era5_c,  r_reg_ictp_ii_era5_c,  r_wrf_ncar_era5_c,  r_wrf_ucan_era5_c],
+        [r_reg_usp_inmet_c, r_reg_ictp_inmet_c, r_reg_ictp_i_inmet_c, r_reg_ictp_ii_inmet_c, r_wrf_ncar_inmet_c, r_wrf_ucan_inmet_c])]
+
 # Plot figure
-fig = plt.figure(figsize=(12, 8))
+fig = plt.figure(figsize=(11, 13))
 font_size = 8
 
 if var == 't2m':
@@ -513,22 +584,17 @@ if var == 't2m':
 	vmax = 30
 	vmax_ = 32
 	int_ = 2
-	tx1, tx2, tx3, tx4, tx5, tx6 = 0.95, 0.85, 0.75, 0.65, 0.55, 0.45
-	ty1 = 0.2
-	ty2 = 0.6
 else:
 	legend = 'Wind 10m (m s⁻¹)'
 	vmin = 1
 	vmax = 6
 	vmax_ = 6.5
 	int_ = 0.5
-	tx1, tx2, tx3, tx4, tx5, tx6 = 0.95, 0.85, 0.75, 0.65, 0.55, 0.45
-	ty1 = 0.2
-	ty2 = 0.6
 	
 dt = pd.date_range(start="20180601", end="20210531", freq="ME")
+columns = ['Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
 
-ax = fig.add_subplot(3, 2, 1)
+ax = fig.add_subplot(6, 2, 1)
 reg_usp_c_i_dt     = pd.Series(data=reg_usp_c_i, index=dt)
 reg_ictp_c_i_dt    = pd.Series(data=reg_ictp_c_i, index=dt)
 reg_ictp_i_c_i_dt  = pd.Series(data=reg_ictp_i_c_i, index=dt)
@@ -545,25 +611,16 @@ plt.plot(reg_ictp_i_c_i_dt,  linewidth=1, linestyle='--', color='gray',    label
 plt.plot(reg_ictp_ii_c_i_dt, linewidth=1, linestyle='--', color='brown',   label='Reg5-UW')
 plt.plot(wrf_ncar_c_i_dt,    linewidth=1, linestyle='--', color='green',   label='WRF-NCAR')
 plt.plot(wrf_ucan_c_i_dt,    linewidth=1, linestyle='--', color='orange',  label='WRF-UCAN')
-ax.text(ty1, tx1, f"Reg4 = {b_reg_usp_inmet_ci:.2f}({r_reg_usp_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx2, f"Reg5-Holt3 = {b_reg_ictp_inmet_ci:.2f}({r_reg_ictp_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx3, f"Reg5-Holt = {b_reg_ictp_i_inmet_ci:.2f}({r_reg_ictp_i_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx4, f"Reg5-UW = {b_reg_ictp_ii_inmet_ci:.2f}({r_reg_ictp_ii_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx5, f"WRF-NCAR = {b_wrf_ncar_inmet_ci:.2f}({r_wrf_ncar_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx6, f"WRF-UCAN = {b_wrf_ucan_inmet_ci:.2f}({r_wrf_ucan_inmet_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty2, tx1, f"{b_reg_usp_era5_ci:.2f}({r_reg_usp_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx2, f"{b_reg_ictp_era5_ci:.2f}({r_reg_ictp_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx3, f"{b_reg_ictp_i_era5_ci:.2f}({r_reg_ictp_i_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx4, f"{b_reg_ictp_ii_era5_ci:.2f}({r_reg_ictp_ii_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx5, f"{b_wrf_ncar_era5_ci:.2f}({r_wrf_ncar_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx6, f"{b_wrf_ucan_era5_ci:.2f}({r_wrf_ucan_era5_ci:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
+plt.xticks(fontsize=font_size)
+plt.xlabel('2018/05/31 - 2021/06/30', fontsize=font_size)
 plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
 plt.ylim(vmin, vmax)
 plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 2)
+ax = fig.add_subplot(6, 2, 2)
 reg_usp_c_ii_dt     = pd.Series(data=reg_usp_c_ii, index=dt)
 reg_ictp_c_ii_dt    = pd.Series(data=reg_ictp_c_ii, index=dt)
 reg_ictp_i_c_ii_dt  = pd.Series(data=reg_ictp_i_c_ii, index=dt)
@@ -580,24 +637,24 @@ plt.plot(reg_ictp_i_c_ii_dt,  linewidth=1, linestyle='--', color='gray',    labe
 plt.plot(reg_ictp_ii_c_ii_dt, linewidth=1, linestyle='--', color='brown',   label='Reg5-UW')
 plt.plot(wrf_ncar_c_ii_dt,    linewidth=1, linestyle='--', color='green',   label='WRF-NCAR')
 plt.plot(wrf_ucan_c_ii_dt,    linewidth=1, linestyle='--', color='orange',  label='WRF-UCAN')
-ax.text(ty1, tx1, f"Reg4 = {b_reg_usp_inmet_cii:.2f}({r_reg_usp_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx2, f"Reg5-Holt3 = {b_reg_ictp_inmet_cii:.2f}({r_reg_ictp_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx3, f"Reg5-Holt = {b_reg_ictp_i_inmet_cii:.2f}({r_reg_ictp_i_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx4, f"Reg5-UW = {b_reg_ictp_ii_inmet_cii:.2f}({r_reg_ictp_ii_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx5, f"WRF-NCAR = {b_wrf_ncar_inmet_cii:.2f}({r_wrf_ncar_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx6, f"WRF-UCAN = {b_wrf_ucan_inmet_cii:.2f}({r_wrf_ucan_inmet_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty2, tx1, f"{b_reg_usp_era5_cii:.2f}({r_reg_usp_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx2, f"{b_reg_ictp_era5_cii:.2f}({r_reg_ictp_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx3, f"{b_reg_ictp_i_era5_cii:.2f}({r_reg_ictp_i_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx4, f"{b_reg_ictp_ii_era5_cii:.2f}({r_reg_ictp_ii_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx5, f"{b_wrf_ncar_era5_cii:.2f}({r_wrf_ncar_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx6, f"{b_wrf_ucan_era5_cii:.2f}({r_wrf_ucan_era5_cii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
+plt.xlabel('2018/05/31 - 2021/06/30', fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.xticks(fontsize=font_size)
 plt.ylim(vmin, vmax)
 plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 3)
+ax = fig.add_subplot(6, 2, 3)
+portrait_diagram(ax, columns, data_c_i)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 4)
+portrait_diagram(ax, columns, data_c_ii)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 5)
 reg_usp_c_iii_dt     = pd.Series(data=reg_usp_c_iii, index=dt)
 reg_ictp_c_iii_dt    = pd.Series(data=reg_ictp_c_iii, index=dt)
 reg_ictp_i_c_iii_dt  = pd.Series(data=reg_ictp_i_c_iii, index=dt)
@@ -614,25 +671,16 @@ plt.plot(reg_ictp_i_c_iii_dt,  linewidth=1, linestyle='--', color='gray',    lab
 plt.plot(reg_ictp_ii_c_iii_dt, linewidth=1, linestyle='--', color='brown',   label='Reg5-UW')
 plt.plot(wrf_ncar_c_iii_dt,    linewidth=1, linestyle='--', color='green',   label='WRF-NCAR')
 plt.plot(wrf_ucan_c_iii_dt,    linewidth=1, linestyle='--', color='orange',  label='WRF-UCAN')
-ax.text(ty1, tx1, f"Reg4 = {b_reg_usp_inmet_ciii:.2f}({r_reg_usp_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx2, f"Reg5-Holt3 = {b_reg_ictp_inmet_ciii:.2f}({r_reg_ictp_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx3, f"Reg5-Holt = {b_reg_ictp_i_inmet_ciii:.2f}({r_reg_ictp_i_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx4, f"Reg5-UW = {b_reg_ictp_ii_inmet_ciii:.2f}({r_reg_ictp_ii_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx5, f"WRF-NCAR = {b_wrf_ncar_inmet_ciii:.2f}({r_wrf_ncar_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx6, f"WRF-UCAN = {b_wrf_ucan_inmet_ciii:.2f}({r_wrf_ucan_inmet_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty2, tx1, f"{b_reg_usp_era5_ciii:.2f}({r_reg_usp_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx2, f"{b_reg_ictp_era5_ciii:.2f}({r_reg_ictp_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx3, f"{b_reg_ictp_i_era5_ciii:.2f}({r_reg_ictp_i_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx4, f"{b_reg_ictp_ii_era5_ciii:.2f}({r_reg_ictp_ii_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx5, f"{b_wrf_ncar_era5_ciii:.2f}({r_wrf_ncar_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx6, f"{b_wrf_ucan_era5_ciii:.2f}({r_wrf_ucan_era5_ciii:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
+plt.xlabel('2018/05/31 - 2021/06/30', fontsize=font_size)
+plt.xticks(fontsize=font_size)
 plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
 plt.ylim(vmin, vmax)
 plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 4)
+ax = fig.add_subplot(6, 2, 6)
 reg_usp_c_iv_dt     = pd.Series(data=reg_usp_c_iv, index=dt)
 reg_ictp_c_iv_dt    = pd.Series(data=reg_ictp_c_iv, index=dt)
 reg_ictp_i_c_iv_dt  = pd.Series(data=reg_ictp_i_c_iv, index=dt)
@@ -649,24 +697,24 @@ plt.plot(reg_ictp_i_c_iv_dt,  linewidth=1, linestyle='--', color='gray',    labe
 plt.plot(reg_ictp_ii_c_iv_dt, linewidth=1, linestyle='--', color='brown',   label='Reg5-UW')
 plt.plot(wrf_ncar_c_iv_dt,    linewidth=1, linestyle='--', color='green',   label='WRF-NCAR')
 plt.plot(wrf_ucan_c_iv_dt,    linewidth=1, linestyle='--', color='orange',  label='WRF-UCAN')
-ax.text(ty1, tx1, f"Reg4 = {b_reg_usp_inmet_civ:.2f}({r_reg_usp_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx2, f"Reg5-Holt3 = {b_reg_ictp_inmet_civ:.2f}({r_reg_ictp_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx3, f"Reg5-Holt = {b_reg_ictp_i_inmet_civ:.2f}({r_reg_ictp_i_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx4, f"Reg5-UW = {b_reg_ictp_ii_inmet_civ:.2f}({r_reg_ictp_ii_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx5, f"WRF-NCAR = {b_wrf_ncar_inmet_civ:.2f}({r_wrf_ncar_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx6, f"WRF-UCAN = {b_wrf_ucan_inmet_civ:.2f}({r_wrf_ucan_inmet_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty2, tx1, f"{b_reg_usp_era5_civ:.2f}({r_reg_usp_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx2, f"{b_reg_ictp_era5_civ:.2f}({r_reg_ictp_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx3, f"{b_reg_ictp_i_era5_civ:.2f}({r_reg_ictp_i_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx4, f"{b_reg_ictp_ii_era5_civ:.2f}({r_reg_ictp_ii_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx5, f"{b_wrf_ncar_era5_civ:.2f}({r_wrf_ncar_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx6, f"{b_wrf_ucan_era5_civ:.2f}({r_wrf_ucan_era5_civ:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
+plt.xlabel('2018/05/31 - 2021/06/30', fontsize=font_size)
+plt.xticks(fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
 plt.ylim(vmin, vmax)
 plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 5)
+ax = fig.add_subplot(6, 2, 7)
+portrait_diagram(ax, columns, data_c_i)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 8)
+portrait_diagram(ax, columns, data_c_ii)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 9)
 reg_usp_c_v_dt     = pd.Series(data=reg_usp_c_v, index=dt)
 reg_ictp_c_v_dt    = pd.Series(data=reg_ictp_c_v, index=dt)
 reg_ictp_i_c_v_dt  = pd.Series(data=reg_ictp_i_c_v, index=dt)
@@ -683,26 +731,16 @@ plt.plot(reg_ictp_i_c_v_dt,  linewidth=1, linestyle='--', color='gray',    label
 plt.plot(reg_ictp_ii_c_v_dt, linewidth=1, linestyle='--', color='brown',   label='Reg5-UW')
 plt.plot(wrf_ncar_c_v_dt,    linewidth=1, linestyle='--', color='green',   label='WRF-NCAR')
 plt.plot(wrf_ucan_c_v_dt,    linewidth=1, linestyle='--', color='orange',  label='WRF-UCAN')
-ax.text(ty1, tx1, f"Reg4 = {b_reg_usp_inmet_cv:.2f}({r_reg_usp_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx2, f"Reg5-Holt3 = {b_reg_ictp_inmet_cv:.2f}({r_reg_ictp_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx3, f"Reg5-Holt = {b_reg_ictp_i_inmet_cv:.2f}({r_reg_ictp_i_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx4, f"Reg5-UW = {b_reg_ictp_ii_inmet_cv:.2f}({r_reg_ictp_ii_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx5, f"WRF-NCAR = {b_wrf_ncar_inmet_cv:.2f}({r_wrf_ncar_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx6, f"WRF-UCAN = {b_wrf_ucan_inmet_cv:.2f}({r_wrf_ucan_inmet_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty2, tx1, f"{b_reg_usp_era5_cv:.2f}({r_reg_usp_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx2, f"{b_reg_ictp_era5_cv:.2f}({r_reg_ictp_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx3, f"{b_reg_ictp_i_era5_cv:.2f}({r_reg_ictp_i_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx4, f"{b_reg_ictp_ii_era5_cv:.2f}({r_reg_ictp_ii_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx5, f"{b_wrf_ncar_era5_cv:.2f}({r_wrf_ncar_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx6, f"{b_wrf_ucan_era5_cv:.2f}({r_wrf_ucan_era5_cv:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(c) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
-plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
+plt.xlabel('2018/05/31 - 2021/06/30', fontsize=font_size)
+plt.xticks(fontsize=font_size)
 plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
 plt.ylim(vmin, vmax)
 plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 6)
+ax = fig.add_subplot(6, 2, 10)
 reg_usp_c_dt     = pd.Series(data=reg_usp_c, index=dt)
 reg_ictp_c_dt    = pd.Series(data=reg_ictp_c, index=dt)
 reg_ictp_i_c_dt  = pd.Series(data=reg_ictp_i_c, index=dt)
@@ -719,25 +757,21 @@ plt.plot(reg_ictp_i_c_dt,  linewidth=1, linestyle='--', color='gray',    label='
 plt.plot(reg_ictp_ii_c_dt, linewidth=1, linestyle='--', color='brown',   label='Reg5-UW')
 plt.plot(wrf_ncar_c_dt,    linewidth=1, linestyle='--', color='green',   label='WRF-NCAR')
 plt.plot(wrf_ucan_c_dt,    linewidth=1, linestyle='--', color='orange',  label='WRF-UCAN')
-ax.text(ty1, tx1, f"Reg4 = {b_reg_usp_inmet_c:.2f}({r_reg_usp_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx2, f"Reg5-Holt3 = {b_reg_ictp_inmet_c:.2f}({r_reg_ictp_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx3, f"Reg5-Holt = {b_reg_ictp_i_inmet_c:.2f}({r_reg_ictp_i_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx4, f"Reg5-UW = {b_reg_ictp_ii_inmet_c:.2f}({r_reg_ictp_ii_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx5, f"WRF-NCAR = {b_wrf_ncar_inmet_c:.2f}({r_wrf_ncar_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty1, tx6, f"WRF-UCAN = {b_wrf_ucan_inmet_c:.2f}({r_wrf_ucan_inmet_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='black')
-ax.text(ty2, tx1, f"{b_reg_usp_era5_c:.2f}({r_reg_usp_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx2, f"{b_reg_ictp_era5_c:.2f}({r_reg_ictp_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx3, f"{b_reg_ictp_i_era5_c:.2f}({r_reg_ictp_i_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx4, f"{b_reg_ictp_ii_era5_c:.2f}({r_reg_ictp_ii_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx5, f"{b_wrf_ncar_era5_c:.2f}({r_wrf_ncar_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
-ax.text(ty2, tx6, f"{b_wrf_ucan_era5_c:.2f}({r_wrf_ucan_era5_c:.2f})", transform=ax.transAxes, ha='left', va='top', fontsize=font_size, color='red')
 plt.title('(f) All clusters', loc='left', fontsize=font_size, fontweight='bold')
-plt.xlabel('Period 2018/06 - 2021/05', fontsize=font_size, fontweight='bold')
+plt.xlabel('2018/05/31 - 2021/06/30', fontsize=font_size)
+plt.xticks(fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
 plt.ylim(vmin, vmax)
 plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
+plt.legend(ncol=8, fontsize=font_size, loc=(-1.1, -1.53))
 
-plt.legend(ncol=8, fontsize=font_size, loc=(-1.15, -0.35))
+ax = fig.add_subplot(6, 2, 11)
+portrait_diagram(ax, columns, data_c_i)
+
+ax = fig.add_subplot(6, 2, 12)
+portrait_diagram(ax, columns, data_c_ii)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)

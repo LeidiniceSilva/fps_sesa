@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
+from matplotlib.patches import Polygon
 
 var = 'pr'
 path = '/home/mda_silv/users/FPS_SESA'
@@ -257,6 +258,39 @@ def import_smn_ii():
 		mean_vii.append(d_vii)
 				
 	return mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii
+	
+
+def portrait_diagram(ax, columns, data, line_label='Bias (Correlation)'):
+
+	n_rows = 1  
+	n_cols = len(columns)
+	cell_width = 1
+	cell_height = 1
+
+	for j in range(n_cols):
+		x = j * cell_width
+		y = 0  
+		era5_text, inmet_text = data[j]
+
+		# ERA5
+		era5_triangle = Polygon([[x, y+cell_height], [x, y], [x+cell_width, y+cell_height]], color='lightgray')
+		ax.add_patch(era5_triangle)
+		ax.text(x + 0.3*cell_width, y + 0.7*cell_height, era5_text, ha='center', va='center', fontsize=8)
+	
+		# INMET
+		inmet_triangle = Polygon([[x, y], [x+cell_width, y], [x+cell_width, y+cell_height]], color='white')
+		ax.add_patch(inmet_triangle)
+		ax.text(x + 0.7*cell_width, y + 0.3*cell_height, inmet_text, ha='center', va='center', fontsize=8)
+
+		ax.plot([x, x+cell_width, x+cell_width, x, x], [y, y, y+cell_height, y+cell_height, y], color='black')
+
+	ax.set_xlim(0, n_cols*cell_width)
+	ax.set_ylim(0, n_rows*cell_height)
+	ax.set_xticks([x + cell_width/2 for x in range(n_cols)])
+	ax.set_xticklabels(columns, fontsize=8)
+	ax.set_yticks([0.5])
+	ax.set_yticklabels([line_label], rotation=90, va='center', fontsize=8, fontweight='bold')
+	ax.invert_yaxis()
 	
 	
 # Import dataset
@@ -603,177 +637,175 @@ r_reg_ictp_ii_era5_c = np.corrcoef(reg_ictp_ii_c, era5_c)[0, 1]
 r_wrf_ncar_era5_c    = np.corrcoef(wrf_ncar_c, era5_c)[0, 1]
 r_wrf_ucan_era5_c    = np.corrcoef(wrf_ucan_c, era5_c)[0, 1]
 
+data_c_i = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_ci,  b_reg_ictp_era5_ci,  b_reg_ictp_i_era5_ci,  b_reg_ictp_ii_era5_ci,  b_wrf_ncar_era5_ci,  b_wrf_ucan_era5_ci],
+        [b_reg_usp_inmet_ci, b_reg_ictp_inmet_ci, b_reg_ictp_i_inmet_ci, b_reg_ictp_ii_inmet_ci, b_wrf_ncar_inmet_ci, b_wrf_ucan_inmet_ci],
+        [r_reg_usp_era5_ci,  r_reg_ictp_era5_ci,  r_reg_ictp_i_era5_ci,  r_reg_ictp_ii_era5_ci,  r_wrf_ncar_era5_ci,  r_wrf_ucan_era5_ci],
+        [r_reg_usp_inmet_ci, r_reg_ictp_inmet_ci, r_reg_ictp_i_inmet_ci, r_reg_ictp_ii_inmet_ci, r_wrf_ncar_inmet_ci, r_wrf_ucan_inmet_ci])]
+
+data_c_ii = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_cii,  b_reg_ictp_era5_cii,  b_reg_ictp_i_era5_cii,  b_reg_ictp_ii_era5_cii,  b_wrf_ncar_era5_cii,  b_wrf_ucan_era5_cii],
+        [b_reg_usp_inmet_cii, b_reg_ictp_inmet_cii, b_reg_ictp_i_inmet_cii, b_reg_ictp_ii_inmet_cii, b_wrf_ncar_inmet_cii, b_wrf_ucan_inmet_cii],
+        [r_reg_usp_era5_cii,  r_reg_ictp_era5_cii,  r_reg_ictp_i_era5_cii,  r_reg_ictp_ii_era5_cii,  r_wrf_ncar_era5_cii,  r_wrf_ucan_era5_cii],
+        [r_reg_usp_inmet_cii, r_reg_ictp_inmet_cii, r_reg_ictp_i_inmet_cii, r_reg_ictp_ii_inmet_cii, r_wrf_ncar_inmet_cii, r_wrf_ucan_inmet_cii])]
+
+
+data_c_iii = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip(	[b_reg_usp_era5_ciii,  b_reg_ictp_era5_ciii,  b_reg_ictp_i_era5_ciii,  b_reg_ictp_ii_era5_ciii,  b_wrf_ncar_era5_ciii,  b_wrf_ucan_era5_ciii],
+        [b_reg_usp_inmet_ciii, b_reg_ictp_inmet_ciii, b_reg_ictp_i_inmet_ciii, b_reg_ictp_ii_inmet_ciii, b_wrf_ncar_inmet_ciii, b_wrf_ucan_inmet_ciii],
+        [r_reg_usp_era5_ciii,  r_reg_ictp_era5_ciii,  r_reg_ictp_i_era5_ciii,  r_reg_ictp_ii_era5_ciii,  r_wrf_ncar_era5_ciii,  r_wrf_ucan_era5_ciii],
+        [r_reg_usp_inmet_ciii, r_reg_ictp_inmet_ciii, r_reg_ictp_i_inmet_ciii, r_reg_ictp_ii_inmet_ciii, r_wrf_ncar_inmet_ciii, r_wrf_ucan_inmet_ciii])]
+
+
+data_c_iv = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_civ,  b_reg_ictp_era5_civ,  b_reg_ictp_i_era5_civ,  b_reg_ictp_ii_era5_civ,  b_wrf_ncar_era5_civ,  b_wrf_ucan_era5_civ],
+        [b_reg_usp_inmet_civ, b_reg_ictp_inmet_civ, b_reg_ictp_i_inmet_civ, b_reg_ictp_ii_inmet_civ, b_wrf_ncar_inmet_civ, b_wrf_ucan_inmet_civ],
+        [r_reg_usp_era5_civ,  r_reg_ictp_era5_civ,  r_reg_ictp_i_era5_civ,  r_reg_ictp_ii_era5_civ,  r_wrf_ncar_era5_civ,  r_wrf_ucan_era5_civ],
+        [r_reg_usp_inmet_civ, r_reg_ictp_inmet_civ, r_reg_ictp_i_inmet_civ, r_reg_ictp_ii_inmet_civ, r_wrf_ncar_inmet_civ, r_wrf_ucan_inmet_civ])]
+
+data_c_v = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_cv,  b_reg_ictp_era5_cv,  b_reg_ictp_i_era5_cv,  b_reg_ictp_ii_era5_cv,  b_wrf_ncar_era5_cv,  b_wrf_ucan_era5_cv],
+        [b_reg_usp_inmet_cv, b_reg_ictp_inmet_cv, b_reg_ictp_i_inmet_cv, b_reg_ictp_ii_inmet_cv, b_wrf_ncar_inmet_cv, b_wrf_ucan_inmet_cv],
+        [r_reg_usp_era5_cv,  r_reg_ictp_era5_cv,  r_reg_ictp_i_era5_cv,  r_reg_ictp_ii_era5_cv,  r_wrf_ncar_era5_cv,  r_wrf_ucan_era5_cv],
+        [r_reg_usp_inmet_cv, r_reg_ictp_inmet_cv, r_reg_ictp_i_inmet_cv, r_reg_ictp_ii_inmet_cv, r_wrf_ncar_inmet_cv, r_wrf_ucan_inmet_cv])]
+
+data_c = [[f"{b_e:.2f}\n({r_e:.2f})", f"{b_i:.2f}\n({r_i:.2f})"]
+    for b_e, b_i, r_e, r_i in zip([b_reg_usp_era5_c,  b_reg_ictp_era5_c,  b_reg_ictp_i_era5_c,  b_reg_ictp_ii_era5_c,  b_wrf_ncar_era5_c,  b_wrf_ucan_era5_c],
+        [b_reg_usp_inmet_c, b_reg_ictp_inmet_c, b_reg_ictp_i_inmet_c, b_reg_ictp_ii_inmet_c, b_wrf_ncar_inmet_c, b_wrf_ucan_inmet_c],
+        [r_reg_usp_era5_c,  r_reg_ictp_era5_c,  r_reg_ictp_i_era5_c,  r_reg_ictp_ii_era5_c,  r_wrf_ncar_era5_c,  r_wrf_ucan_era5_c],
+        [r_reg_usp_inmet_c, r_reg_ictp_inmet_c, r_reg_ictp_i_inmet_c, r_reg_ictp_ii_inmet_c, r_wrf_ncar_inmet_c, r_wrf_ucan_inmet_c])]
+
 # Plot figure
-fig = plt.figure(figsize=(10, 8))
+fig = plt.figure(figsize=(10, 12))
 time = np.arange(0.5, 12 + 0.5)
 font_size = 8
 
-ax = fig.add_subplot(3, 2, 1)
-plt.plot(time, inmet_smn_c_i,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_i,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_i,     linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='blue', label='Reg4')
-plt.plot(time, reg_ictp_c_i,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='magenta', label='Reg5-Holt3')
-plt.plot(time, reg_ictp_i_c_i,  linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='gray', label='Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_i, linewidth=1.5, linestyle='--', marker='o',  markersize=3, markerfacecolor='white', color='brown', label='Reg5-UW')
-plt.plot(time, wrf_ncar_c_i,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='green', label='WRF-NCAR')
-plt.plot(time, wrf_ucan_c_i,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='orange', label='WRF-UCAN')
-plt.text(2, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_ci, 2), round(r_reg_usp_inmet_ci, 2)), fontsize=font_size, color='black')
-plt.text(2, 10, 'Reg5-Holt3 = {0}({1})'.format(round(b_reg_ictp_inmet_ci, 2), round(r_reg_ictp_inmet_ci, 2)), fontsize=font_size, color='black')
-plt.text(2, 9, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_ci, 2), round(r_reg_ictp_i_inmet_ci, 2)), fontsize=font_size, color='black')
-plt.text(2, 8, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_ci, 2), round(r_reg_ictp_ii_inmet_ci, 2)), fontsize=font_size, color='black')
-plt.text(2, 7, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_ci, 2), round(r_wrf_ncar_inmet_ci, 2)), fontsize=font_size, color='black')
-plt.text(2, 6, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_ci, 2), round(r_wrf_ucan_inmet_ci, 2)), fontsize=font_size, color='black')
-plt.text(7, 11, '{0}({1})'.format(round(b_reg_usp_era5_ci, 2), round(r_reg_usp_era5_ci, 2)), fontsize=font_size, color='red')
-plt.text(7, 10, '{0}({1})'.format(round(b_reg_ictp_era5_ci, 2), round(r_reg_ictp_era5_ci, 2)), fontsize=font_size, color='red')
-plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_ci, 2), round(r_reg_ictp_i_era5_ci, 2)), fontsize=font_size, color='red')
-plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_ci, 2), round(r_reg_ictp_ii_era5_ci, 2)), fontsize=font_size, color='red')
-plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_ci, 2), round(r_wrf_ncar_era5_ci, 2)), fontsize=font_size, color='red')
-plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_ci, 2), round(r_wrf_ucan_era5_ci, 2)), fontsize=font_size, color='red')
+legend = 'Precipitation (mm d$^-$$^1$)'
+vmin = 0
+vmax = 12
+vmax_ = 13
+int_ = 1
+	
+columns = ['Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
+
+ax = fig.add_subplot(6, 2, 1)
+plt.plot(time, inmet_smn_c_i,   linewidth=1.5, color='black', label='INMET+SMN')
+plt.plot(time, era5_c_i,        linewidth=1.5, color='red',   label='ERA5')
+plt.plot(time, reg_usp_c_i,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue',    label='Reg4')
+plt.plot(time, reg_ictp_c_i,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='magenta', label='Reg5-Holt3')
+plt.plot(time, reg_ictp_i_c_i,  linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='gray',    label='Reg5-Holt')
+plt.plot(time, reg_ictp_ii_c_i, linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='brown',   label='Reg5-UW')
+plt.plot(time, wrf_ncar_c_i,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='green',   label='WRF-NCAR')
+plt.plot(time, wrf_ucan_c_i,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='orange',  label='WRF-UCAN')
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 12)
-plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.ylim(vmin, vmax)
+plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
-plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 2)
-plt.plot(time, inmet_smn_c_ii,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_ii,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_ii,     linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='blue', label='Reg4')
-plt.plot(time, reg_ictp_c_ii,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='magenta', label='Reg5-Holt3')
-plt.plot(time, reg_ictp_i_c_ii,  linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='gray', label='Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_ii, linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='brown', label='Reg5-UW')
-plt.plot(time, wrf_ncar_c_ii,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='green', label='WRF-NCAR')
-plt.plot(time, wrf_ucan_c_ii,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='orange', label='WRF-UCAN')
-plt.text(2, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_cii, 2), round(r_reg_usp_inmet_cii, 2)), fontsize=font_size, color='black')
-plt.text(2, 10, 'Reg5-Holt3 = {0}({1})'.format(round(b_reg_ictp_inmet_cii, 2), round(r_reg_ictp_inmet_cii, 2)), fontsize=font_size, color='black')
-plt.text(2, 9, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_cii, 2), round(r_reg_ictp_i_inmet_cii, 2)), fontsize=font_size, color='black')
-plt.text(2, 8, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_cii, 2), round(r_reg_ictp_ii_inmet_cii, 2)), fontsize=font_size, color='black')
-plt.text(2, 7, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_cii, 2), round(r_wrf_ncar_inmet_cii, 2)), fontsize=font_size, color='black')
-plt.text(2, 6, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_cii, 2), round(r_wrf_ucan_inmet_cii, 2)), fontsize=font_size, color='black')
-plt.text(7, 11, '{0}({1})'.format(round(b_reg_usp_era5_cii, 2), round(r_reg_usp_era5_cii, 2)), fontsize=font_size, color='red')
-plt.text(7, 10, '{0}({1})'.format(round(b_reg_ictp_era5_cii, 2), round(r_reg_ictp_era5_cii, 2)), fontsize=font_size, color='red')
-plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_cii, 2), round(r_reg_ictp_i_era5_cii, 2)), fontsize=font_size, color='red')
-plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_cii, 2), round(r_reg_ictp_ii_era5_cii, 2)), fontsize=font_size, color='red')
-plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_cii, 2), round(r_wrf_ncar_era5_cii, 2)), fontsize=font_size, color='red')
-plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_cii, 2), round(r_wrf_ucan_era5_cii, 2)), fontsize=font_size, color='red')
+ax = fig.add_subplot(6, 2, 2)
+plt.plot(time, inmet_smn_c_ii,   linewidth=1.5, color='black', label='INMET+SMN')
+plt.plot(time, era5_c_ii,        linewidth=1.5, color='red',   label='ERA5')
+plt.plot(time, reg_usp_c_ii,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue',    label='Reg4')
+plt.plot(time, reg_ictp_c_ii,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='magenta', label='Reg5-Holt3')
+plt.plot(time, reg_ictp_i_c_ii,  linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='gray',    label='Reg5-Holt')
+plt.plot(time, reg_ictp_ii_c_ii, linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='brown',   label='Reg5-UW')
+plt.plot(time, wrf_ncar_c_ii,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='green',   label='WRF-NCAR')
+plt.plot(time, wrf_ucan_c_ii,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='orange',  label='WRF-UCAN')
 plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 12)
-plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.ylim(vmin, vmax)
+plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
-plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 3)
-plt.plot(time, inmet_smn_c_iii,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_iii,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_iii,     linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='blue',    label='Reg4')
-plt.plot(time, reg_ictp_c_iii,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='magenta', label='Reg5-Holt3')
-plt.plot(time, reg_ictp_i_c_iii,  linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='gray',    label='Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_iii, linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='brown',   label='Reg5-UW')
-plt.plot(time, wrf_ncar_c_iii,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='green',   label='WRF-NCAR')
-plt.plot(time, wrf_ucan_c_iii,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='orange',  label='WRF-UCAN')
-plt.text(2, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_ciii, 2), round(r_reg_usp_inmet_ciii, 2)), fontsize=font_size, color='black')
-plt.text(2, 10, 'Reg5-Holt3 = {0}({1})'.format(round(b_reg_ictp_inmet_ciii, 2), round(r_reg_ictp_inmet_ciii, 2)), fontsize=font_size, color='black')
-plt.text(2, 9, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_ciii, 2), round(r_reg_ictp_i_inmet_ciii, 2)), fontsize=font_size, color='black')
-plt.text(2, 8, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_ciii, 2), round(r_reg_ictp_ii_inmet_ciii, 2)), fontsize=font_size, color='black')
-plt.text(2, 7, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_ciii, 2), round(r_wrf_ncar_inmet_ciii, 2)), fontsize=font_size, color='black')
-plt.text(2, 6, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_ciii, 2), round(r_wrf_ucan_inmet_ciii, 2)), fontsize=font_size, color='black')
-plt.text(7, 11, '{0}({1})'.format(round(b_reg_usp_era5_ciii, 2), round(r_reg_usp_era5_ciii, 2)), fontsize=font_size, color='red')
-plt.text(7, 10, '{0}({1})'.format(round(b_reg_ictp_era5_ciii, 2), round(r_reg_ictp_era5_ciii, 2)), fontsize=font_size, color='red')
-plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_ciii, 2), round(r_reg_ictp_i_era5_ciii, 2)), fontsize=font_size, color='red')
-plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_ciii, 2), round(r_reg_ictp_ii_era5_ciii, 2)), fontsize=font_size, color='red')
-plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_ciii, 2), round(r_wrf_ncar_era5_ciii, 2)), fontsize=font_size, color='red')
-plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_ciii, 2), round(r_wrf_ucan_era5_ciii, 2)), fontsize=font_size, color='red')
+ax = fig.add_subplot(6, 2, 3)
+portrait_diagram(ax, columns, data_c_i)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 4)
+portrait_diagram(ax, columns, data_c_ii)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 5)
+plt.plot(time, inmet_smn_c_iii,   linewidth=1.5, color='black', label='INMET+SMN')
+plt.plot(time, era5_c_iii,        linewidth=1.5, color='red',   label='ERA5')
+plt.plot(time, reg_usp_c_iii,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue',    label='Reg4')
+plt.plot(time, reg_ictp_c_iii,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='magenta', label='Reg5-Holt3')
+plt.plot(time, reg_ictp_i_c_iii,  linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='gray',    label='Reg5-Holt')
+plt.plot(time, reg_ictp_ii_c_iii, linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='brown',   label='Reg5-UW')
+plt.plot(time, wrf_ncar_c_iii,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='green',   label='WRF-NCAR')
+plt.plot(time, wrf_ucan_c_iii,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='orange',  label='WRF-UCAN')
 plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 12)
-plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.ylim(vmin, vmax)
+plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
-plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 4)
-plt.plot(time, inmet_smn_c_iv,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_iv,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_iv,     linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='blue',    label='Reg4')
-plt.plot(time, reg_ictp_c_iv,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='magenta', label='Reg5-Holt3')
-plt.plot(time, reg_ictp_i_c_iv,  linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='gray',    label='Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_iv, linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='brown',   label='Reg5-UW')
-plt.plot(time, wrf_ncar_c_iv,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='green',   label='WRF-NCAR')
-plt.plot(time, wrf_ucan_c_iv,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='orange',  label='WRF-UCAN')
-plt.text(2, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_civ, 2), round(r_reg_usp_inmet_civ, 2)), fontsize=font_size, color='black')
-plt.text(2, 10, 'Reg5-Holt3 = {0}({1})'.format(round(b_reg_ictp_inmet_civ, 2), round(r_reg_ictp_inmet_civ, 2)), fontsize=font_size, color='black')
-plt.text(2, 9, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_civ, 2), round(r_reg_ictp_i_inmet_civ, 2)), fontsize=font_size, color='black')
-plt.text(2, 8, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_civ, 2), round(r_reg_ictp_ii_inmet_civ, 2)), fontsize=font_size, color='black')
-plt.text(2, 7, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_civ, 2), round(r_wrf_ncar_inmet_civ, 2)), fontsize=font_size, color='black')
-plt.text(2, 6, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_civ, 2), round(r_wrf_ucan_inmet_civ, 2)), fontsize=font_size, color='black')
-plt.text(7, 11, '{0}({1})'.format(round(b_reg_usp_era5_civ, 2), round(r_reg_usp_era5_civ, 2)), fontsize=font_size, color='red')
-plt.text(7, 10, '{0}({1})'.format(round(b_reg_ictp_era5_civ, 2), round(r_reg_ictp_era5_civ, 2)), fontsize=font_size, color='red')
-plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_civ, 2), round(r_reg_ictp_i_era5_civ, 2)), fontsize=font_size, color='red')
-plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_civ, 2), round(r_reg_ictp_ii_era5_civ, 2)), fontsize=font_size, color='red')
-plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_civ, 2), round(r_wrf_ncar_era5_civ, 2)), fontsize=font_size, color='red')
-plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_civ, 2), round(r_wrf_ucan_era5_civ, 2)), fontsize=font_size, color='red')
+ax = fig.add_subplot(6, 2, 6)
+plt.plot(time, inmet_smn_c_iv,   linewidth=1.5, color='black', label='INMET+SMN')
+plt.plot(time, era5_c_iv,        linewidth=1.5, color='red',   label='ERA5')
+plt.plot(time, reg_usp_c_iv,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue',    label='Reg4')
+plt.plot(time, reg_ictp_c_iv,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='magenta', label='Reg5-Holt3')
+plt.plot(time, reg_ictp_i_c_iv,  linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='gray',    label='Reg5-Holt')
+plt.plot(time, reg_ictp_ii_c_iv, linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='brown',   label='Reg5-UW')
+plt.plot(time, wrf_ncar_c_iv,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='green',   label='WRF-NCAR')
+plt.plot(time, wrf_ucan_c_iv,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='orange',  label='WRF-UCAN')
 plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 12)
-plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.ylim(vmin, vmax)
+plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
-plt.setp(ax.get_xticklabels(), visible=False)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 5)
-plt.plot(time, inmet_smn_c_v,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c_v,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c_v,     linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='blue',    label='Reg4')
-plt.plot(time, reg_ictp_c_v,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='magenta', label='Reg5-Holt3')
-plt.plot(time, reg_ictp_i_c_v,  linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='gray',    label='Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c_v, linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='brown',   label='Reg5-UW')
-plt.plot(time, wrf_ncar_c_v,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='green',   label='WRF-NCAR')
-plt.plot(time, wrf_ucan_c_v,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='orange',  label='WRF-UCAN')
-plt.text(2, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_cv, 2), round(r_reg_usp_inmet_cv, 2)), fontsize=font_size, color='black')
-plt.text(2, 10, 'Reg5-Holt3 = {0}({1})'.format(round(b_reg_ictp_inmet_cv, 2), round(r_reg_ictp_inmet_cv, 2)), fontsize=font_size, color='black')
-plt.text(2, 9, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_cv, 2), round(r_reg_ictp_i_inmet_cv, 2)), fontsize=font_size, color='black')
-plt.text(2, 8, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_cv, 2), round(r_reg_ictp_ii_inmet_cv, 2)), fontsize=font_size, color='black')
-plt.text(2, 7, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_cv, 2), round(r_wrf_ncar_inmet_cv, 2)), fontsize=font_size, color='black')
-plt.text(2, 6, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_cv, 2), round(r_wrf_ucan_inmet_cv, 2)), fontsize=font_size, color='black')
-plt.text(7, 11, '{0}({1})'.format(round(b_reg_usp_era5_cv, 2), round(r_reg_usp_era5_cv, 2)), fontsize=font_size, color='red')
-plt.text(7, 10, '{0}({1})'.format(round(b_reg_ictp_era5_cv, 2), round(r_reg_ictp_era5_cv, 2)), fontsize=font_size, color='red')
-plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_cv, 2), round(r_reg_ictp_i_era5_cv, 2)), fontsize=font_size, color='red')
-plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_cv, 2), round(r_reg_ictp_ii_era5_cv, 2)), fontsize=font_size, color='red')
-plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_cv, 2), round(r_wrf_ncar_era5_cv, 2)), fontsize=font_size, color='red')
-plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_cv, 2), round(r_wrf_ucan_era5_cv, 2)), fontsize=font_size, color='red')
+ax = fig.add_subplot(6, 2, 7)
+portrait_diagram(ax, columns, data_c_iii)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 8)
+portrait_diagram(ax, columns, data_c_iv)
+ax.xaxis.set_visible(False)
+
+ax = fig.add_subplot(6, 2, 9)
+plt.plot(time, inmet_smn_c_v,   linewidth=1.5, color='black', label='INMET+SMN')
+plt.plot(time, era5_c_v,        linewidth=1.5, color='red',   label='ERA5')
+plt.plot(time, reg_usp_c_v,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue',    label='Reg4')
+plt.plot(time, reg_ictp_c_v,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='magenta', label='Reg5-Holt3')
+plt.plot(time, reg_ictp_i_c_v,  linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='gray',    label='Reg5-Holt')
+plt.plot(time, reg_ictp_ii_c_v, linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='brown',   label='Reg5-UW')
+plt.plot(time, wrf_ncar_c_v,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='green',   label='WRF-NCAR')
+plt.plot(time, wrf_ucan_c_v,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='orange',  label='WRF-UCAN')
 plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
-plt.xlabel('Months', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 12)
-plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.ylim(vmin, vmax)
+plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
+plt.grid(linestyle='--')
 
-ax = fig.add_subplot(3, 2, 6)
-plt.plot(time, inmet_smn_c,   linewidth=1.5, color='black', label = 'INMET+SMN')
-plt.plot(time, era5_c,        linewidth=1.5, color='red', label = 'ERA5')
-plt.plot(time, reg_usp_c,     linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='blue',    label='Reg4')
-plt.plot(time, reg_ictp_c,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='magenta', label='Reg5-Holt3')
-plt.plot(time, reg_ictp_i_c,  linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='gray',    label='Reg5-Holt')
-plt.plot(time, reg_ictp_ii_c, linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='brown',   label='Reg5-UW')
-plt.plot(time, wrf_ncar_c,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='green',   label='WRF-NCAR')
-plt.plot(time, wrf_ucan_c,    linewidth=1.5, linestyle='--', marker='o', markersize=3, markerfacecolor='white', color='orange',  label='WRF-UCAN')
-plt.text(2, 11, 'Reg4 = {0}({1})'.format(round(b_reg_usp_inmet_c, 2), round(r_reg_usp_inmet_c, 2)), fontsize=font_size, color='black')
-plt.text(2, 10, 'Reg5-Holt3 = {0}({1})'.format(round(b_reg_ictp_inmet_c, 2), round(r_reg_ictp_inmet_c, 2)), fontsize=font_size, color='black')
-plt.text(2, 9, 'Reg5-Holt = {0}({1})'.format(round(b_reg_ictp_i_inmet_c, 2), round(r_reg_ictp_i_inmet_c, 2)), fontsize=font_size, color='black')
-plt.text(2, 8, 'Reg5-UW = {0}({1})'.format(round(b_reg_ictp_ii_inmet_c, 2), round(r_reg_ictp_ii_inmet_c, 2)), fontsize=font_size, color='black')
-plt.text(2, 7, 'WRF-NCAR = {0}({1})'.format(round(b_wrf_ncar_inmet_c, 2), round(r_wrf_ncar_inmet_c, 2)), fontsize=font_size, color='black')
-plt.text(2, 6, 'WRF-UCAN = {0}({1})'.format(round(b_wrf_ucan_inmet_c, 2), round(r_wrf_ucan_inmet_c, 2)), fontsize=font_size, color='black')
-plt.text(7, 11, '{0}({1})'.format(round(b_reg_usp_era5_c, 2), round(r_reg_usp_era5_c, 2)), fontsize=font_size, color='red')
-plt.text(7, 10, '{0}({1})'.format(round(b_reg_ictp_era5_c, 2), round(r_reg_ictp_era5_c, 2)), fontsize=font_size, color='red')
-plt.text(7, 9, '{0}({1})'.format(round(b_reg_ictp_i_era5_c, 2), round(r_reg_ictp_i_era5_c, 2)), fontsize=font_size, color='red')
-plt.text(7, 8, '{0}({1})'.format(round(b_reg_ictp_ii_era5_c, 2), round(r_reg_ictp_ii_era5_c, 2)), fontsize=font_size, color='red')
-plt.text(7, 7, '{0}({1})'.format(round(b_wrf_ncar_era5_c, 2), round(r_wrf_ncar_era5_c, 2)), fontsize=font_size, color='red')
-plt.text(7, 6, '{0}({1})'.format(round(b_wrf_ucan_era5_c, 2), round(r_wrf_ucan_era5_c, 2)), fontsize=font_size, color='red')
+ax = fig.add_subplot(6, 2, 10)
+plt.plot(time, inmet_smn_c,   linewidth=1.5, color='black', label='INMET')
+plt.plot(time, era5_c,        linewidth=1.5, color='red',   label='ERA5')
+plt.plot(time, reg_usp_c,     linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='blue',    label='Reg4')
+plt.plot(time, reg_ictp_c,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='magenta', label='Reg5-Holt3')
+plt.plot(time, reg_ictp_i_c,  linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='gray',    label='Reg5-Holt')
+plt.plot(time, reg_ictp_ii_c, linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='brown',   label='Reg5-UW')
+plt.plot(time, wrf_ncar_c,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='green',   label='WRF-NCAR')
+plt.plot(time, wrf_ucan_c,    linewidth=1.5, linestyle='--', markersize=3, marker='o', markerfacecolor='white', color='orange',  label='WRF-UCAN')
 plt.title('(f) All clusters', loc='left', fontsize=font_size, fontweight='bold')
-plt.xlabel('Months', fontsize=font_size, fontweight='bold')
-plt.ylim(0, 12)
-plt.yticks(np.arange(0, 13, 1), fontsize=font_size)
+plt.ylabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.ylim(vmin, vmax)
+plt.yticks(np.arange(vmin, vmax_, int_), fontsize=font_size)
 plt.xticks(time, ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), fontsize=font_size)
+plt.legend(ncol=8, fontsize=font_size, loc=(-1.25, -1.50))
+plt.grid(linestyle='--')
 
-plt.legend(ncol=8, fontsize=font_size, loc=(-1.3, -0.35))
+ax = fig.add_subplot(6, 2, 11)
+portrait_diagram(ax, columns, data_c_v)
+
+ax = fig.add_subplot(6, 2, 12)
+portrait_diagram(ax, columns, data_c)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
