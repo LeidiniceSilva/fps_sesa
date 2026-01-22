@@ -25,7 +25,7 @@ from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 var = 'pr'
-font_size = 8
+font_size = 7
 path = '/home/mda_silv/users/FPS_SESA'
 
 skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
@@ -44,7 +44,7 @@ skip_list_smn_ii = [39, 51, 55, 58, 64, 65, 66, 72, 75, 83, 86, 90, 91, 92]
 def import_inmet():
 
 	iy, ix = [], []
-	mean_i, mean_ii, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+	bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii = [], [], [], [], [], [], [], [], [], [], [], []
 
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
@@ -143,17 +143,14 @@ def import_inmet():
 			# calculate bias wrf ucan
 			bias_xi.append(values_v - values_vi)	
 			bias_xii.append(values_v - values_vii)
-			
-			mean_i.append(values_vi)
-			mean_ii.append(values_vi)
 
-	return iy, ix, mean_i, mean_ii, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii	
+	return iy, ix, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii
 
 
 def import_smn_i():
 
 	iy, ix = [], []
-	mean_i, mean_ii, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+	bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii = [], [], [], [], [], [], [], [], [], [], [], []
 
 	for i in range(1, 73):
 		yy=smn_i[i][1]
@@ -247,16 +244,13 @@ def import_smn_i():
 		bias_xi.append(values_v - values_vi)	
 		bias_xii.append(values_v - values_vii)
 
-		mean_i.append(values_vi)
-		mean_ii.append(values_vi)
-
-	return iy, ix, mean_i, mean_ii, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii	
-
+	return iy, ix, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii
+	
 
 def import_smn_ii():
 	
 	iy, ix = [], []
-	mean_i, mean_ii, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii = [], [], [], [], [], [], [], [], [], [], [], [], [], []
+	bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii = [], [], [], [], [], [], [], [], [], [], [], []
 
 	for i in range(1, 110):
 		if i in skip_list_smn_ii:
@@ -352,10 +346,7 @@ def import_smn_ii():
 		bias_xi.append(values_v - values_vi)	
 		bias_xii.append(values_v - values_vii)
 
-		mean_i.append(values_vi)
-		mean_ii.append(values_vi)
-
-	return iy, ix, mean_i, mean_ii, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii
+	return iy, ix, bias_i, bias_ii, bias_iii, bias_iv, bias_v, bias_vi, bias_vii, bias_viii, bias_ix, bias_x, bias_xi, bias_xii
 
 
 def configure_subplot(ax):
@@ -382,15 +373,12 @@ def configure_subplot(ax):
 	
 	
 # Import dataset
-lat_x, lon_x, mean_i_x, mean_ii_x, bias_i_x, bias_ii_x, bias_iii_x, bias_iv_x, bias_v_x, bias_vi_x, bias_vii_x, bias_viii_x, bias_ix_x, bias_x_x, bias_xi_x, bias_xii_x = import_inmet()			
-lat_y, lon_y, mean_i_y, mean_ii_y, bias_i_y, bias_ii_y, bias_iii_y, bias_iv_y, bias_v_y, bias_vi_y, bias_vii_y, bias_viii_y, bias_ix_y, bias_x_y, bias_xi_y, bias_xii_y = import_smn_i()			
-lat_z, lon_z, mean_i_z, mean_ii_z, bias_i_z, bias_ii_z, bias_iii_z, bias_iv_z, bias_v_z, bias_vi_z, bias_vii_z, bias_viii_z, bias_ix_z, bias_x_z, bias_xi_z, bias_xii_z = import_smn_ii()			
+lat_x, lon_x, bias_i_x, bias_ii_x, bias_iii_x, bias_iv_x, bias_v_x, bias_vi_x, bias_vii_x, bias_viii_x, bias_ix_x, bias_x_x, bias_xi_x, bias_xii_x = import_inmet()			
+lat_y, lon_y, bias_i_y, bias_ii_y, bias_iii_y, bias_iv_y, bias_v_y, bias_vi_y, bias_vii_y, bias_viii_y, bias_ix_y, bias_x_y, bias_xi_y, bias_xii_y = import_smn_i()			
+lat_z, lon_z, bias_i_z, bias_ii_z, bias_iii_z, bias_iv_z, bias_v_z, bias_vi_z, bias_vii_z, bias_viii_z, bias_ix_z, bias_x_z, bias_xi_z, bias_xii_z = import_smn_ii()			
 
 lat_yy = lat_x + lat_y + lat_z
 lon_xx = lon_x + lon_y + lon_z
-
-ws_inmet_smn = mean_i_x + mean_i_y + mean_i_z
-reanalise_era5 = mean_ii_x + mean_ii_y + mean_ii_z
 
 reg_usp_inmet_smn = bias_i_x + bias_i_y + bias_i_z
 reg_usp_reanalise = bias_ii_x + bias_ii_y + bias_ii_z
@@ -411,90 +399,73 @@ wrf_ucan_inmet_smn = bias_xi_x + bias_xi_y + bias_xi_z
 wrf_ucan_reanalise = bias_xii_x + bias_xii_y + bias_xii_z
 
 # Plot figure   
-fig, axes = plt.subplots(4,4, figsize=(11, 9.75), subplot_kw={"projection": ccrs.PlateCarree()})
-(ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12), (ax13, ax14, ax15, ax16) = axes
-fig.delaxes(ax3)
-fig.delaxes(ax4)
+fig, axes = plt.subplots(3,4, figsize=(11, 7), subplot_kw={"projection": ccrs.PlateCarree()})
+(ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12) = axes
 
-bins_ = np.linspace(0, 6, 16 + 1)
-cmap_ = cm.get_cmap('terrain_r', 16)
-norm_ = BoundaryNorm(bins_, cmap_.N)
-legend_ = 'Precipitation (mm d⁻¹)'
-
-bins = np.linspace(-3, 3, 16 + 1)
-cmap = cm.get_cmap('BrBG', 16)
+vmin = -3
+vmax = 3
+n_classes = 16
+bins = np.linspace(vmin, vmax, n_classes + 1)
+cmap = cm.get_cmap('BrBG', n_classes)
 norm = BoundaryNorm(bins, cmap.N)
 legend = 'Bias of precipitation (mm d⁻¹)'
 
-st1 = ax1.scatter(lon_xx, lat_yy, 20, ws_inmet_smn, cmap=cmap_, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
-ax1.set_title('(a) INMET', loc='left', fontsize=font_size, fontweight='bold')
+st1 = ax1.scatter(lon_xx, lat_yy, 20, reg_usp_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax1.set_title('(a) Reg4 - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 ax1.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax1)
 
-st2 = ax2.scatter(lon_xx, lat_yy, 20, reanalise_era5, cmap=cmap_, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
-ax2.set_title('(b) ERA5', loc='left', fontsize=font_size, fontweight='bold')
+st2 = ax2.scatter(lon_xx, lat_yy, 20, reg_usp_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax2.set_title('(b) Reg4 - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax2)
 
-st5 = ax5.scatter(lon_xx, lat_yy, 20, reg_usp_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax5.set_title('(c) Reg4 - INMET', loc='left', fontsize=font_size, fontweight='bold')
+st3 = ax3.scatter(lon_xx, lat_yy, 20, reg_ictp_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax3.set_title('(c) Reg5-holt3 - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax3)
+
+st4 = ax4.scatter(lon_xx, lat_yy, 20, reg_ictp_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax4.set_title('(d) Reg5-holt3 - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+configure_subplot(ax4)
+
+st5 = ax5.scatter(lon_xx, lat_yy, 20, reg_ictp_i_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax5.set_title('(e) Reg5-holt - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 ax5.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax5)
 
-st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_usp_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax6.set_title('(d) Reg4 - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+st6 = ax6.scatter(lon_xx, lat_yy, 20, reg_ictp_i_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax6.set_title('(f) Reg5-holt - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax6)
 
-st7 = ax7.scatter(lon_xx, lat_yy, 20, reg_ictp_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax7.set_title('(e) Reg5-holt3 - INMET', loc='left', fontsize=font_size, fontweight='bold')
+st7 = ax7.scatter(lon_xx, lat_yy, 20, reg_ictp_i_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax7.set_title('(g) Reg5-UW - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax7)
 
-st8 = ax8.scatter(lon_xx, lat_yy, 20, reg_ictp_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax8.set_title('(f) Reg5-holt3 - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+st8 = ax8.scatter(lon_xx, lat_yy, 20, reg_ictp_ii_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax8.set_title('(h) Reg5-UW - ERA5', loc='left', fontsize=font_size, fontweight='bold')
 configure_subplot(ax8)
 
-st9 = ax9.scatter(lon_xx, lat_yy, 20, reg_ictp_i_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax9.set_title('(g) Reg5-holt - INMET', loc='left', fontsize=font_size, fontweight='bold')
+st9 = ax9.scatter(lon_xx, lat_yy, 20, wrf_ncar_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax9.set_title('(i) WRF-NCAR - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
 ax9.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
+ax9.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax9)
 
-st10 = ax10.scatter(lon_xx, lat_yy, 20, reg_ictp_i_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax10.set_title('(h) Reg5-holt - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+st10 = ax10.scatter(lon_xx, lat_yy, 20, wrf_ncar_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax10.set_title('(j) WRF-NCAR - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+ax10.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax10)
 
-st11 = ax11.scatter(lon_xx, lat_yy, 20, reg_ictp_i_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax11.set_title('(i) Reg5-UW - INMET', loc='left', fontsize=font_size, fontweight='bold')
+st11 = ax11.scatter(lon_xx, lat_yy, 20, wrf_ucan_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax11.set_title('(k) WRF-UCAN - INMET+SMN', loc='left', fontsize=font_size, fontweight='bold')
+ax11.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax11)
 
-st12 = ax12.scatter(lon_xx, lat_yy, 20, reg_ictp_ii_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax12.set_title('(j) Reg5-UW - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+st12 = ax12.scatter(lon_xx, lat_yy, 20, wrf_ucan_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ax12.set_title('(l) WRF-UCAN - ERA5', loc='left', fontsize=font_size, fontweight='bold')
+ax12.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
 configure_subplot(ax12)
 
-st13 = ax13.scatter(lon_xx, lat_yy, 20, wrf_ncar_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax13.set_title('(k) WRF-NCAR - INMET', loc='left', fontsize=font_size, fontweight='bold')
-ax13.set_ylabel(u'Latitude', fontsize=font_size, fontweight='bold')
-ax13.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
-configure_subplot(ax13)
-
-st14 = ax14.scatter(lon_xx, lat_yy, 20, wrf_ncar_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax14.set_title('(l) WRF-NCAR - ERA5', loc='left', fontsize=font_size, fontweight='bold')
-ax14.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
-configure_subplot(ax14)
-
-st15 = ax15.scatter(lon_xx, lat_yy, 20, wrf_ucan_inmet_smn, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax15.set_title('(m) WRF-UCAN - INMET', loc='left', fontsize=font_size, fontweight='bold')
-ax15.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
-configure_subplot(ax15)
-
-st16 = ax16.scatter(lon_xx, lat_yy, 20, wrf_ucan_reanalise, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax16.set_title('(n) WRF-UCAN - ERA5', loc='left', fontsize=font_size, fontweight='bold')
-ax16.set_xlabel(u'Longitude', fontsize=font_size, fontweight='bold')
-configure_subplot(ax16)
-
 cbar = plt.colorbar(st1, cax=fig.add_axes([0.91, 0.25, 0.015, 0.50]), extend='both')
-cbar.set_label('{0}'.format(legend_), fontsize=font_size, fontweight='bold')
-cbar.ax.tick_params(labelsize=font_size)
-
-cbar = plt.colorbar(st16, cax=fig.add_axes([0.97, 0.25, 0.015, 0.50]), extend='both')
 cbar.set_label('{0}'.format(legend), fontsize=font_size, fontweight='bold')
 cbar.ax.tick_params(labelsize=font_size)
 
