@@ -1,0 +1,6 @@
+
+--------------- INIT POSPROCESSING MODEL ----------------
+
+/home/mda_silv/users/FPS_SESA/database/rcm/wrf_ucan
+cdo    selhour: Open failed on >pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1_1hr_2018060100-2021053123.nc<
+                No such file or directory

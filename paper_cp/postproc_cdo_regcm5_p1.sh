@@ -11,8 +11,8 @@
 
 #__author__      = 'Leidinice Silva'
 #__email__       = 'leidinicesilva@gmail.com'
-#__date__        = 'Nov 20, 2023'
-#__description__ = 'Posprocessing the RegCM5 output with CDO'
+#__date__        = 'Feb 16, 2026'
+#__description__ = 'Posprocessing the RegCM5 with CDO'
 
 {
 set -eo pipefail
