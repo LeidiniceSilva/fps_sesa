@@ -7,7 +7,6 @@ __description__ = "This script plot PDFs"
 
 import os
 import numpy as np
-import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 
@@ -17,7 +16,7 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
-var = 'pr'
+var = 't2m'
 path = '/home/mda_silv/users/FPS_SESA'
 
 skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
@@ -43,56 +42,45 @@ def import_inmet():
 			yy=inmet[i][2]
 			xx=inmet[i][3]
 
-			# Reading inmet 
-			d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-			d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
-			d_vi = d_vi.values
-			mean_vi.append(d_vi)
-		
+			if var == 't2m':
+				# Reading inmet 
+				d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/tmp/'.format(path) + 'tmp_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+				d_vi = d_vi.tmp.sel(time=slice('2018-06-01','2021-05-31'))
+				d_vi = d_vi.values
+				mean_vi.append(d_vi)
+			else:
+				# Reading inmet 
+				d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/uv/'.format(path) + 'uv_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+				d_vi = d_vi.uv.sel(time=slice('2018-06-01','2021-05-31'))
+				d_vi = d_vi.values
+				mean_vi.append(d_vi)
+					
 	return  mean_vi
 
 
-def import_smn_i():
+def compute_pdf(pr_hourly, nbins=10000):
 
-	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii  = [], [], [], [], [], [], [], []
-	for i in range(1, 73):
-		yy=smn_i[i][1]
-		xx=smn_i[i][2]
-			
-		# Reading smn 
-		d_vi = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
-		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.values
-		mean_vi.append(d_vi)
-
-	return  mean_vi
+	if var == 't2m':
+		perc = np.nanpercentile(pr_hourly, 97.5)
+	else:
+		perc = np.nanpercentile(pr_hourly, 95)
 
 
-def compute_frequency(timeseries, percentile=90):
-    ts_values = np.asarray(timeseries)
-    start_time = pd.Timestamp("2018-06-01 00:00")
-    times = pd.date_range(start=start_time, periods=len(ts_values), freq='H')
+	pr = np.asarray(pr_hourly)
+	pr = pr[pr > 0]  
+
+	kde = gaussian_kde(pr)
+	x = np.linspace(pr.min(), pr.max(), nbins)
+	pdf = kde(x)
+	
+
+	return x, pdf, perc
     
-    freq_by_hour = np.zeros(24)
-    
-    print(f"\nFrequency for P{percentile} by hour:")
-    print("-" * 40)
-    
-    for hr in range(24):
-        hr_values = ts_values[times.hour == hr]
-        p_val = np.percentile(hr_values, percentile, method='linear')
-        extreme_count = (hr_values >= p_val).sum()
-        freq_by_hour[hr] = 100 * extreme_count / len(hr_values)
-        print(f"Hour {hr:02d}: {freq_by_hour[hr]:.4f}%")
-    
-    return freq_by_hour
-
 	
 # Import dataset
 clim_vi_x = import_inmet()			
-clim_vi_y = import_smn_i()
 
-inmet_smn = clim_vi_x + clim_vi_y
+inmet_smn = clim_vi_x 
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
 list_hc = list_hc[:len(inmet_smn)]
@@ -129,12 +117,11 @@ for c_v in count_v:
 	inmet_smn_v.append(inmet_smn[c_v])
 
 # Group I
-# Average
-inmet_smn_c_i   = np.nanmean(inmet_smn_i, axis=0)
-inmet_smn_c_ii   = np.nanmean(inmet_smn_ii, axis=0)
-inmet_smn_c_iii   = np.nanmean(inmet_smn_iii, axis=0)
-inmet_smn_c_iv   = np.nanmean(inmet_smn_iv, axis=0)
-inmet_smn_c_v   = np.nanmean(inmet_smn_v, axis=0)
+inmet_smn_c_i = np.concatenate(inmet_smn_i)
+inmet_smn_c_ii = np.concatenate(inmet_smn_ii)
+inmet_smn_c_iii = np.concatenate(inmet_smn_iii)
+inmet_smn_c_iv = np.concatenate(inmet_smn_iv)
+inmet_smn_c_v = np.concatenate(inmet_smn_v)
 
 print(inmet_smn_c_i)
 print(len(inmet_smn_c_i))
@@ -151,74 +138,93 @@ print()
 print(inmet_smn_c_v)
 print(len(inmet_smn_c_v))
 
-
-frequencies = compute_frequency(inmet_smn_c_i)
- 
-print(len(frequencies))
-print(frequencies)
-
-exit()
+x_inmet_smn_c_i, pdf_inmet_smn_c_i, perc_inmet_smn_c_i = compute_pdf(inmet_smn_c_i)
+x_inmet_smn_c_ii, pdf_inmet_smn_c_ii, perc_inmet_smn_c_ii = compute_pdf(inmet_smn_c_ii)
+x_inmet_smn_c_iii, pdf_inmet_smn_c_iii, perc_inmet_smn_c_iii = compute_pdf(inmet_smn_c_iii)
+x_inmet_smn_c_iv, pdf_inmet_smn_c_iv, perc_inmet_smn_c_iv = compute_pdf(inmet_smn_c_iv)
+x_inmet_smn_c_v, pdf_inmet_smn_c_v, perc_inmet_smn_c_v = compute_pdf(inmet_smn_c_v)
 
 # Plot figure
 fig = plt.figure(figsize=(8, 18))
 font_size = 8
 
+if var == 't2m':
+	legend = 'Air emperature 2m (°C)'
+	xvmin = 0
+	xvmax = 45
+	xvmax_ = 50
+	xint_ = 5
+	yvmin = 0
+	yvmax = 0.1
+	yvmax_ = 0.11
+	yint_ = 0.01
+else:
+	legend = 'Wind speed 10m (m s⁻¹)'
+	xvmin = 0
+	xvmax = 6.5
+	xvmax_ = 7
+	xint_ = 0.5
+	yvmin = 0
+	yvmax = 0.8
+	yvmax_ = 0.88
+	yint_ = 0.08
+	
 ax1 = fig.add_subplot(6, 2, 1)
 plt.plot(x_inmet_smn_c_i, pdf_inmet_smn_c_i, linewidth=1, color='black', label='INMET+SMN')
-plt.axvline(p999_inmet_smn_c_i, linestyle='--', linewidth=0.75, color='black')
+plt.axvline(perc_inmet_smn_c_i, linestyle='--', linewidth=0.75, color='black')
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
-plt.xlim(0, 6)
-plt.ylim(0, 4)
-plt.xticks(np.arange(0, 6.5, 0.5), fontsize=font_size)
-plt.yticks(np.arange(0, 4.5, 0.5), fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(np.arange(xvmin, xvmax_, xint_), fontsize=font_size)
+plt.yticks(np.arange(xvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
-ax1.legend(loc=2, ncol=3, fontsize=8, frameon=False)
+ax1.legend(loc=1, ncol=3, fontsize=8, frameon=False)
 
 ax2 = fig.add_subplot(6, 2, 2)
 ax2.plot(x_inmet_smn_c_ii, pdf_inmet_smn_c_ii, linewidth=1, color='black', label='INMET+SMN')
-plt.axvline(p999_inmet_smn_c_ii, linestyle='--', linewidth=0.75, color='black')
-plt.title('(b) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
+plt.axvline(perc_inmet_smn_c_ii, linestyle='--', linewidth=0.75, color='black')
+plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
-plt.xlim(0, 6)
-plt.ylim(0, 4)
-plt.xticks(np.arange(0, 6.5, 0.5), fontsize=font_size)
-plt.yticks(np.arange(0, 4.5, 0.5), fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(np.arange(xvmin, xvmax_, xint_), fontsize=font_size)
+plt.yticks(np.arange(xvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax3 = fig.add_subplot(6, 2, 3)
 plt.plot(x_inmet_smn_c_iii, pdf_inmet_smn_c_iii, linewidth=1, color='black', label='INMET+SMN')
-plt.axvline(p999_inmet_smn_c_iii, linestyle='--', linewidth=0.75, color='black')
-plt.title('(c) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
+plt.axvline(perc_inmet_smn_c_iii, linestyle='--', linewidth=0.75, color='black')
+plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
-plt.xlim(0, 6)
-plt.ylim(0, 4)
-plt.xticks(np.arange(0, 6.5, 0.5), fontsize=font_size)
-plt.yticks(np.arange(0, 4.5, 0.5), fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(np.arange(xvmin, xvmax_, xint_), fontsize=font_size)
+plt.yticks(np.arange(xvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax4 = fig.add_subplot(6, 2, 4)
 plt.plot(x_inmet_smn_c_iv, pdf_inmet_smn_c_iv, linewidth=1, color='black', label='INMET+SMN')
-plt.axvline(p999_inmet_smn_c_iv, linestyle='--', linewidth=0.75, color='black')
-plt.title('(d) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
+plt.axvline(perc_inmet_smn_c_iv, linestyle='--', linewidth=0.75, color='black')
+plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
-plt.xlabel('Precipitation (mm d⁻¹)', fontsize=font_size, fontweight='bold')
-plt.xlim(0, 6)
-plt.ylim(0, 4)
-plt.xticks(np.arange(0, 6.5, 0.5), fontsize=font_size)
-plt.yticks(np.arange(0, 4.5, 0.5), fontsize=font_size)
+plt.xlabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(np.arange(xvmin, xvmax_, xint_), fontsize=font_size)
+plt.yticks(np.arange(xvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax5 = fig.add_subplot(6, 2, 5)
 plt.plot(x_inmet_smn_c_v, pdf_inmet_smn_c_v, linewidth=1, color='black', label='INMET+SMN')
-plt.axvline(p999_inmet_smn_c_v, linestyle='--', linewidth=0.75, color='black')
-plt.title('(e) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
+plt.axvline(perc_inmet_smn_c_v, linestyle='--', linewidth=0.75, color='black')
+plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
-plt.xlabel('Precipitation (mm h⁻¹)', fontsize=font_size, fontweight='bold')
-plt.xlim(0, 6)
-plt.ylim(0, 4)
-plt.xticks(np.arange(0, 6.5, 0.5), fontsize=font_size)
-plt.yticks(np.arange(0, 4.5, 0.5), fontsize=font_size)
+plt.xlabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(np.arange(xvmin, xvmax_, xint_), fontsize=font_size)
+plt.yticks(np.arange(xvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 # Path out to save figure

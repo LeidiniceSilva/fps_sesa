@@ -1,8 +1,0 @@
-
---------------- INIT POSPROCESSING MODEL ----------------
-
-/home/mda_silv/users/FPS_SESA/database/rcm/wrf_ncar
-cdo(1) merge: Open failed on >uas_CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1_1hr_2019010100-2018123123.nc<
-              No such file or directory
-terminate called without an active exception
-/var/spool/slurm/d/job815385/slurm_script: line 18: 106200 Aborted                 cdo -O -L -f nc4 -z zip $@
