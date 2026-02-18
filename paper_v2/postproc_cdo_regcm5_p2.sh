@@ -21,18 +21,19 @@ CDO(){
 
 VAR_LIST="pr tas sfcWind"
 SEASON_LIST="DJF MAM JJA SON"
-DATASET_LIST="wrf_ucan"
-#DATASET_LIST="reg_ictp reg_ictp_pbl1 reg_ictp_pbl2 reg_usp wrf_ncar wrf_ucan"
+DATASET_LIST="reg_ictp_pbl1 reg_ictp_pbl2"
 
 echo
 echo "--------------- INIT POSPROCESSING MODEL ----------------"
 
 for DATASET in ${DATASET_LIST[@]}; do
 
-    DIR="/home/mda_silv/users/FPS_SESA/database/rcm/${DATASET}"
+    DIR_IN="/home/mda_silv/users/FPS_SESA/database/rcm/${DATASET}"
+    DIR_OUT="/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/${DATASET}"
+
     echo
-    cd ${DIR}
-    echo ${DIR}
+    cd ${DIR_OUT}
+    echo ${DIR_OUT}
     
     if [ ${DATASET} = 'reg_ictp'  ]; then
     EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5_v1" 
@@ -50,7 +51,7 @@ for DATASET in ${DATASET_LIST[@]}; do
     
     for VAR in ${VAR_LIST[@]}; do
     
-	CDO mergetime ${VAR}_${EXP}_1hr_20*.nc ${VAR}_${EXP}_1hr_2018-2021.nc
+	CDO mergetime ${DIR_IN}/${VAR}_${EXP}_1hr_20*.nc ${VAR}_${EXP}_1hr_2018-2021.nc
 	CDO seldate,2018-06-01,2021-05-31 ${VAR}_${EXP}_1hr_2018-2021.nc ${VAR}_${EXP}_1hr_201806-202105.nc
 	
 	if [ ${VAR} = 'pr'  ]; then

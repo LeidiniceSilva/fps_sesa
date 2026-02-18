@@ -21,23 +21,23 @@ CDO(){
 
 VAR_LIST="pr tas sfcWind"
 DT="2018060100-2021053123"
-DATASET_LIST="wrf_ucan"
+DATASET_LIST="reg_ictp reg_ictp_pbl1 reg_ictp_pbl2 ictp_usp wrf_ncar wrf_ucan"
 
 echo
 echo "--------------- INIT POSPROCESSING MODEL ----------------"
 
 for DATASET in ${DATASET_LIST[@]}; do
 
-    DIR="/home/mda_silv/users/FPS_SESA/database/rcm/${DATASET}"
+    DIR="/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/${DATASET}"
     echo
     cd ${DIR}
     echo ${DIR}
     
     if [ ${DATASET} = 'reg_ictp'  ]; then
     EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5_v1" 
-    elif [ ${DATASET} = 'reg_ictp'  ]; then
+    elif [ ${DATASET} = 'reg_ictp_pbl1'  ]; then
     EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0" 
-    elif [ ${DATASET} = 'reg_ictp'  ]; then
+    elif [ ${DATASET} = 'reg_ictp_pbl2'  ]; then
     EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0"
     elif [ ${DATASET} = 'reg_usp'  ]; then
     EXP="pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_USP-RegCM471_v2"
@@ -50,7 +50,7 @@ for DATASET in ${DATASET_LIST[@]}; do
     for VAR in ${VAR_LIST[@]}; do
     
 	if [ ${VAR} = 'pr'  ]; then
-	P=99.9
+	P=99
 	elif [ ${VAR} = 'tas'  ]; then
 	P=97.5
 	else

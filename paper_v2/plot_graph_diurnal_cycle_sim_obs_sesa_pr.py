@@ -193,8 +193,8 @@ time = np.arange(0, 24)
 font_size = 8
 
 pvmin = 0
-pvmax = 8
-pvmax_ = 9
+pvmax = 10
+pvmax_ = 11
 pint_ = 1
 
 fvmin = 0

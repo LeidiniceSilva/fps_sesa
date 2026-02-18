@@ -1,9 +1,11 @@
 #!/bin/bash
 
+#SBATCH -A CMPNS_ictpclim
+#SBATCH -p dcgp_usr_prod
 #SBATCH -N 1
-#SBATCH -t 24:00:00
-#SBATCH -J FPS-SESA
-#SBATCH -p esp
+#SBATCH --ntasks-per-node=112
+#SBATCH -t 1-00:00:00
+#SBATCH -J Postproc
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=mda_silv@ictp.it
 
@@ -11,7 +13,7 @@
 #__email__       = 'leidinicesilva@gmail.com'
 #__date__        = 'Feb 16, 2026'
 #__description__ = 'Posprocessing the RegCM5 with CDO'
- 
+
 {
 set -eo pipefail
 
@@ -19,43 +21,61 @@ CDO(){
   cdo -O -L -f nc4 -z zip $@
 }
 
-VAR_LIST="sfcWind"
-SEASON_LIST="DJF MAM JJA SON"
-DATASET_LIST="wrf_ncar"
+YR="2018-2021"
+IYR=$( echo $YR | cut -d- -f1 )
+FYR=$( echo $YR | cut -d- -f2 )
+
+EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5_v1"
+VAR_LIST="pr tas sfcWind"
+
+DIR_IN="/leonardo/home/userexternal/mdasilva/leonardo_scratch/SAM-3km/output"
+DIR_OUT="/leonardo/home/userexternal/mdasilva/leonardo_work/SAM-3km/postproc/fps_sesa"
+GRID="/leonardo/home/userexternal/mdasilva/github_projects/shell/ictp/regcm_post_v1/sam_3km/evaluate/rcm"
+WIND="/leonardo/home/userexternal/mdasilva/github_projects/shell/ictp/regcm_post_v2/scripts_regcm"
+
+echo
+cd ${DIR_OUT}
+echo ${DIR_OUT}
 
 echo
 echo "--------------- INIT POSPROCESSING MODEL ----------------"
 
-for DATASET in ${DATASET_LIST[@]}; do
-
-    DIR="/home/mda_silv/users/FPS_SESA/database/rcm/${DATASET}"
+for VAR in ${VAR_LIST[@]}; do
+    
     echo
-    cd ${DIR}
-    echo ${DIR}
-    
-    if [ ${DATASET} = 'reg_ictp'  ]; then
-    EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5_v1" 
-    elif [ ${DATASET} = 'reg_ictp'  ]; then
-    EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0" 
-    elif [ ${DATASET} = 'reg_ictp'  ]; then
-    EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0"
-    elif [ ${DATASET} = 'reg_usp'  ]; then
-    EXP="pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_USP-RegCM471_v2"
-    elif [ ${DATASET} = 'wrf_ncar'  ]; then
-    EXP="CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1"
-    else
-    EXP="CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1"
-    fi
-    
-    for VAR in ${VAR_LIST[@]}; do
-    
-	#CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2018010100-2018123123.nc vas_${EXP}_1hr_2018010100-2018123123.nc ${VAR}_${EXP}_1hr_2018010100-2018123123.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2019010100-2019123123.nc vas_${EXP}_1hr_2019010100-2019123123.nc ${VAR}_${EXP}_1hr_2019010100-2019123123.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2020010100-2020123123.nc vas_${EXP}_1hr_2020010100-2020123123.nc ${VAR}_${EXP}_1hr_2020010100-2020123123.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2021010100-2021123123.nc vas_${EXP}_1hr_2021010100-2021123123.nc ${VAR}_${EXP}_1hr_2021010100-2021123123.nc
-
+    echo "Select variable"
+    for YEAR in `seq -w ${IYR} ${FYR}`; do
+        for MON in `seq -w 01 12`; do
+            CDO selname,${VAR} ${DIR_IN}/SAM-3km_SRF.${YEAR}${MON}0100.nc ${VAR}_${YEAR}${MON}0100.nc
+	    CDO remapdis,${GRID}/grid.txt ${VAR}_${YEAR}${MON}0100.nc ${VAR}_${YEAR}${MON}01.nc
+        done
     done
+    
+    echo 
+    echo "Concatenate date"
+    CDO mergetime ${VAR}_*01.nc ${VAR}_${YR}.nc
+
+    echo
+    echo "Convert unit"
+    if [ ${VAR} = 'pr'  ] 
+    then
+    CDO -b f32 mulc,3600 ${VAR}_${YR}.nc ${VAR}_${EXP}_1hr_${YR}.nc
+    elif [ ${VAR} = 'tas'  ] 
+    then
+    CDO -b f32 mulc,3600 ${VAR}_${YR}.nc ${VAR}_${EXP}_1hr_${YR}.nc
+    else
+    cp ${VAR}_${YR}.nc ${VAR}_${EXP}_1hr_${YR}.nc
+    python3 ${GRID}/rotatewinds.py ${VAR}_${EXP}_1hr_${YR}.nc
+    fi
+
+    echo 
+    echo "Delete files"
+    rm ${VAR}_${EXP}_*01.nc
+    rm ${VAR}_${YR}.nc
+  
 done
+
+
 
 echo
 echo "--------------- THE END POSPROCESSING MODEL ----------------"
