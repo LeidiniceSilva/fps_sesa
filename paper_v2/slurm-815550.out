@@ -1,0 +1,6 @@
+
+--------------- INIT POSPROCESSING MODEL ----------------
+
+/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1
+cdo    mergetime: Open failed on >pr_CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0_1hr_201806010000-201901010000.nc<
+                  Too many levels of symbolic links

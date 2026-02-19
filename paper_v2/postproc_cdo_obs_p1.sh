@@ -37,10 +37,10 @@ for VAR in ${VAR_LIST[@]}; do
 
     if [ ${VAR} = 'tp' ]; then
     CDO daysum ${VAR}_${EXP}_1hr_${DT}.nc ${VAR}_${EXP}_day_${DT}.nc
-
     else
     CDO daymean ${VAR}_${EXP}_1hr_${DT}.nc ${VAR}_${EXP}_day_${DT}.nc
     fi
+    
     CDO monmean ${VAR}_${EXP}_day_${DT}.nc ${VAR}_${EXP}_mon_${DT}.nc
 
     for SEASON in ${SEASON_LIST[@]}; do

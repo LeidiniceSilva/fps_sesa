@@ -31,7 +31,6 @@ VAR_LIST="pr tas sfcWind"
 DIR_IN="/leonardo/home/userexternal/mdasilva/leonardo_scratch/SAM-3km/output"
 DIR_OUT="/leonardo/home/userexternal/mdasilva/leonardo_work/SAM-3km/postproc/fps_sesa"
 GRID="/leonardo/home/userexternal/mdasilva/github_projects/shell/ictp/regcm_post_v1/sam_3km/evaluate/rcm"
-WIND="/leonardo/home/userexternal/mdasilva/github_projects/shell/ictp/regcm_post_v2/scripts_regcm"
 
 echo
 cd ${DIR_OUT}
@@ -62,10 +61,9 @@ for VAR in ${VAR_LIST[@]}; do
     CDO -b f32 mulc,3600 ${VAR}_${YR}.nc ${VAR}_${EXP}_1hr_${YR}.nc
     elif [ ${VAR} = 'tas'  ] 
     then
-    CDO -b f32 mulc,3600 ${VAR}_${YR}.nc ${VAR}_${EXP}_1hr_${YR}.nc
+    CDO -b f32 subc,273.15 ${VAR}_${YR}.nc ${VAR}_${EXP}_1hr_${YR}.nc
     else
     cp ${VAR}_${YR}.nc ${VAR}_${EXP}_1hr_${YR}.nc
-    python3 ${GRID}/rotatewinds.py ${VAR}_${EXP}_1hr_${YR}.nc
     fi
 
     echo 

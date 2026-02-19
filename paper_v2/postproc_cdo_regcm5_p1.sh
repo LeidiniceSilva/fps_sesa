@@ -20,7 +20,7 @@ CDO(){
 }
 
 VAR_LIST="sfcWind"
-DATASET_LIST="reg_ictp_pbl1 reg_ictp_pbl2"
+DATASET_LIST="reg_ictp_pbl1"
 
 echo
 echo "--------------- INIT POSPROCESSING MODEL ----------------"
@@ -28,7 +28,6 @@ echo "--------------- INIT POSPROCESSING MODEL ----------------"
 for DATASET in ${DATASET_LIST[@]}; do
 
     DIR_IN="/home/mda_silv/users/FPS_SESA/database/rcm/${DATASET}"
-    DIR_OUT="/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/${DATASET}"
 
     echo
     cd ${DIR_IN}
@@ -50,10 +49,10 @@ for DATASET in ${DATASET_LIST[@]}; do
     
     for VAR in ${VAR_LIST[@]}; do
     
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2018010100-2018123123.nc vas_${EXP}_1hr_2018010100-2018123123.nc ${DIR_OUT}/${VAR}_${EXP}_1hr_2018010100-2018123123.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2019010100-2019123123.nc vas_${EXP}_1hr_2019010100-2019123123.nc ${DIR_OUT}/${VAR}_${EXP}_1hr_2019010100-2019123123.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2020010100-2020123123.nc vas_${EXP}_1hr_2020010100-2020123123.nc ${DIR_OUT}/${VAR}_${EXP}_1hr_2020010100-2020123123.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_2021010100-2021123123.nc vas_${EXP}_1hr_2021010100-2021123123.nc ${DIR_OUT}/${VAR}_${EXP}_1hr_2021010100-2021123123.nc
+	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_201806010000-201812312300.nc vas_${EXP}_1hr_201806010000-201812312300.nc ${VAR}_${EXP}_1hr_201806010000-201812312300.nc
+	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_201901010000-201912312300.nc vas_${EXP}_1hr_201901010000-201912312300.nc ${VAR}_${EXP}_1hr_201901010000-201912312300.nc
+	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_202001010000-202012312300.nc vas_${EXP}_1hr_202001010000-202012312300.nc ${VAR}_${EXP}_1hr_202001010000-202012312300.nc
+	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_202101010000-202112310000.nc vas_${EXP}_1hr_202101010000-202112310000.nc ${VAR}_${EXP}_1hr_202101010000-202112310000.nc
 
     done
 done

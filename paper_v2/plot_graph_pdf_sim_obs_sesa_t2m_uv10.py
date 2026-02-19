@@ -1,3 +1,4 @@
+
 # -*- coding:utf-8 -*-
 
 __author__      = "Leidinice Silva"
@@ -32,7 +33,7 @@ skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 3
 
 def import_inmet():
 	
-	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii  = [], [], [], [], [], [], [], []
+	mean = []
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
 			continue
@@ -44,18 +45,18 @@ def import_inmet():
 
 			if var == 't2m':
 				# Reading inmet 
-				d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/tmp/'.format(path) + 'tmp_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-				d_vi = d_vi.tmp.sel(time=slice('2018-06-01','2021-05-31'))
-				d_vi = d_vi.values
-				mean_vi.append(d_vi)
+				df_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/tmp/'.format(path) + 'tmp_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+				df_i = df_i.tmp.sel(time=slice('2018-06-01','2021-05-31'))
+				df_i = df_i.values
+				mean.append(df_i)
 			else:
 				# Reading inmet 
-				d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/uv/'.format(path) + 'uv_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-				d_vi = d_vi.uv.sel(time=slice('2018-06-01','2021-05-31'))
-				d_vi = d_vi.values
-				mean_vi.append(d_vi)
+				df_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/uv/'.format(path) + 'uv_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+				df_i = df_i.uv.sel(time=slice('2018-06-01','2021-05-31'))
+				df_i = df_i.values
+				mean.append(df_i)
 					
-	return  mean_vi
+	return  mean
 
 
 def compute_pdf(pr_hourly, nbins=10000):
@@ -78,9 +79,7 @@ def compute_pdf(pr_hourly, nbins=10000):
     
 	
 # Import dataset
-clim_vi_x = import_inmet()			
-
-inmet_smn = clim_vi_x 
+inmet_smn = import_inmet()			
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
 list_hc = list_hc[:len(inmet_smn)]
@@ -122,21 +121,6 @@ inmet_smn_c_ii = np.concatenate(inmet_smn_ii)
 inmet_smn_c_iii = np.concatenate(inmet_smn_iii)
 inmet_smn_c_iv = np.concatenate(inmet_smn_iv)
 inmet_smn_c_v = np.concatenate(inmet_smn_v)
-
-print(inmet_smn_c_i)
-print(len(inmet_smn_c_i))
-print()
-print(inmet_smn_c_ii)
-print(len(inmet_smn_c_ii))
-print()
-print(inmet_smn_c_iii)
-print(len(inmet_smn_c_iii))
-print()
-print(inmet_smn_c_iv)
-print(len(inmet_smn_c_iv))
-print()
-print(inmet_smn_c_v)
-print(len(inmet_smn_c_v))
 
 x_inmet_smn_c_i, pdf_inmet_smn_c_i, perc_inmet_smn_c_i = compute_pdf(inmet_smn_c_i)
 x_inmet_smn_c_ii, pdf_inmet_smn_c_ii, perc_inmet_smn_c_ii = compute_pdf(inmet_smn_c_ii)

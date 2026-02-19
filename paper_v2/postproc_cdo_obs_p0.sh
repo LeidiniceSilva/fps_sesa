@@ -40,18 +40,18 @@ for VAR in ${VAR_LIST[@]}; do
     if [ ${VAR} = 'tp' ]; then
     CDO seldate,2018-06-01,2021-05-31 ${DIR_IN}/${VAR}_ERA5_1hr_2018-2021.nc ${VAR}_ERA5_1hr_2018-2021.nc
     CDO mulc,1000 ${VAR}_ERA5_1hr_2018-2021.nc ${VAR}_ERA5_1hr_2018060100-2021053100.nc
-    CDO remapdis,/leonardo/home/userexternal/mdasilva/grid.txt ${VAR}_ERA5_1hr_2018060100-2021053100.nc ${VAR}_${EXP}_1hr_2018060100-2021053100.nc
+    CDO remapdis,/leonardo/home/userexternal/mdasilva/grid.txt ${VAR}_ERA5_1hr_2018060100-2021053100.nc ${VAR}_${EXP}_1hr_2018060100-2021053123.nc
 
     elif [ ${VAR} = 't2m' ]; then
     CDO mergetime ${DIR_IN}/${VAR}_ERA5_1hr_20*.nc ${VAR}_ERA5_1hr_2018010100-2021123100.nc
     CDO seldate,2018-06-01,2021-05-31 ${VAR}_ERA5_1hr_2018010100-2021123100.nc ${VAR}_ERA5_1hr_2018-2021.nc
     CDO subc,273.15 ${VAR}_ERA5_1hr_2018-2021.nc ${VAR}_ERA5_1hr_2018060100-2021053100.nc
-    CDO remapdis,/leonardo/home/userexternal/mdasilva/grid.txt ${VAR}_ERA5_1hr_2018060100-2021053100.nc ${VAR}_${EXP}_1hr_2018060100-2021053100.nc
+    CDO remapdis,/leonardo/home/userexternal/mdasilva/grid.txt ${VAR}_ERA5_1hr_2018060100-2021053100.nc ${VAR}_${EXP}_1hr_2018060100-2021053123.nc
     
     else
     CDO expr,'ws10=sqrt(u10*u10+v10*v10)' -merge ${DIR_IN}/u10_ERA5_1hr_2018-2021.nc ${DIR_IN}/v10_ERA5_1hr_2018-2021.nc uv10_ERA5_1hr_2018-2021.nc
     CDO seldate,2018-06-01,2021-05-31 uv10_ERA5_1hr_2018-2021.nc uv10_ERA5_1hr_2018060100-2021053100.nc
-    CDO remapdis,/leonardo/home/userexternal/mdasilva/grid.txt uv10_ERA5_1hr_2018060100-2021053100.nc uv10_${EXP}_1hr_2018060100-2021053100.nc
+    CDO remapdis,/leonardo/home/userexternal/mdasilva/grid.txt uv10_ERA5_1hr_2018060100-2021053100.nc uv10_${EXP}_1hr_2018060100-2021053123.nc
     fi
   
 done

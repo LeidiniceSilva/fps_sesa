@@ -35,7 +35,7 @@ echo "--------------- INIT POSPROCESSING MODEL ----------------"
 for VAR in ${VAR_LIST[@]}; do
 
     if [ ${VAR} = 'tp'  ]; then
-    P=99.9
+    P=99
     elif [ ${VAR} = 't2m'  ]; then
     P=97.5
     else
@@ -45,9 +45,8 @@ for VAR in ${VAR_LIST[@]}; do
     for HR in `seq -w 00 23`; do
 	CDO selhour,${HR} ${VAR}_${EXP}_1hr_${DT}.nc ${VAR}_${EXP}_${HR}_${DT}.nc
 	CDO timpctl,${P} ${VAR}_${EXP}_${HR}_${DT}.nc -timmin ${VAR}_${EXP}_${HR}_${DT}.nc -timmax ${VAR}_${EXP}_${HR}_${DT}.nc p${P}_${VAR}_${EXP}_${HR}_${DT}.nc
-	CDO ifthen -ge ${VAR}_${EXP}_${HR}_${DT}.nc p${P}_${VAR}_${EXP}_${HR}_${DT}.nc ext_${VAR}_${EXP}_${HR}_${DT}.nc
-	CDO div -timcount ext_${VAR}_${EXP}_${HR}_${DT}.nc -timcount ${VAR}_${EXP}_${HR}_${DT}.nc freq_${VAR}_${EXP}_${HR}_${DT}.nc
-	CDO timmean ext_${VAR}_${EXP}_${HR}_${DT}.nc int_${VAR}_${EXP}_${HR}_${DT}.nc
+	CDO mulc,100 -histfreq,${TH},100000 ${VAR}_${EXP}_${HR}_${DT}.nc freq_${VAR}_${EXP}_${HR}_${DT}.nc
+	CDO histmean,${TH},100000 ${VAR}_${EXP}_${HR}_${DT}.nc int_${VAR}_${EXP}_${HR}_${DT}.nc
     done
 	
     CDO mergetime p${P}_${VAR}_${EXP}_*_${DT}.nc p${P}_${VAR}_diurnal-cycle_${EXP}_${DT}.nc

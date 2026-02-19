@@ -7,7 +7,6 @@ __description__ = "This script plot PDFs"
 
 import os
 import numpy as np
-import pandas as pd
 import xarray as xr
 import matplotlib.pyplot as plt
 
@@ -17,7 +16,7 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
-var = 'pr'
+var = 't2m'
 path = '/home/mda_silv/users/FPS_SESA'
 
 skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
@@ -43,52 +42,49 @@ def import_inmet():
 			yy=inmet[i][2]
 			xx=inmet[i][3]
 
-			# Reading inmet 
-			df_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-			df_i = df_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
-			df_i = df_i.values
-			mean.append(df_i)
+			if var == 't2m':
+				# Reading inmet 
+				df_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/tmp/'.format(path) + 'tmp_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+				df_i = df_i.tmp.sel(time=slice('2018-06-01','2021-05-31'))
+				df_i = df_i.values
+				mean.append(df_i)
+			else:
+				# Reading inmet 
+				df_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/uv/'.format(path) + 'uv_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
+				df_i = df_i.uv.sel(time=slice('2018-06-01','2021-05-31'))
+				df_i = df_i.values
+				mean.append(df_i)
 					
 	return  mean
 
 
-def import_smn_i():
 
-	mean = []
-	for i in range(1, 73):
-		yy=smn_i[i][1]
-		xx=smn_i[i][2]
-			
-		# Reading smn 
-		df_i = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
-		df_i = df_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
-		df_i = df_i.values
-		mean.append(df_i)
-
-	return  mean
-	
-	
 def compute_stats(dataset):
 
-	pr = np.asarray(dataset)
-	horas = np.arange(len(pr)) % 24
+	if var == 't2m':
+		perc = 97.5
+	else:
+		perc = 95
+		
+	var_ = np.asarray(dataset)
+	horas = np.arange(len(var_)) % 24
 	
-	# P99 (threshold)
-	p99_global = np.nanpercentile(pr, 99)
+	# Percentile (threshold)
+	perc_global = np.nanpercentile(var_, perc)
 	
-	p99_hour = np.zeros(24)
+	perc_hour = np.zeros(24)
 	freq = np.zeros(24)
 	intens = np.zeros(24)
 	
 	for h in range(24):
-		pr_h = pr[horas == h]
-		valid = ~np.isnan(pr_h)
+		var_h = var_[horas == h]
+		valid = ~np.isnan(var_h)
 	
 		# Percentil diurno
-		p99_hour[h] = np.nanpercentile(pr_h, 99) if np.sum(valid) > 0 else np.nan
+		perc_hour[h] = np.nanpercentile(var_h, perc) if np.sum(valid) > 0 else np.nan
 	
-		# Extreme events (>= P99)
-		extreme = pr_h[valid][pr_h[valid] >= p99_global]
+		# Extreme events 
+		extreme = var_h[valid][var_h[valid] >= perc_global]
 
 		# Frequency (%) 
 		if np.sum(valid) > 0:
@@ -99,14 +95,11 @@ def compute_stats(dataset):
 		# Intensity 
 		intens[h] = np.nanmean(extreme) if len(extreme) > 0 else np.nan
 
-	return p99_hour, freq, intens
-
+	return perc_hour, freq, intens
+	
 	
 # Import dataset
-clim_vi_x = import_inmet()			
-clim_vi_y = import_smn_i()
-
-inmet_smn = clim_vi_x + clim_vi_y
+inmet_smn = import_inmet()			
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
 list_hc = list_hc[:len(inmet_smn)]
@@ -164,19 +157,19 @@ fig = plt.figure(figsize=(14, 16))
 time = np.arange(0, 24)
 font_size = 8
 
-pvmin = 0
-pvmax = 10
-pvmax_ = 11
-pint_ = 1
+pvmin = 20
+pvmax = 40
+pvmax_ = 42
+pint_ = 2
 
 fvmin = 0
 fvmax = 2
 fvmax_ = 2.2
 fint_ = 0.2
 
-ivmin = 0
-ivmax = 20
-ivmax_ = 22
+ivmin = 20
+ivmax = 40
+ivmax_ = 42
 iint_ = 2
 
 ax = fig.add_subplot(5, 3, 1)
