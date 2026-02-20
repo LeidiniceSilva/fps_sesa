@@ -20,7 +20,7 @@ CDO(){
 }
 
 VAR_LIST="sfcWind"
-DATASET_LIST="reg_ictp_pbl1"
+DATASET_LIST="reg_ictp_pbl2"
 
 echo
 echo "--------------- INIT POSPROCESSING MODEL ----------------"
