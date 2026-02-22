@@ -49,10 +49,10 @@ for DATASET in ${DATASET_LIST[@]}; do
     
     for VAR in ${VAR_LIST[@]}; do
     
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_201806010000-201812312300.nc vas_${EXP}_1hr_201806010000-201812312300.nc ${VAR}_${EXP}_1hr_201806010000-201812312300.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_201901010000-201912312300.nc vas_${EXP}_1hr_201901010000-201912312300.nc ${VAR}_${EXP}_1hr_201901010000-201912312300.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_202001010000-202012312300.nc vas_${EXP}_1hr_202001010000-202012312300.nc ${VAR}_${EXP}_1hr_202001010000-202012312300.nc
-	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_202101010000-202112310000.nc vas_${EXP}_1hr_202101010000-202112310000.nc ${VAR}_${EXP}_1hr_202101010000-202112310000.nc
+	#CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_201806010000-201812312300.nc vas_${EXP}_1hr_201806010000-201812312300.nc ${VAR}_${EXP}_1hr_201806010000-201812312300.nc
+	#CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_201901010000-201912312300.nc vas_${EXP}_1hr_201901010000-201912312300.nc ${VAR}_${EXP}_1hr_201901010000-201912312300.nc
+	#CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_202001010000-202012312300.nc vas_${EXP}_1hr_202001010000-202012312300.nc ${VAR}_${EXP}_1hr_202001010000-202012312300.nc
+	CDO expr,'sfcWind=sqrt(uas*uas+vas*vas)' -merge uas_${EXP}_1hr_202101010000-202112140400.nc vas_${EXP}_1hr_202101010000-202112140400.nc ${VAR}_${EXP}_1hr_202101010000-202112310000.nc
 
     done
 done

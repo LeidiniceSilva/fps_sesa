@@ -19,7 +19,7 @@ CDO(){
   cdo -O -L -f nc4 -z zip $@
 }
 
-VAR_LIST="sfcWind"
+VAR_LIST="pr sfcWind"
 SEASON_LIST="DJF MAM JJA SON"
 DATASET_LIST="reg_ictp_pbl2"
 
