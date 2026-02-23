@@ -32,39 +32,126 @@ skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 3
 
 def import_inmet():
 	
-	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii  = [], [], [], [], [], [], [], []
+	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
 			continue
 		if i in skip_list_inmet_ii:
 			continue
 		if inmet[i][3] <= -48 and inmet[i][2] <= -16.5:
-			yy=inmet[i][2]
-			xx=inmet[i][3]
-
+			station_code = f'INMET{i:03d}'
+			station_name = inmet[i][0]
+			print(station_code, station_name)
+		
 			# Reading inmet 
-			d_vi = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(inmet[i][0]))
-			d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
+			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_name))
+			d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
+			d_i = d_i.values
+			mean_i.append(d_i)
+
+			# Reading era5 
+			d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_H_2018-06-01-2021-05-31.nc'.format(station_name))
+			d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ii = d_ii.values
+			mean_ii.append(d_ii)
+			
+			# Reading regcm ictp 
+			d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_H_2018-06-01-2021-05-31.nc'.format(station_name))
+			d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iii = d_iii.values
+			mean_iii.append(d_iii)
+	
+			# Reading regcm ictp pbl 1
+			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_H_2018-06-01-2021-05-31.nc'.format(station_name))
+			d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iv = d_iv.values
+			mean_iv.append(d_iv)
+
+			# Reading regcm ictp pbl 2
+			d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_H_2018-06-01-2021-05-31.nc'.format(station_name))
+			d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_v = d_v.values
+			mean_v.append(d_v)
+
+			# Reading regcm usp
+			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_H_2018-06-01-2021-05-31.nc'.format(station_name))
+			d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
 			d_vi = d_vi.values
 			mean_vi.append(d_vi)
+
+			# Reading wrf ncar
+			d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_H_2018-06-01-2021-05-31.nc'.format(station_name))
+			d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vii = d_vii.values
+			mean_vii.append(d_vii)
 		
-	return  mean_vi
+			# Reading wrf ucan
+			d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_H_2018-06-01-2021-05-31.nc'.format(station_name))
+			d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_viii = d_viii.values
+			mean_viii.append(d_viii)
+		
+	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
 
 
 def import_smn_i():
 
-	mean_, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii  = [], [], [], [], [], [], [], []
+	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
 	for i in range(1, 73):
-		yy=smn_i[i][1]
-		xx=smn_i[i][2]
+		station_code = f'SMN{i:03d}'
+		station_name = smn_i[i][0]
+		print(station_code, station_name)
 			
 		# Reading smn 
-		d_vi = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(smn_i[i][0]))
-		d_vi = d_vi.pre.sel(time=slice('2018-06-01','2021-05-31'))
+		d_i = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_name))
+		d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
+		d_i = d_i.values
+		mean_i.append(d_i)
+
+		# Reading era5 
+		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
+		d_ii = d_ii.values
+		mean_ii.append(d_ii)
+		
+		# Reading regcm ictp 
+		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iii = d_iii.values
+		mean_iii.append(d_iii)
+
+		# Reading regcm ictp pbl 1
+		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iv = d_iv.values
+		mean_iv.append(d_iv)
+
+		# Reading regcm ictp pbl 2
+		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_v = d_v.values
+		mean_v.append(d_v)
+
+		# Reading regcm usp
+		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.values
 		mean_vi.append(d_vi)
 
-	return  mean_vi
+		# Reading wrf ncar
+		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_vii = d_vii.values
+		mean_vii.append(d_vii)
+		
+		# Reading wrf ucan
+		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_viii = d_viii.values
+		mean_viii.append(d_viii)
+				
+	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
+
 
 
 def compute_pdf(pr_hourly, nbins=10000):
@@ -84,7 +171,7 @@ def compute_pdf(pr_hourly, nbins=10000):
 	
 # Import dataset
 clim_vi_x = import_inmet()			
-clim_vi_y = import_smn_i()
+clim_viii_y, clim_ix_y = import_smn_i()
 
 inmet_smn = clim_vi_x + clim_vi_y
 

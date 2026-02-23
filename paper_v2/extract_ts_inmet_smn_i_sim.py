@@ -16,44 +16,46 @@ from dict_inmet_stations import inmet
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--var', required=True, help='Variable')
+parser.add_argument('--mdl', required=True, help='Model')
 parser.add_argument('--inst', required=True, help='Institution')
 args = parser.parse_args()
 
 var = args.var
+mdl = args.mdl
 inst = args.inst
 
-if var == 'tp':
-	nc_var = 'tp'
+if var == 'pr':
+	nc_var = 'pr'
 	unit_var = 'mm'
 	name_var = 'Hourly total of precipitation'
 	std_var = 'precipitation'
-elif var == 't2m':
-	nc_var = 't2m'
+elif var == 'tas':
+	nc_var = 'tas'
 	unit_var = 'degrees C'
 	name_var = 'Hourly mean of air temperature'
 	std_var = 'temperature'
 else: # 3
-	nc_var = 'ws10' 
+	nc_var = 'sfcWind' 
 	unit_var = 'm.s**-1'
 	name_var = 'Hourly mean of wind speed'
 	std_var = 'wind speed'
 
-if inst == 'reg_ictp':
-	exp = 'ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5_v1'
-elif inst == 'reg_ictp_pbl1':
+if mdl == 'reg_ictp':
+	exp = 'CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5_v1'
+elif mdl == 'reg_ictp_pbl1':
 	exp = 'CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl1_v0'
-elif inst == 'reg_ictp_pbl2':
+elif mdl == 'reg_ictp_pbl2':
 	exp = 'CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_ICTP-RegCM5pbl2_v0'
-elif inst == 'reg_usp':
+elif mdl == 'reg_usp':
 	exp = 'CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_USP-RegCM471_v2'
-elif inst == 'wrf_ncar':
-	exp = 'CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1'
+elif mdl == 'wrf_ncar':
+	exp = 'CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415'
 else:
-	exp = 'ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1'
+	exp = 'CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1'
 
 # Paths
-path_in = '/home/mda_silv/clima-archive2-b/FPS-SESA/rcm'
-path_out = '/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/{0}'.format(nc_var)
+path_in = '/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/{0}'.format(mdl)
+path_out = '/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/{0}/{1}'.format(mdl, nc_var)
 
 # Skip list for INMET stations
 skip_inmet = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] # 2018-2021
@@ -95,7 +97,7 @@ def extract_station(ts, station_code, station_name, institution):
 	
 	
 # Load ERA5 netCDF
-var_ds = Dataset('{0}/{1}_CSAM-4i_{2}_1hr_2018060100-2021053123.nc'.format(path_in, nc_var, exp))
+var_ds = Dataset('{0}/{1}_{2}_1hr_2018060100-2021053123.nc'.format(path_in, nc_var, exp))
 lats = var_ds.variables['lat'][:]
 lons = var_ds.variables['lon'][:]
 time = var_ds.variables['time'][:]
