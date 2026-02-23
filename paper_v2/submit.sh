@@ -19,6 +19,12 @@ CDO(){
   cdo -O -L -f nc4 -z zip $@
 }
 
-python3 plot_graph_pdf_sim_obs_sesa_t2m_uv10.py
+#python3 extract_ts_inmet_smn_i_obs.py --var tp --inst SMN
+python3 extract_ts_inmet_smn_i_obs.py --var t2m --inst SMN
+python3 extract_ts_inmet_smn_i_obs.py --var ws10 --inst SMN
+
+python3 extract_ts_inmet_smn_i_obs.py --var tp --inst INMET
+python3 extract_ts_inmet_smn_i_obs.py --var t2m --inst INMET
+python3 extract_ts_inmet_smn_i_obs.py --var ws10 --inst INMET
 
 }
