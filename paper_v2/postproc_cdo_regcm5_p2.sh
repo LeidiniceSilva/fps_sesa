@@ -19,9 +19,9 @@ CDO(){
   cdo -O -L -f nc4 -z zip $@
 }
 
-VAR_LIST="pr sfcWind"
+VAR_LIST="pr" # tas sfcWind
 SEASON_LIST="DJF MAM JJA SON"
-DATASET_LIST="reg_ictp_pbl2"
+DATASET_LIST="reg_ictp reg_ictp_pbl1 reg_ictp_pbl2 ictp_usp wrf_ncar wrf_ucan"
 
 echo
 echo "--------------- INIT POSPROCESSING MODEL ----------------"
@@ -55,7 +55,7 @@ for DATASET in ${DATASET_LIST[@]}; do
 	CDO seldate,2018-06-01,2021-05-31 ${VAR}_${EXP}_1hr_2018-2021.nc ${VAR}_${EXP}_1hr_201806-202105.nc
 	
 	if [ ${VAR} = 'pr'  ]; then
-	CDO -b f32 mulc,86400 ${VAR}_${EXP}_1hr_201806-202105.nc ${VAR}_${EXP}_1hr_2018060100-2021053123.nc
+	CDO -b f32 mulc,3600 ${VAR}_${EXP}_1hr_201806-202105.nc ${VAR}_${EXP}_1hr_2018060100-2021053123.nc
 	CDO daysum ${VAR}_${EXP}_1hr_2018060100-2021053123.nc ${VAR}_${EXP}_day_2018060100-2021053123.nc
 	CDO monmean ${VAR}_${EXP}_day_2018060100-2021053123.nc ${VAR}_${EXP}_mon_2018060100-2021053123.nc
 

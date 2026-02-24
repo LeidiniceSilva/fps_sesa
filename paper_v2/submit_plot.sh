@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH -N 2
+#SBATCH -N 1
 #SBATCH -t 24:00:00
-#SBATCH -J FPS-SESA
+#SBATCH -J Plot
 #SBATCH -p esp
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=mda_silv@ictp.it
@@ -15,10 +15,6 @@
 {
 set -eo pipefail
 
-python3 test_tas.py --var tas --mdl reg_ictp --inst SMN 
-python3 test_tas.py --var tas --mdl reg_ictp --inst INMET
-
-python3 test_sfcWind.py --var sfcWind --mdl reg_ictp --inst SMN
-python3 test_sfcWind.py --var sfcWind --mdl reg_ictp --inst INMET
+python3 plot_graph_pdf_sim_obs_sesa_pr.py
 
 }
