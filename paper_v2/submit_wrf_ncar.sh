@@ -15,13 +15,6 @@
 {
 set -eo pipefail
 
-python3 test.py --var pr --mdl wrf_ncar --inst SMN
-python3 test.py --var pr --mdl wrf_ncar --inst INMET
-
-python3 test.py --var tas --mdl wrf_ncar --inst SMN 
-python3 test.py --var tas --mdl wrf_ncar --inst INMET
-
-python3 test.py --var sfcWind --mdl wrf_ncar --inst SMN
-python3 test.py --var sfcWind --mdl wrf_ncar --inst INMET
+python3 test_wrf_ncar.py --var sfcWind --mdl wrf_ncar --inst INMET
 
 }

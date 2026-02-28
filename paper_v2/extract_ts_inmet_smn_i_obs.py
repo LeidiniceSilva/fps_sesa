@@ -93,7 +93,7 @@ else:
 
 # INMET stations
 if inst == 'INMET':
-	for station in inmet:
+	for station in range(1, 567):
 		if station in skip_inmet:
 			continue
 		station_code, station_name, lat_s, lon_s, alt_s = inmet[station]

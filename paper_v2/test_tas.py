@@ -104,14 +104,14 @@ time = var_ds.variables['time'][:]
 
 # INMET stations
 if inst == 'INMET':
-	for station in inmet:
+	for station in range(1, 567):
 		if station in skip_inmet:
 			continue
 		station_code, station_name, lat_s, lon_s, alt_s = inmet[station]
 		print(f'Processing INMET station {station_code} - {station_name}')
 		lat_idx = np.abs(lats - lat_s).argmin()
 		lon_idx = np.abs(lons - lon_s).argmin()
-		ts = var_ds.variables[nc_var][:, :, lat_idx, lon_idx]
+		ts = var_ds.variables[nc_var][:, lat_idx, lon_idx]
 		extract_station(ts, station_code, station_name, inst)
 	var_ds.close()
 
@@ -123,7 +123,7 @@ else:
 		print(f'Processing SMN station {station_code} - {station_name}')
 		lat_idx = np.abs(lats - lat_s).argmin()
 		lon_idx = np.abs(lons - lon_s).argmin()
-		ts = var_ds.variables[nc_var][:, :, lat_idx, lon_idx]
+		ts = var_ds.variables[nc_var][:, lat_idx, lon_idx]
 		extract_station(ts, station_code, station_name, inst)
 	var_ds.close()
 

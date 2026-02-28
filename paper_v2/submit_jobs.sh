@@ -15,22 +15,6 @@
 {
 set -eo pipefail
 
-python3 extract_ts_inmet_smn_i_obs.py --var tp --inst SMN
-python3 extract_ts_inmet_smn_i_obs.py --var tp --inst INMET
-
-python3 extract_ts_inmet_smn_i_obs.py --var t2m --inst SMN
-python3 extract_ts_inmet_smn_i_obs.py --var t2m --inst INMET
-
-python3 extract_ts_inmet_smn_i_obs.py --var ws10 --inst SMN
 python3 extract_ts_inmet_smn_i_obs.py --var ws10 --inst INMET
-
-python3 extract_ts_inmet_smn_i_sim.py --var pr --mdl reg_ictp --inst SMN
-python3 extract_ts_inmet_smn_i_sim.py --var pr --mdl reg_ictp --inst INMET
-
-python3 extract_ts_inmet_smn_i_sim.py --var tas --mdl reg_ictp --inst SMN 
-python3 extract_ts_inmet_smn_i_sim.py --var tas --mdl reg_ictp --inst INMET
-
-python3 extract_ts_inmet_smn_i_sim.py --var sfcWind --mdl reg_ictp --inst SMN
-python3 extract_ts_inmet_smn_i_sim.py --var sfcWind --mdl reg_ictp --inst INMET
 
 }

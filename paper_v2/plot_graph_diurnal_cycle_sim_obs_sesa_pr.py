@@ -18,6 +18,7 @@ from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
 var = 'pr'
+perc = 99
 path = '/home/mda_silv/users/FPS_SESA'
 
 skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
@@ -153,16 +154,25 @@ def import_smn_i():
 				
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
 	
+
+def mask_like(reference, target):
+
+	reference = np.asarray(reference)
+	masked_target = np.asarray(target, dtype=float).copy()
+	masked_target[np.isnan(reference)] = np.nan
+	
+	return masked_target
+	
 	
 def compute_stats(dataset):
 
 	pr = np.asarray(dataset)
 	horas = np.arange(len(pr)) % 24
 	
-	# P99 (threshold)
-	p99_global = np.nanpercentile(pr, 99)
+	# Percentile (threshold)
+	perc_global = np.nanpercentile(pr, perc)
 	
-	p99_hour = np.zeros(24)
+	perc_hour = np.zeros(24)
 	freq = np.zeros(24)
 	intens = np.zeros(24)
 	
@@ -171,10 +181,10 @@ def compute_stats(dataset):
 		valid = ~np.isnan(pr_h)
 	
 		# Percentil diurno
-		p99_hour[h] = np.nanpercentile(pr_h, 99) if np.sum(valid) > 0 else np.nan
+		perc_hour[h] = np.nanpercentile(pr_h, perc) if np.sum(valid) > 0 else np.nan
 	
-		# Extreme events (>= P99)
-		extreme = pr_h[valid][pr_h[valid] >= p99_global]
+		# Extreme events (>= percentile)
+		extreme = pr_h[valid][pr_h[valid] >= perc_global]
 
 		# Frequency (%) 
 		if np.sum(valid) > 0:
@@ -185,7 +195,7 @@ def compute_stats(dataset):
 		# Intensity 
 		intens[h] = np.nanmean(extreme) if len(extreme) > 0 else np.nan
 
-	return p99_hour, freq, intens
+	return perc_hour, freq, intens
 
 	
 # Import dataset
@@ -285,53 +295,95 @@ inmet_smn_c_iv  = np.concatenate(inmet_smn_iv)
 inmet_smn_c_v   = np.concatenate(inmet_smn_v)
 
 # Group II
-era5_c_i   = np.concatenate(era5_i)
-era5_c_ii  = np.concatenate(era5_ii)
-era5_c_iii = np.concatenate(era5_iii)
-era5_c_iv  = np.concatenate(era5_iv)
-era5_c_v   = np.concatenate(era5_v)
+era5_c_i_   = np.concatenate(era5_i)
+era5_c_ii_  = np.concatenate(era5_ii)
+era5_c_iii_ = np.concatenate(era5_iii)
+era5_c_iv_  = np.concatenate(era5_iv)
+era5_c_v_   = np.concatenate(era5_v)
+
+era5_c_i = mask_like(inmet_smn_c_i, era5_c_i_)
+era5_c_ii = mask_like(inmet_smn_c_ii, era5_c_ii_)
+era5_c_iii = mask_like(inmet_smn_c_iii, era5_c_iii_)
+era5_c_iv = mask_like(inmet_smn_c_iv, era5_c_iv_)
+era5_c_v = mask_like(inmet_smn_c_v, era5_c_v_)
 
 # Group III
-reg_usp_c_i   = np.concatenate(reg_usp_i)
-reg_usp_c_ii  = np.concatenate(reg_usp_ii)
-reg_usp_c_iii = np.concatenate(reg_usp_iii)
-reg_usp_c_iv  = np.concatenate(reg_usp_iv)
-reg_usp_c_v   = np.concatenate(reg_usp_v)
+reg_usp_c_i_   = np.concatenate(reg_usp_i)
+reg_usp_c_ii_  = np.concatenate(reg_usp_ii)
+reg_usp_c_iii_ = np.concatenate(reg_usp_iii)
+reg_usp_c_iv_  = np.concatenate(reg_usp_iv)
+reg_usp_c_v_   = np.concatenate(reg_usp_v)
+
+reg_usp_c_i = mask_like(inmet_smn_c_i, reg_usp_c_i_)
+reg_usp_c_ii = mask_like(inmet_smn_c_ii, reg_usp_c_ii_)
+reg_usp_c_iii = mask_like(inmet_smn_c_iii, reg_usp_c_iii_)
+reg_usp_c_iv = mask_like(inmet_smn_c_iv, reg_usp_c_iv_)
+reg_usp_c_v = mask_like(inmet_smn_c_v, reg_usp_c_v_)
 
 # Group IV
-reg_ictp_c_i   = np.concatenate(reg_ictp_i)
-reg_ictp_c_ii  = np.concatenate(reg_ictp_ii)
-reg_ictp_c_iii = np.concatenate(reg_ictp_iii)
-reg_ictp_c_iv  = np.concatenate(reg_ictp_iv)
-reg_ictp_c_v   = np.concatenate(reg_ictp_v)
+reg_ictp_c_i_   = np.concatenate(reg_ictp_i)
+reg_ictp_c_ii_  = np.concatenate(reg_ictp_ii)
+reg_ictp_c_iii_ = np.concatenate(reg_ictp_iii)
+reg_ictp_c_iv_  = np.concatenate(reg_ictp_iv)
+reg_ictp_c_v_   = np.concatenate(reg_ictp_v)
+
+reg_ictp_c_i = mask_like(inmet_smn_c_i, reg_ictp_c_i_)
+reg_ictp_c_ii = mask_like(inmet_smn_c_ii, reg_ictp_c_ii_)
+reg_ictp_c_iii = mask_like(inmet_smn_c_iii, reg_ictp_c_iii_)
+reg_ictp_c_iv = mask_like(inmet_smn_c_iv, reg_ictp_c_iv_)
+reg_ictp_c_v = mask_like(inmet_smn_c_v, reg_ictp_c_v_)
 
 # Group V
-reg_ictp_i_c_i   = np.concatenate(reg_ictp_i_i)
-reg_ictp_i_c_ii  = np.concatenate(reg_ictp_i_ii)
-reg_ictp_i_c_iii = np.concatenate(reg_ictp_i_iii)
-reg_ictp_i_c_iv  = np.concatenate(reg_ictp_i_iv)
-reg_ictp_i_c_v  = np.concatenate(reg_ictp_i_v)
+reg_ictp_i_c_i_   = np.concatenate(reg_ictp_i_i)
+reg_ictp_i_c_ii_  = np.concatenate(reg_ictp_i_ii)
+reg_ictp_i_c_iii_ = np.concatenate(reg_ictp_i_iii)
+reg_ictp_i_c_iv_  = np.concatenate(reg_ictp_i_iv)
+reg_ictp_i_c_v_  = np.concatenate(reg_ictp_i_v)
+
+reg_ictp_i_c_i = mask_like(inmet_smn_c_i, reg_ictp_i_c_i_)
+reg_ictp_i_c_ii = mask_like(inmet_smn_c_ii, reg_ictp_i_c_ii_)
+reg_ictp_i_c_iii = mask_like(inmet_smn_c_iii, reg_ictp_i_c_iii_)
+reg_ictp_i_c_iv = mask_like(inmet_smn_c_iv, reg_ictp_i_c_iv_)
+reg_ictp_i_c_v = mask_like(inmet_smn_c_v, reg_ictp_i_c_v_)
 
 # Group VI
-reg_ictp_ii_c_i   = np.concatenate(reg_ictp_ii_i)
-reg_ictp_ii_c_ii  = np.concatenate(reg_ictp_ii_ii)
-reg_ictp_ii_c_iii = np.concatenate(reg_ictp_ii_iii)
-reg_ictp_ii_c_iv  = np.concatenate(reg_ictp_ii_iv)
-reg_ictp_ii_c_v   = np.concatenate(reg_ictp_ii_v)
+reg_ictp_ii_c_i_   = np.concatenate(reg_ictp_ii_i)
+reg_ictp_ii_c_ii_  = np.concatenate(reg_ictp_ii_ii)
+reg_ictp_ii_c_iii_ = np.concatenate(reg_ictp_ii_iii)
+reg_ictp_ii_c_iv_  = np.concatenate(reg_ictp_ii_iv)
+reg_ictp_ii_c_v_   = np.concatenate(reg_ictp_ii_v)
+
+reg_ictp_ii_c_i = mask_like(inmet_smn_c_i, reg_ictp_ii_c_i_)
+reg_ictp_ii_c_ii = mask_like(inmet_smn_c_ii, reg_ictp_ii_c_ii_)
+reg_ictp_ii_c_iii = mask_like(inmet_smn_c_iii, reg_ictp_ii_c_iii_)
+reg_ictp_ii_c_iv = mask_like(inmet_smn_c_iv, reg_ictp_ii_c_iv_)
+reg_ictp_ii_c_v = mask_like(inmet_smn_c_v, reg_ictp_ii_c_v_)
 
 # Group VII
-wrf_ncar_c_i   = np.concatenate(wrf_ncar_i)
-wrf_ncar_c_ii  = np.concatenate(wrf_ncar_ii)
-wrf_ncar_c_iii = np.concatenate(wrf_ncar_iii)
-wrf_ncar_c_iv  = np.concatenate(wrf_ncar_iv)
-wrf_ncar_c_v   = np.concatenate(wrf_ncar_v)
+wrf_ncar_c_i_   = np.concatenate(wrf_ncar_i)
+wrf_ncar_c_ii_  = np.concatenate(wrf_ncar_ii)
+wrf_ncar_c_iii_ = np.concatenate(wrf_ncar_iii)
+wrf_ncar_c_iv_  = np.concatenate(wrf_ncar_iv)
+wrf_ncar_c_v_   = np.concatenate(wrf_ncar_v)
+
+wrf_ncar_c_i = mask_like(inmet_smn_c_i, wrf_ncar_c_i_)
+wrf_ncar_c_ii = mask_like(inmet_smn_c_ii, wrf_ncar_c_ii_)
+wrf_ncar_c_iii = mask_like(inmet_smn_c_iii, wrf_ncar_c_iii_)
+wrf_ncar_c_iv = mask_like(inmet_smn_c_iv, wrf_ncar_c_iv_)
+wrf_ncar_c_v = mask_like(inmet_smn_c_v, wrf_ncar_c_v_)
 
 # Group VIII
-wrf_ucan_c_i   = np.concatenate(wrf_ucan_i)
-wrf_ucan_c_ii  = np.concatenate(wrf_ucan_ii)
-wrf_ucan_c_iii = np.concatenate(wrf_ucan_iii)
-wrf_ucan_c_iv  = np.concatenate(wrf_ucan_iv)
-wrf_ucan_c_v   = np.concatenate(wrf_ucan_v)
+wrf_ucan_c_i_   = np.concatenate(wrf_ucan_i)
+wrf_ucan_c_ii_  = np.concatenate(wrf_ucan_ii)
+wrf_ucan_c_iii_ = np.concatenate(wrf_ucan_iii)
+wrf_ucan_c_iv_  = np.concatenate(wrf_ucan_iv)
+wrf_ucan_c_v_   = np.concatenate(wrf_ucan_v)
+
+wrf_ucan_c_i = mask_like(inmet_smn_c_i, wrf_ucan_c_i_)
+wrf_ucan_c_ii = mask_like(inmet_smn_c_ii, wrf_ucan_c_ii_)
+wrf_ucan_c_iii = mask_like(inmet_smn_c_iii, wrf_ucan_c_iii_)
+wrf_ucan_c_iv = mask_like(inmet_smn_c_iv, wrf_ucan_c_iv_)
+wrf_ucan_c_v = mask_like(inmet_smn_c_v,wrf_ucan_c_v_)
 
 perc_inmet_smn_c_i,   freq_inmet_smn_c_i,   int_inmet_smn_c_i   = compute_stats(inmet_smn_c_i)
 perc_inmet_smn_c_ii,  freq_inmet_smn_c_ii,  int_inmet_smn_c_ii  = compute_stats(inmet_smn_c_ii)
