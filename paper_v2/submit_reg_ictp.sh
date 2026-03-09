@@ -15,7 +15,6 @@
 {
 set -eo pipefail
 
-python3 test_tas.py --var sfcWind --mdl reg_ictp --inst SMN
-python3 test_tas.py --var sfcWind --mdl reg_ictp --inst INMET
+python3 test_reg_ictp.py --var sfcWind --mdl reg_ictp --inst INMET
 
 }

@@ -49,7 +49,7 @@ elif mdl == 'reg_ictp_pbl2':
 elif mdl == 'reg_usp':
 	exp = 'CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_USP-RegCM471_v2'
 elif mdl == 'wrf_ncar':
-	exp = 'CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415'
+	exp = 'CSAM-4i_ERA5_evaluation_r1i1p1_NCAR-WRF415_v1'
 else:
 	exp = 'CSAM-4i_ECMWF-ERA5_evaluation_r1i1p1f1_UCAN-WRF433_v1'
 
@@ -104,7 +104,7 @@ time = var_ds.variables['time'][:]
 
 # INMET stations
 if inst == 'INMET':
-	for station in inmet:
+	for station in range(160, 567):
 		if station in skip_inmet:
 			continue
 		station_code, station_name, lat_s, lon_s, alt_s = inmet[station]

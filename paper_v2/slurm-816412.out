@@ -1,0 +1,4 @@
+  File "/home/mda_silv/github_projects/fps_sesa/paper_v2/extract_ts_inmet_smn_i_sim.py", line 107
+    	for station in range(160, 567:
+    	                             ^
+SyntaxError: invalid syntax

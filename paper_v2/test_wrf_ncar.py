@@ -104,8 +104,8 @@ time = var_ds.variables['time'][:]
 
 # INMET stations
 if inst == 'INMET':
-	for station in inmet:
-		if station in range(360, 567):
+	for station in range(380, 567):
+		if station in skip_inmet:
 			continue
 		station_code, station_name, lat_s, lon_s, alt_s = inmet[station]
 		print(f'Processing INMET station {station_code} - {station_name}')
