@@ -22,7 +22,7 @@ parser.add_argument('--var', required=True, choices=['tas', 'sfcWind'], help='Va
 args = parser.parse_args()
 var = args.var
 
-dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['ws10', 'uv']}
+dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['uv', 'ws10']}
 
 if var == 'tas':
 	perc = 75
@@ -426,21 +426,22 @@ if var == 'tas':
 	ivmax_ = 35
 	iint_ = 1
 else:
-	legend = 'P90 (m s⁻¹)'
-	pvmin = 0
-	pvmax = 10
-	pvmax_ = 11
-	pint_ = 1
+	legend_i = 'P90 (m s⁻¹)'
+	legend_ii = '(m s⁻¹)'
+	pvmin = 2
+	pvmax = 7
+	pvmax_ = 7.5
+	pint_ = 0.5
 
 	fvmin = 0
 	fvmax = 20
 	fvmax_ = 22
 	fint_ = 2
 
-	ivmin = 0
-	ivmax = 10
-	ivmax_ = 11
-	iint_ = 1
+	ivmin = 3.5
+	ivmax = 8.5
+	ivmax_ = 9
+	iint_ = 0.5
 
 ax = fig.add_subplot(5, 3, 1)
 plt.plot(time, perc_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET')
@@ -461,7 +462,7 @@ plt.yticks(np.arange(pvmin, pvmax_, pint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
-ax.legend(loc=2, ncol=1, fontsize=font_size, frameon=False)
+ax.legend(loc=4, ncol=2, fontsize=font_size, frameon=False)
 
 ax = fig.add_subplot(5, 3, 2)
 plt.plot(time, freq_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET')
