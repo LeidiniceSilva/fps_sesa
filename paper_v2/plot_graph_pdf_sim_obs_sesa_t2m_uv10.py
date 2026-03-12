@@ -116,23 +116,43 @@ def mask_like(reference, target):
 	return masked_target
 	
 
-def compute_pdf(ts_hourly, nbins=10000):
+def compute_pdf(ts_hourly, nbins=10000, max_kde_points=200000):
 
-	ts = np.asarray(ts_hourly)
-	ts = ts[~np.isnan(ts)]
-	
-	# Percentil and max
-	perc = np.nanpercentile(ts, percentile)
-	max_ = np.nanmax(ts)
-	
-	# KDE
-	kde = gaussian_kde(ts)
-	x = np.linspace(np.nanmin(ts), np.nanmax(ts), nbins)
-	pdf = kde(x)
-	
-	return x, pdf, max_, perc
+    ts = np.asarray(ts_hourly).ravel()
+
+    # Remove NaN and inf
+    ts[~np.isfinite(ts)] = np.nan
+    ts[np.abs(ts) > 1e20] = np.nan
+
+    # Filters
+    if var == 'tas':        # Celsius
+        ts = ts[(ts > -80) & (ts < 60)]
+
+    elif var == 'sfcWind':  # m/s
+        ts = ts[(ts >= 0) & (ts < 80)]
+
+    if ts.size < 10:
+        return np.array([]), np.array([]), np.nan, np.nan
+
+    # Percentile and max
+    perc = np.nanpercentile(ts, percentile)
+    max_ = np.nanmax(ts)
+
+    # KDE
+    if ts.size > max_kde_points:
+        idx = np.random.choice(ts.size, max_kde_points, replace=False)
+        ts_kde = ts[idx]
+    else:
+        ts_kde = ts
+
+    kde = gaussian_kde(ts_kde, bw_method="scott")
+
+    x = np.linspace(ts.min(), ts.max(), nbins)
+    pdf = kde(x)
+
+    return x, pdf, max_, perc
     
-    	
+
 # Import dataset
 clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x, clim_viii_x = import_inmet()			
 
@@ -378,10 +398,19 @@ if var == 'tas':
 	xvmax_ = 44
 	xint_ = 4
 	yvmin = 0
-	yvmax = 1
-	yvmax_ = 1.1
-	yint_ = 0.1
-	text_ = 20
+	yvmax = 0.1
+	yvmax_ = 0.11
+	yint_ = 0.01
+	text_ = 1
+	text_1 = 0.01
+	text_2 = 0.02
+	text_3 = 0.03
+	text_4 = 0.04
+	text_5 = 0.05
+	text_6 = 0.06
+	text_7 = 0.07
+	text_8 = 0.08
+
 else:
 	legend = 'Wind speed 10m (m s⁻¹)'
 	xvmin = 0
@@ -392,10 +421,18 @@ else:
 	yvmax = 1
 	yvmax_ = 1.1
 	yint_ = 0.1
-	text_ = 5
+	text_ = 4
+	text_1 = 0.1
+	text_2 = 0.2
+	text_3 = 0.3
+	text_4 = 0.4
+	text_5 = 0.5
+	text_6 = 0.6
+	text_7 = 0.7
+	text_8 = 0.8
 
 ax1 = fig.add_subplot(6, 2, 1)
-plt.plot(x_inmet_smn_c_i,   pdf_inmet_smn_c_i,   linewidth=1, color='black',   label='INMET')
+plt.plot(x_inmet_smn_c_i,   pdf_inmet_smn_c_i,   linewidth=1, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_i,        pdf_era5_c_i,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_i,     pdf_reg_usp_c_i,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_i,    pdf_reg_ictp_c_i,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -403,22 +440,14 @@ plt.plot(x_reg_ictp_i_c_i,  pdf_reg_ictp_i_c_i,  linewidth=1, color='gray',    l
 plt.plot(x_reg_ictp_ii_c_i, pdf_reg_ictp_ii_c_i, linewidth=1, color='brown',   label='Reg5-UW')
 plt.plot(x_wrf_ncar_c_i,    pdf_wrf_ncar_c_i,    linewidth=1, color='green',   label='WRF-NCAR')
 plt.plot(x_wrf_ucan_c_i,    pdf_wrf_ucan_c_i,    linewidth=1, color='orange',  label='WRF-UCAN')
-plt.axvline(perc_inmet_smn_c_i,   linestyle='--', linewidth=0.75, color='black')
-plt.axvline(perc_era5_c_i,        linestyle='--', linewidth=0.75, color='red')
-plt.axvline(perc_reg_usp_c_i,     linestyle='--', linewidth=0.75, color='blue')
-plt.axvline(perc_reg_ictp_c_i,    linestyle='--', linewidth=0.75, color='magenta')
-plt.axvline(perc_reg_ictp_i_c_i,  linestyle='--', linewidth=0.75, color='gray')
-plt.axvline(perc_reg_ictp_ii_c_i, linestyle='--', linewidth=0.75, color='brown')
-plt.axvline(perc_wrf_ncar_c_i,    linestyle='--', linewidth=0.75, color='green')
-plt.axvline(perc_wrf_ucan_c_i,    linestyle='--', linewidth=0.75, color='orange')
-plt.text(text_, 0.72, 'INMET = {0}'.format(round(max_inmet_smn_c_i, 2)),      color='black',   fontsize=font_size)
-plt.text(text_, 0.62, 'ERA5 = {0}'.format(round(max_era5_c_i, 2)),            color='red',     fontsize=font_size)
-plt.text(text_, 0.52, 'Reg4 = {0}'.format(round(max_reg_usp_c_i, 2)),         color='blue',    fontsize=font_size)
-plt.text(text_, 0.42, 'Reg5-Holt3 = {0}'.format(round(max_reg_ictp_c_i, 2)),  color='magenta', fontsize=font_size)
-plt.text(text_, 0.32, 'Reg5-Holt = {0}'.format(round(max_reg_ictp_i_c_i, 2)), color='gray',    fontsize=font_size)
-plt.text(text_, 0.22, 'Reg5-UW = {0}'.format(round(max_reg_ictp_ii_c_i, 2)),  color='brown',   fontsize=font_size)
-plt.text(text_, 0.12, 'WRF-NCAR = {0}'.format(round(max_wrf_ncar_c_i, 2)),    color='green',   fontsize=font_size)
-plt.text(text_, 0.02, 'WRF-UCAN = {0}'.format(round(max_wrf_ucan_c_i, 2)),    color='orange',  fontsize=font_size)
+plt.text(text_, text_8, 'INMET = {0} ({1})'.format(round(perc_inmet_smn_c_i, 1),      round(max_inmet_smn_c_i, 1)),   color='black',   fontsize=font_size)
+plt.text(text_, text_7, 'ERA5 = {0} ({1})'.format(round(perc_era5_c_i, 1),            round(max_era5_c_i, 1)),        color='red',     fontsize=font_size)
+plt.text(text_, text_6, 'Reg4 = {0} ({1})'.format(round(perc_reg_usp_c_i, 1),         round(max_reg_usp_c_i, 1)),     color='blue',    fontsize=font_size)
+plt.text(text_, text_5, 'Reg5-Holt3 = {0} ({1})'.format(round(perc_reg_ictp_c_i, 1),  round(max_reg_ictp_c_i, 1)),    color='magenta', fontsize=font_size)
+plt.text(text_, text_4, 'Reg5-Holt = {0} ({1})'.format(round(perc_reg_ictp_i_c_i, 1), round(max_reg_ictp_i_c_i, 1)),  color='gray',    fontsize=font_size)
+plt.text(text_, text_3, 'Reg5-UW = {0} ({1})'.format(round(perc_reg_ictp_ii_c_i, 1),  round(max_reg_ictp_ii_c_i, 1)), color='brown',   fontsize=font_size)
+plt.text(text_, text_2, 'WRF-NCAR = {0} ({1})'.format(round(perc_wrf_ncar_c_i, 1),    round(max_wrf_ncar_c_i, 1)),    color='green',   fontsize=font_size)
+plt.text(text_, text_1, 'WRF-UCAN = {0} ({1})'.format(round(perc_wrf_ucan_c_i, 1),    round(max_wrf_ucan_c_i, 1)),    color='orange',  fontsize=font_size)
 plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
 plt.xlim(xvmin, xvmax)
@@ -426,10 +455,9 @@ plt.ylim(yvmin, yvmax)
 plt.xticks(np.arange(xvmin, xvmax_, xint_), fontsize=font_size)
 plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
-ax1.legend(loc=2, ncol=2, fontsize=font_size, frameon=False)
 
 ax2 = fig.add_subplot(6, 2, 2)
-plt.plot(x_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   linewidth=1, color='black',   label='INMET')
+plt.plot(x_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   linewidth=1, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_ii,        pdf_era5_c_ii,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_ii,     pdf_reg_usp_c_ii,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_ii,    pdf_reg_ictp_c_ii,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -437,22 +465,14 @@ plt.plot(x_reg_ictp_i_c_ii,  pdf_reg_ictp_i_c_ii,  linewidth=1, color='gray',   
 plt.plot(x_reg_ictp_ii_c_ii, pdf_reg_ictp_ii_c_ii, linewidth=1, color='brown',   label='Reg5-UW')
 plt.plot(x_wrf_ncar_c_ii,    pdf_wrf_ncar_c_ii,    linewidth=1, color='green',   label='WRF-NCAR')
 plt.plot(x_wrf_ucan_c_ii,    pdf_wrf_ucan_c_ii,    linewidth=1, color='orange',  label='WRF-UCAN')
-plt.axvline(perc_inmet_smn_c_ii,   linestyle='--', linewidth=0.75, color='black')
-plt.axvline(perc_era5_c_ii,	   linestyle='--', linewidth=0.75, color='red')
-plt.axvline(perc_reg_usp_c_ii,     linestyle='--', linewidth=0.75, color='blue')
-plt.axvline(perc_reg_ictp_c_ii,    linestyle='--', linewidth=0.75, color='magenta')
-plt.axvline(perc_reg_ictp_i_c_ii,  linestyle='--', linewidth=0.75, color='gray')
-plt.axvline(perc_reg_ictp_ii_c_ii, linestyle='--', linewidth=0.75, color='brown')
-plt.axvline(perc_wrf_ncar_c_ii,    linestyle='--', linewidth=0.75, color='green')
-plt.axvline(perc_wrf_ucan_c_ii,    linestyle='--', linewidth=0.75, color='orange')
-plt.text(text_, 0.72, 'INMET = {0}'.format(round(max_inmet_smn_c_ii, 2)),      color='black',   fontsize=font_size)
-plt.text(text_, 0.62, 'ERA5 = {0}'.format(round(max_era5_c_ii, 2)),            color='red',     fontsize=font_size)
-plt.text(text_, 0.52, 'Reg4 = {0}'.format(round(max_reg_usp_c_ii, 2)),         color='blue',    fontsize=font_size)
-plt.text(text_, 0.42, 'Reg5-Holt3 = {0}'.format(round(max_reg_ictp_c_ii, 2)),  color='magenta', fontsize=font_size)
-plt.text(text_, 0.32, 'Reg5-Holt = {0}'.format(round(max_reg_ictp_i_c_ii, 2)), color='gray',    fontsize=font_size)
-plt.text(text_, 0.22, 'Reg5-UW = {0}'.format(round(max_reg_ictp_ii_c_ii, 2)),  color='brown',   fontsize=font_size)
-plt.text(text_, 0.12, 'WRF-NCAR = {0}'.format(round(max_wrf_ncar_c_ii, 2)),    color='green',   fontsize=font_size)
-plt.text(text_, 0.02, 'WRF-UCAN = {0}'.format(round(max_wrf_ucan_c_ii, 2)),    color='orange',  fontsize=font_size)
+plt.text(text_, text_8, 'INMET = {0} ({1})'.format(round(perc_inmet_smn_c_ii, 1),      round(max_inmet_smn_c_ii, 1)),   color='black',   fontsize=font_size)
+plt.text(text_, text_7, 'ERA5 = {0} ({1})'.format(round(perc_era5_c_ii, 1),            round(max_era5_c_ii, 1)),        color='red',     fontsize=font_size)
+plt.text(text_, text_6, 'Reg4 = {0} ({1})'.format(round(perc_reg_usp_c_ii, 1),	     round(max_reg_usp_c_ii, 1)),     color='blue',    fontsize=font_size)
+plt.text(text_, text_5, 'Reg5-Holt3 = {0} ({1})'.format(round(perc_reg_ictp_c_ii, 1),  round(max_reg_ictp_c_ii, 1)),    color='magenta', fontsize=font_size)
+plt.text(text_, text_4, 'Reg5-Holt = {0} ({1})'.format(round(perc_reg_ictp_i_c_ii, 1), round(max_reg_ictp_i_c_ii, 1)),  color='gray',    fontsize=font_size)
+plt.text(text_, text_3, 'Reg5-UW = {0} ({1})'.format(round(perc_reg_ictp_ii_c_ii, 1),  round(max_reg_ictp_ii_c_ii, 1)), color='brown',   fontsize=font_size)
+plt.text(text_, text_2, 'WRF-NCAR = {0} ({1})'.format(round(perc_wrf_ncar_c_ii, 1),    round(max_wrf_ncar_c_ii, 1)),    color='green',   fontsize=font_size)
+plt.text(text_, text_1, 'WRF-UCAN = {0} ({1})'.format(round(perc_wrf_ucan_c_ii, 1),    round(max_wrf_ucan_c_ii, 1)),    color='orange',  fontsize=font_size)
 plt.title('(b) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
 plt.xlim(xvmin, xvmax)
@@ -462,7 +482,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax3 = fig.add_subplot(6, 2, 3)
-plt.plot(x_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   linewidth=1, color='black',   label='INMET')
+plt.plot(x_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   linewidth=1, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_iii,        pdf_era5_c_iii,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_iii,     pdf_reg_usp_c_iii,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_iii,    pdf_reg_ictp_c_iii,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -470,22 +490,14 @@ plt.plot(x_reg_ictp_i_c_iii,  pdf_reg_ictp_i_c_iii,  linewidth=1, color='gray', 
 plt.plot(x_reg_ictp_ii_c_iii, pdf_reg_ictp_ii_c_iii, linewidth=1, color='brown',   label='Reg5-UW')
 plt.plot(x_wrf_ncar_c_iii,    pdf_wrf_ncar_c_iii,    linewidth=1, color='green',   label='WRF-NCAR')
 plt.plot(x_wrf_ucan_c_iii,    pdf_wrf_ucan_c_iii,    linewidth=1, color='orange',  label='WRF-UCAN')
-plt.axvline(perc_inmet_smn_c_iii,   linestyle='--', linewidth=0.75, color='black')
-plt.axvline(perc_era5_c_iii,        linestyle='--', linewidth=0.75, color='red')
-plt.axvline(perc_reg_usp_c_iii,     linestyle='--', linewidth=0.75, color='blue')
-plt.axvline(perc_reg_ictp_c_iii,    linestyle='--', linewidth=0.75, color='magenta')
-plt.axvline(perc_reg_ictp_i_c_iii,  linestyle='--', linewidth=0.75, color='gray')
-plt.axvline(perc_reg_ictp_ii_c_iii, linestyle='--', linewidth=0.75, color='brown')
-plt.axvline(perc_wrf_ncar_c_iii,    linestyle='--', linewidth=0.75, color='green')
-plt.axvline(perc_wrf_ucan_c_iii,    linestyle='--', linewidth=0.75, color='orange')
-plt.text(text_, 0.72, 'INMET = {0}'.format(round(max_inmet_smn_c_iii, 2)),      color='black',   fontsize=font_size)
-plt.text(text_, 0.62, 'ERA5 = {0}'.format(round(max_era5_c_iii, 2)),            color='red',     fontsize=font_size)
-plt.text(text_, 0.52, 'Reg4 = {0}'.format(round(max_reg_usp_c_iii, 2)),         color='blue',    fontsize=font_size)
-plt.text(text_, 0.42, 'Reg5-Holt3 = {0}'.format(round(max_reg_ictp_c_iii, 2)),  color='magenta', fontsize=font_size)
-plt.text(text_, 0.32, 'Reg5-Holt = {0}'.format(round(max_reg_ictp_i_c_iii, 2)), color='gray',    fontsize=font_size)
-plt.text(text_, 0.22, 'Reg5-UW = {0}'.format(round(max_reg_ictp_ii_c_iii, 2)),  color='brown',   fontsize=font_size)
-plt.text(text_, 0.12, 'WRF-NCAR = {0}'.format(round(max_wrf_ncar_c_iii, 2)),    color='green',   fontsize=font_size)
-plt.text(text_, 0.02, 'WRF-UCAN = {0}'.format(round(max_wrf_ucan_c_iii, 2)),    color='orange',  fontsize=font_size)
+plt.text(text_, text_8, 'INMET = {0} ({1})'.format(round(perc_inmet_smn_c_iii, 1),      round(max_inmet_smn_c_iii, 1)),   color='black',   fontsize=font_size)
+plt.text(text_, text_7, 'ERA5 = {0} ({1})'.format(round(perc_era5_c_iii, 1),            round(max_era5_c_iii, 1)),        color='red',     fontsize=font_size)
+plt.text(text_, text_6, 'Reg4 = {0} ({1})'.format(round(perc_reg_usp_c_iii, 1),         round(max_reg_usp_c_iii, 1)),     color='blue',    fontsize=font_size)
+plt.text(text_, text_5, 'Reg5-Holt3 = {0} ({1})'.format(round(perc_reg_ictp_c_iii, 1),  round(max_reg_ictp_c_iii, 1)),	 color='magenta', fontsize=font_size)
+plt.text(text_, text_4, 'Reg5-Holt = {0} ({1})'.format(round(perc_reg_ictp_i_c_iii, 1), round(max_reg_ictp_i_c_iii, 1)),  color='gray',    fontsize=font_size)
+plt.text(text_, text_3, 'Reg5-UW = {0} ({1})'.format(round(perc_reg_ictp_ii_c_iii, 1),  round(max_reg_ictp_ii_c_iii, 1)), color='brown',   fontsize=font_size)
+plt.text(text_, text_2, 'WRF-NCAR = {0} ({1})'.format(round(perc_wrf_ncar_c_iii, 1),    round(max_wrf_ncar_c_iii, 1)),    color='green',   fontsize=font_size)
+plt.text(text_, text_1, 'WRF-UCAN = {0} ({1})'.format(round(perc_wrf_ucan_c_iii, 1),    round(max_wrf_ucan_c_iii, 1)),    color='orange',  fontsize=font_size)
 plt.title('(c) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
 plt.xlim(xvmin, xvmax)
@@ -495,7 +507,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax4 = fig.add_subplot(6, 2, 4)
-plt.plot(x_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   linewidth=1, color='black',   label='INMET')
+plt.plot(x_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   linewidth=1, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_iv,        pdf_era5_c_iv,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_iv,     pdf_reg_usp_c_iv,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_iv,    pdf_reg_ictp_c_iv,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -503,22 +515,14 @@ plt.plot(x_reg_ictp_i_c_iv,  pdf_reg_ictp_i_c_iv,  linewidth=1, color='gray',   
 plt.plot(x_reg_ictp_ii_c_iv, pdf_reg_ictp_ii_c_iv, linewidth=1, color='brown',   label='Reg5-UW')
 plt.plot(x_wrf_ncar_c_iv,    pdf_wrf_ncar_c_iv,    linewidth=1, color='green',   label='WRF-NCAR')
 plt.plot(x_wrf_ucan_c_iv,    pdf_wrf_ucan_c_iv,    linewidth=1, color='orange',  label='WRF-UCAN')
-plt.axvline(perc_inmet_smn_c_iv,   linestyle='--', linewidth=0.75, color='black')
-plt.axvline(perc_era5_c_iv,	   linestyle='--', linewidth=0.75, color='red')
-plt.axvline(perc_reg_usp_c_iv,     linestyle='--', linewidth=0.75, color='blue')
-plt.axvline(perc_reg_ictp_c_iv,    linestyle='--', linewidth=0.75, color='magenta')
-plt.axvline(perc_reg_ictp_i_c_iv,  linestyle='--', linewidth=0.75, color='gray')
-plt.axvline(perc_reg_ictp_ii_c_iv, linestyle='--', linewidth=0.75, color='brown')
-plt.axvline(perc_wrf_ncar_c_iv,    linestyle='--', linewidth=0.75, color='green')
-plt.axvline(perc_wrf_ucan_c_iv,    linestyle='--', linewidth=0.75, color='orange')
-plt.text(text_, 0.72, 'INMET = {0}'.format(round(max_inmet_smn_c_iv, 2)),      color='black',   fontsize=font_size)
-plt.text(text_, 0.62, 'ERA5 = {0}'.format(round(max_era5_c_iv, 2)),            color='red',     fontsize=font_size)
-plt.text(text_, 0.52, 'Reg4 = {0}'.format(round(max_reg_usp_c_iv, 2)),         color='blue',    fontsize=font_size)
-plt.text(text_, 0.42, 'Reg5-Holt3 = {0}'.format(round(max_reg_ictp_c_iv, 2)),  color='magenta', fontsize=font_size)
-plt.text(text_, 0.32, 'Reg5-Holt = {0}'.format(round(max_reg_ictp_i_c_iv, 2)), color='gray',    fontsize=font_size)
-plt.text(text_, 0.22, 'Reg5-UW = {0}'.format(round(max_reg_ictp_ii_c_iv, 2)),  color='brown',   fontsize=font_size)
-plt.text(text_, 0.12, 'WRF-NCAR = {0}'.format(round(max_wrf_ncar_c_iv, 2)),    color='green',   fontsize=font_size)
-plt.text(text_, 0.02, 'WRF-UCAN = {0}'.format(round(max_wrf_ucan_c_iv, 2)),    color='orange',  fontsize=font_size)
+plt.text(text_, text_8, 'INMET = {0} ({1})'.format(round(perc_inmet_smn_c_iv, 1),      round(max_inmet_smn_c_iv, 1)),   color='black',   fontsize=font_size)
+plt.text(text_, text_7, 'ERA5 = {0} ({1})'.format(round(perc_era5_c_iv, 1),	       round(max_era5_c_iv, 1)),	color='red',	 fontsize=font_size)
+plt.text(text_, text_6, 'Reg4 = {0} ({1})'.format(round(perc_reg_usp_c_iv, 1),         round(max_reg_usp_c_iv, 1)),     color='blue',    fontsize=font_size)
+plt.text(text_, text_5, 'Reg5-Holt3 = {0} ({1})'.format(round(perc_reg_ictp_c_iv, 1),  round(max_reg_ictp_c_iv, 1)),    color='magenta', fontsize=font_size)
+plt.text(text_, text_4, 'Reg5-Holt = {0} ({1})'.format(round(perc_reg_ictp_i_c_iv, 1), round(max_reg_ictp_i_c_iv, 1)),  color='gray',	fontsize=font_size)
+plt.text(text_, text_3, 'Reg5-UW = {0} ({1})'.format(round(perc_reg_ictp_ii_c_iv, 1),  round(max_reg_ictp_ii_c_iv, 1)), color='brown',   fontsize=font_size)
+plt.text(text_, text_2, 'WRF-NCAR = {0} ({1})'.format(round(perc_wrf_ncar_c_iv, 1),    round(max_wrf_ncar_c_iv, 1)),    color='green',   fontsize=font_size)
+plt.text(text_, text_1, 'WRF-UCAN = {0} ({1})'.format(round(perc_wrf_ucan_c_iv, 1),    round(max_wrf_ucan_c_iv, 1)),    color='orange',  fontsize=font_size)
 plt.title('(d) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
 plt.xlabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
@@ -529,7 +533,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax5 = fig.add_subplot(6, 2, 5)
-plt.plot(x_inmet_smn_c_v,   pdf_inmet_smn_c_v,   linewidth=1, color='black',   label='INMET')
+plt.plot(x_inmet_smn_c_v,   pdf_inmet_smn_c_v,   linewidth=1, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_v,        pdf_era5_c_v,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_v,     pdf_reg_usp_c_v,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_v,    pdf_reg_ictp_c_v,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -537,22 +541,14 @@ plt.plot(x_reg_ictp_i_c_v,  pdf_reg_ictp_i_c_v,  linewidth=1, color='gray',    l
 plt.plot(x_reg_ictp_ii_c_v, pdf_reg_ictp_ii_c_v, linewidth=1, color='brown',   label='Reg5-UW')
 plt.plot(x_wrf_ncar_c_v,    pdf_wrf_ncar_c_v,    linewidth=1, color='green',   label='WRF-NCAR')
 plt.plot(x_wrf_ucan_c_v,    pdf_wrf_ucan_c_v,    linewidth=1, color='orange',  label='WRF-UCAN')
-plt.axvline(perc_inmet_smn_c_v,   linestyle='--', linewidth=0.75, color='black')
-plt.axvline(perc_era5_c_v,        linestyle='--', linewidth=0.75, color='red')
-plt.axvline(perc_reg_usp_c_v,     linestyle='--', linewidth=0.75, color='blue')
-plt.axvline(perc_reg_ictp_c_v,    linestyle='--', linewidth=0.75, color='magenta')
-plt.axvline(perc_reg_ictp_i_c_v,  linestyle='--', linewidth=0.75, color='gray')
-plt.axvline(perc_reg_ictp_ii_c_v, linestyle='--', linewidth=0.75, color='brown')
-plt.axvline(perc_wrf_ncar_c_v,    linestyle='--', linewidth=0.75, color='green')
-plt.axvline(perc_wrf_ucan_c_v,    linestyle='--', linewidth=0.75, color='orange')
-plt.text(text_, 0.72, 'INMET = {0}'.format(round(max_inmet_smn_c_v, 2)),      color='black',   fontsize=font_size)
-plt.text(text_, 0.62, 'ERA5 = {0}'.format(round(max_era5_c_v, 2)),            color='red',     fontsize=font_size)
-plt.text(text_, 0.52, 'Reg4 = {0}'.format(round(max_reg_usp_c_v, 2)),         color='blue',    fontsize=font_size)
-plt.text(text_, 0.42, 'Reg5-Holt3 = {0}'.format(round(max_reg_ictp_c_v, 2)),  color='magenta', fontsize=font_size)
-plt.text(text_, 0.32, 'Reg5-Holt = {0}'.format(round(max_reg_ictp_i_c_v, 2)), color='gray',    fontsize=font_size)
-plt.text(text_, 0.22, 'Reg5-UW = {0}'.format(round(max_reg_ictp_ii_c_v, 2)),  color='brown',   fontsize=font_size)
-plt.text(text_, 0.12, 'WRF-NCAR = {0}'.format(round(max_wrf_ncar_c_v, 2)),    color='green',   fontsize=font_size)
-plt.text(text_, 0.02, 'WRF-UCAN = {0}'.format(round(max_wrf_ucan_c_v, 2)),    color='orange',  fontsize=font_size)
+plt.text(text_, text_8, 'INMET = {0} ({1})'.format(round(perc_inmet_smn_c_v, 1),      round(max_inmet_smn_c_v, 1)),   color='black',   fontsize=font_size)
+plt.text(text_, text_7, 'ERA5 = {0} ({1})'.format(round(perc_era5_c_v, 1),            round(max_era5_c_v, 1)),        color='red',     fontsize=font_size)
+plt.text(text_, text_6, 'Reg4 = {0} ({1})'.format(round(perc_reg_usp_c_v, 1),         round(max_reg_usp_c_v, 1)),     color='blue',    fontsize=font_size)
+plt.text(text_, text_5, 'Reg5-Holt3 = {0} ({1})'.format(round(perc_reg_ictp_c_v, 1),  round(max_reg_ictp_c_v, 1)),    color='magenta', fontsize=font_size)
+plt.text(text_, text_4, 'Reg5-Holt = {0} ({1})'.format(round(perc_reg_ictp_i_c_v, 1), round(max_reg_ictp_i_c_v, 1)),  color='gray',    fontsize=font_size)
+plt.text(text_, text_3, 'Reg5-UW = {0} ({1})'.format(round(perc_reg_ictp_ii_c_v, 1),  round(max_reg_ictp_ii_c_v, 1)), color='brown',   fontsize=font_size)
+plt.text(text_, text_2, 'WRF-NCAR = {0} ({1})'.format(round(perc_wrf_ncar_c_v, 1),    round(max_wrf_ncar_c_v, 1)),    color='green',   fontsize=font_size)
+plt.text(text_, text_1, 'WRF-UCAN = {0} ({1})'.format(round(perc_wrf_ucan_c_v, 1),    round(max_wrf_ucan_c_v, 1)),    color='orange',  fontsize=font_size)
 plt.title('(e) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
 plt.ylabel('Frequency (#)', fontsize=font_size, fontweight='bold')
 plt.xlabel('{0}'.format(legend), fontsize=font_size, fontweight='bold')
