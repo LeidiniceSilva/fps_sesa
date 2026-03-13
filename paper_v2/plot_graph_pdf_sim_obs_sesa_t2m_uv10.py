@@ -402,14 +402,14 @@ if var == 'tas':
 	yvmax_ = 0.11
 	yint_ = 0.01
 	text_ = 1
-	text_1 = 0.01
-	text_2 = 0.02
-	text_3 = 0.03
-	text_4 = 0.04
-	text_5 = 0.05
-	text_6 = 0.06
-	text_7 = 0.07
-	text_8 = 0.08
+	text_1 = 0.2
+	text_2 = 0.3
+	text_3 = 0.4
+	text_4 = 0.5
+	text_5 = 0.6
+	text_6 = 0.7
+	text_7 = 0.8
+	text_8 = 0.9
 
 else:
 	legend = 'Wind speed 10m (m s⁻¹)'
@@ -422,17 +422,17 @@ else:
 	yvmax_ = 1.1
 	yint_ = 0.1
 	text_ = 4
-	text_1 = 0.1
-	text_2 = 0.2
-	text_3 = 0.3
-	text_4 = 0.4
-	text_5 = 0.5
-	text_6 = 0.6
-	text_7 = 0.7
-	text_8 = 0.8
+	text_1 = 0.2
+	text_2 = 0.3
+	text_3 = 0.4
+	text_4 = 0.5
+	text_5 = 0.6
+	text_6 = 0.7
+	text_7 = 0.8
+	text_8 = 0.9
 
 ax1 = fig.add_subplot(6, 2, 1)
-plt.plot(x_inmet_smn_c_i,   pdf_inmet_smn_c_i,   linewidth=1, color='black',   label='INMET+SMN')
+plt.plot(x_inmet_smn_c_i,   pdf_inmet_smn_c_i,   linewidth=2, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_i,        pdf_era5_c_i,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_i,     pdf_reg_usp_c_i,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_i,    pdf_reg_ictp_c_i,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -457,7 +457,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax2 = fig.add_subplot(6, 2, 2)
-plt.plot(x_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   linewidth=1, color='black',   label='INMET+SMN')
+plt.plot(x_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   linewidth=2, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_ii,        pdf_era5_c_ii,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_ii,     pdf_reg_usp_c_ii,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_ii,    pdf_reg_ictp_c_ii,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -482,7 +482,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax3 = fig.add_subplot(6, 2, 3)
-plt.plot(x_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   linewidth=1, color='black',   label='INMET+SMN')
+plt.plot(x_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   linewidth=2, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_iii,        pdf_era5_c_iii,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_iii,     pdf_reg_usp_c_iii,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_iii,    pdf_reg_ictp_c_iii,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -507,7 +507,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax4 = fig.add_subplot(6, 2, 4)
-plt.plot(x_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   linewidth=1, color='black',   label='INMET+SMN')
+plt.plot(x_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   linewidth=2, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_iv,        pdf_era5_c_iv,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_iv,     pdf_reg_usp_c_iv,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_iv,    pdf_reg_ictp_c_iv,    linewidth=1, color='magenta', label='Reg5-Holt3')
@@ -533,7 +533,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax5 = fig.add_subplot(6, 2, 5)
-plt.plot(x_inmet_smn_c_v,   pdf_inmet_smn_c_v,   linewidth=1, color='black',   label='INMET+SMN')
+plt.plot(x_inmet_smn_c_v,   pdf_inmet_smn_c_v,   linewidth=2, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_v,        pdf_era5_c_v,        linewidth=1, color='red',     label='ERA5')
 plt.plot(x_reg_usp_c_v,     pdf_reg_usp_c_v,     linewidth=1, color='blue',    label='Reg4')
 plt.plot(x_reg_ictp_c_v,    pdf_reg_ictp_c_v,    linewidth=1, color='magenta', label='Reg5-Holt3')
