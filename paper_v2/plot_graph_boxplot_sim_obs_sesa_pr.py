@@ -1,4 +1,3 @@
-
 # -*- coding:utf-8 -*-
 
 __author__      = "Leidinice Silva"
@@ -7,7 +6,6 @@ __date__        = "Dec 08, 2025"
 __description__ = "This script plot PDFs"
 
 import os
-import argparse
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
@@ -18,18 +16,7 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
-parser = argparse.ArgumentParser(description='Process variable')
-parser.add_argument('--var', required=True, choices=['tas', 'sfcWind'], help='Variable name')
-args = parser.parse_args()
-var = args.var
-
-dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['uv', 'ws10']}
-
-if var == 'tas':
-	percentile = 75
-else:
-	percentile = 90
-	
+var = 'pr'
 path = '/home/mda_silv/users/FPS_SESA'
 
 skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
@@ -57,56 +44,115 @@ def import_inmet():
 			print(station_code, station_name)
 		
 			# Reading inmet 
-			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_H_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], station_code))
-			d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
+			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_code))
+			d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
 			d_i = d_i.values
 			mean_i.append(d_i)
 
 			# Reading era5 
-			d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/{0}/'.format(dict_var[var][1]) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(dict_var[var][1], station_code, station_name))
-			d_ii = d_ii[dict_var[var][1]].sel(time=slice('2018-06-01','2021-05-31'))
+			d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 			d_ii = d_ii.values 
 			mean_ii.append(d_ii)
 			
 			# Reading regcm ictp 
-			d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-			d_iii = d_iii[var].sel(time=slice('2018-06-01','2021-05-31'))
+			d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 			d_iii = d_iii.values 
 			mean_iii.append(d_iii)
 	
 			# Reading regcm ictp pbl 1
-			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-			d_iv = d_iv[var].sel(time=slice('2018-06-01','2021-05-31'))
-			d_iv = d_iv.values 
+			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iv = d_iv.values / 24
 			mean_iv.append(d_iv)
 
 			# Reading regcm ictp pbl 2
-			d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-			d_v = d_v[var].sel(time=slice('2018-06-01','2021-05-31'))
-			d_v = d_v.values 
+			d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_v = d_v.values / 24
 			mean_v.append(d_v)
 
 			# Reading regcm usp
-			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-			d_vi = d_vi[var].sel(time=slice('2018-06-01','2021-05-31'))
-			d_vi = d_vi.values 
+			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vi = d_vi.values / 24
 			mean_vi.append(d_vi)
 
 			# Reading wrf ncar
-			d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-			d_vii = d_vii[var].sel(time=slice('2018-06-01','2021-05-31'))
-			d_vii = d_vii.values 
+			d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vii = d_vii.values / 24
 			mean_vii.append(d_vii)
 		
 			# Reading wrf ucan
-			d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-			d_viii = d_viii[var].sel(time=slice('2018-06-01','2021-05-31'))
-			d_viii = d_viii.values 
+			d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_viii = d_viii.values / 24
 			mean_viii.append(d_viii)
 		
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
-	
-					
+
+
+def import_smn_i():
+
+	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
+	for i in range(1, 73):
+		station_code = f'SMN{i:03d}'
+		station_name = smn_i[i][0]
+		print(station_code, station_name)
+			
+		# Reading smn 
+		d_i = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_name))
+		d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
+		d_i = d_i.values
+		mean_i.append(d_i)
+
+		# Reading era5 
+		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
+		d_ii = d_ii.values
+		mean_ii.append(d_ii)
+		
+		# Reading regcm ictp 
+		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iii = d_iii.values
+		mean_iii.append(d_iii)
+
+		# Reading regcm ictp pbl 1
+		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iv = d_iv.values / 24
+		mean_iv.append(d_iv)
+
+		# Reading regcm ictp pbl 2
+		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_v = d_v.values / 24
+		mean_v.append(d_v)
+
+		# Reading regcm usp
+		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_vi = d_vi.values / 24
+		mean_vi.append(d_vi)
+
+		# Reading wrf ncar
+		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_vii = d_vii.values / 24
+		mean_vii.append(d_vii)
+		
+		# Reading wrf ucan
+		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_viii = d_viii.values / 24
+		mean_viii.append(d_viii)
+				
+	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
+
+
 def mask_like(reference, target):
 
 	reference = np.asarray(reference)
@@ -115,55 +161,37 @@ def mask_like(reference, target):
 	
 	return masked_target
 	
+	
+def compute_pdf(ts_hourly, nbins=10000):
 
-def compute_pdf(ts_hourly, nbins=10000, max_kde_points=200000):
+	ts = np.asarray(ts_hourly)
+	ts = ts[~np.isnan(ts)]
+	ts = ts[ts >= 0.1]  
+	
+	# Percentil and max
+	perc = np.nanpercentile(ts, percentile)
+	max_ = np.nanmax(ts)
+	
+	# KDE
+	kde = gaussian_kde(ts, bw_method="scott")
+	x = np.linspace(np.nanmin(ts), np.nanmax(ts), nbins)
+	pdf = kde(x)
 
-    ts = np.asarray(ts_hourly).ravel()
-
-    # Remove nan and inf
-    ts[~np.isfinite(ts)] = np.nan
-    ts[np.abs(ts) > 1e20] = np.nan
-
-    # Filters
-    if var == 'tas':        # Celsius
-        ts = ts[(ts > -80) & (ts < 60)]
-
-    elif var == 'sfcWind':  # m/s
-        ts = ts[(ts >= 0) & (ts < 80)]
-
-    if ts.size < 10:
-        return np.array([]), np.array([]), np.nan, np.nan
-
-    # Percentile and max
-    perc = np.nanpercentile(ts, percentile)
-    max_ = np.nanmax(ts)
-
-    # KDE
-    if ts.size > max_kde_points:
-        idx = np.random.choice(ts.size, max_kde_points, replace=False)
-        ts_kde = ts[idx]
-    else:
-        ts_kde = ts
-
-    kde = gaussian_kde(ts_kde, bw_method="scott")
-
-    x = np.linspace(ts.min(), ts.max(), nbins)
-    pdf = kde(x)
-
-    return x, pdf, max_, perc
+	return x, pdf, max_, perc
     
-
+        
 # Import dataset
 clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x, clim_viii_x = import_inmet()			
+clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y, clim_viii_y = import_smn_i()
 
-inmet_smn    = clim_i_x 
-era5         = clim_ii_x 
-reg_ictp     = clim_iii_x 
-reg_ictp_i_  = clim_iv_x 
-reg_ictp_ii_ = clim_v_x 
-reg_usp      = clim_vi_x 
-wrf_ncar     = clim_vii_x 
-wrf_ucan     = clim_viii_x 
+inmet_smn    = clim_i_x + clim_i_y
+era5         = clim_ii_x + clim_ii_y
+reg_ictp     = clim_iii_x + clim_iii_y
+reg_ictp_i_  = clim_iv_x + clim_iv_y
+reg_ictp_ii_ = clim_v_x + clim_v_y
+reg_usp      = clim_vi_x + clim_vi_y
+wrf_ncar     = clim_vii_x + clim_vii_y
+wrf_ucan     = clim_viii_x + clim_viii_y
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
 list_hc = list_hc[:len(inmet_smn)]
@@ -391,46 +419,25 @@ x_wrf_ucan_c_v,   pdf_wrf_ucan_c_v,   max_wrf_ucan_c_v,   perc_wrf_ucan_c_v   = 
 fig = plt.figure(figsize=(8, 18))
 font_size = 8
 
-if var == 'tas':
-	legend = 'Air emperature 2m (°C)'
-	xvmin = 0
-	xvmax = 40
-	xvmax_ = 44
-	xint_ = 4
-	yvmin = 0
-	yvmax = 0.1
-	yvmax_ = 0.11
-	yint_ = 0.01
-	text_ = 1
-	text_1 = 0.02
-	text_2 = 0.03
-	text_3 = 0.04
-	text_4 = 0.05
-	text_5 = 0.06
-	text_6 = 0.07
-	text_7 = 0.08
-	text_8 = 0.09
-
-else:
-	legend = 'Wind speed 10m (m s⁻¹)'
-	xvmin = 0
-	xvmax =10
-	xvmax_ = 11
-	xint_ = 1
-	yvmin = 0
-	yvmax = 1
-	yvmax_ = 1.1
-	yint_ = 0.1
-	text_ = 4
-	text_1 = 0.2
-	text_2 = 0.3
-	text_3 = 0.4
-	text_4 = 0.5
-	text_5 = 0.6
-	text_6 = 0.7
-	text_7 = 0.8
-	text_8 = 0.9
-
+legend = 'Precipitation (mm h⁻¹)'
+xvmin = 0
+xvmax = 10
+xvmax_ = 11
+xint_ = 1
+yvmin = 0
+yvmax = 1
+yvmax_ = 1.1
+yint_ = 0.1
+text_ = 3
+text_1 = 0.22
+text_2 = 0.32
+text_3 = 0.42
+text_4 = 0.52
+text_5 = 0.62
+text_6 = 0.72
+text_7 = 0.82
+text_8 = 0.92
+	
 ax1 = fig.add_subplot(6, 2, 1)
 plt.plot(x_inmet_smn_c_i,   pdf_inmet_smn_c_i,   linewidth=2, color='black',   label='INMET+SMN')
 plt.plot(x_era5_c_i,        pdf_era5_c_i,        linewidth=1, color='red',     label='ERA5')
@@ -560,7 +567,7 @@ plt.grid(True, alpha=0.5, linestyle='--')
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
-name_out = 'pyplt_graph_pdf_{0}_sesa.png'.format(var)
+name_out = 'pyplt_graph_boxplot_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()

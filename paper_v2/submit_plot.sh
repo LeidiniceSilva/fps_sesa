@@ -15,9 +15,9 @@
 {
 set -eo pipefail
 
-python3 plot_graph_pdf_sim_obs_sesa_pr.py
+#python3 plot_graph_pdf_sim_obs_sesa_pr.py
 python3 plot_graph_pdf_sim_obs_sesa_t2m_uv10.py --var tas
-python3 plot_graph_pdf_sim_obs_sesa_t2m_uv10.py --var sfcWind
+#python3 plot_graph_pdf_sim_obs_sesa_t2m_uv10.py --var sfcWind
 
 
 }
