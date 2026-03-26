@@ -25,9 +25,9 @@ var = args.var
 dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['uv', 'ws10']}
 
 if var == 'tas':
-	perc = 75
+	perc = 95
 else:
-	perc = 90
+	perc = 95
 	
 path = '/home/mda_silv/users/FPS_SESA'
 

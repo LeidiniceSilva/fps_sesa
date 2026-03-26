@@ -31,9 +31,9 @@ else:
 	seas_ = 'jja'
 	
 if var == 'tas':
-	perc = 95
+	perc = 75
 else:
-	perc = 95
+	perc = 90
 	
 path = '/home/mda_silv/users/FPS_SESA'
 

@@ -556,7 +556,7 @@ cbar_topo.ax.tick_params(labelsize=font_size)
 
 # Path out to save figure
 path_out = '/home/mda_silv/users/FPS_SESA/figs/paper_cp'.format(path)
-name_out = 'pyplt_maps_bias_{0}_sesa_topo.png'.format(var)
+name_out = 'pyplt_maps_bias_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
