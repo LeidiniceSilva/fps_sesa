@@ -7,6 +7,7 @@ __description__ = "This script plot maps of bias"
 
 import os
 import sys
+import argparse
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -23,7 +24,11 @@ from netCDF4 import Dataset as nc
 from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
-var = 'tas'
+parser = argparse.ArgumentParser(description='Process variable')
+parser.add_argument('--var', required=True, choices=['tas', 'sfcWind'], help='Variable name')
+args = parser.parse_args()
+var = args.var
+
 dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['uv', 'ws10']}
 
 font_size = 7
@@ -224,111 +229,115 @@ fig.delaxes(ax3)
 fig.delaxes(ax4)
 
 if var == 'tas':
-	cmap = cm.get_cmap('bwr', 16)
-	norm = BoundaryNorm(np.linspace(-4, 4, 16 + 1), cmap.N)
-	norm_ = BoundaryNorm(np.linspace(-1, 1, 16 + 1), cmap.N)
+	cmap = cm.get_cmap('bwr', 20)
+	norm_i = BoundaryNorm(np.linspace(-5, 5, 20 + 1), cmap.N)
+	norm_ii = BoundaryNorm(np.linspace(-5, 5, 20 + 1), cmap.N)
+	norm_iii = BoundaryNorm(np.linspace(-0.5, 0.5, 20 + 1), cmap.N)
+	norm_iv = BoundaryNorm(np.linspace(-5, 5, 20 + 1), cmap.N)
 	legend = '°C'
 	legend_ = '%'
 else:
-	cmap = cm.get_cmap('PRGn', 16)
-	norm = BoundaryNorm(np.linspace(-4, 4, 16 + 1), cmap.N)
-	norm_ = BoundaryNorm(np.linspace(-1, 1, 16 + 1), cmap.N)
+	cmap = cm.get_cmap('PRGn', 20)
+	norm_i = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	norm_ii = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	norm_iii = BoundaryNorm(np.linspace(-0.4, 0.4, 20 + 1), cmap.N)
+	norm_iv = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
 	legend = 'm s⁻¹'
 	legend_ = '%'
 
-ct5 = ax5.scatter(lon_xx, lat_yy, 20, bias_mean_era5, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct5 = ax5.scatter(lon_xx, lat_yy, 20, bias_mean_era5, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax5.set_title('MEAN ({0})'.format(legend), loc='center', fontsize=font_size)
 ax5.set_ylabel(u'ERA5 - INMET', fontsize=font_size)
 configure_subplot(ax5)
 
-ct6 = ax6.scatter(lon_xx, lat_yy, 20, bias_perc_era5, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax6.set_title('P95 ({0})'.format(legend), loc='center', fontsize=font_size)
+ct6 = ax6.scatter(lon_xx, lat_yy, 20, bias_perc_era5, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax6.set_title('P99 ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax6)
 
-ct7 = ax7.scatter(lon_xx, lat_yy, 20, bias_freq_era5, cmap=cmap, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
+ct7 = ax7.scatter(lon_xx, lat_yy, 20, bias_freq_era5, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
 ax7.set_title('FREQUENCY ({0})'.format(legend_), loc='center', fontsize=font_size)
 configure_subplot(ax7)
 
-ct8 = ax8.scatter(lon_xx, lat_yy, 20, bias_int_era5, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct8 = ax8.scatter(lon_xx, lat_yy, 20, bias_int_era5, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
 ax8.set_title('INTENSITY ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax8)
 
-ct9 = ax9.scatter(lon_xx, lat_yy, 20, bias_mean_reg_usp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct9 = ax9.scatter(lon_xx, lat_yy, 20, bias_mean_reg_usp, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax9.set_ylabel('Reg4 - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax9)
 
-ct10 = ax10.scatter(lon_xx, lat_yy, 20, bias_perc_reg_usp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct10 = ax10.scatter(lon_xx, lat_yy, 20, bias_perc_reg_usp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax10)
 
-ct11 = ax11.scatter(lon_xx, lat_yy, 20, bias_freq_reg_usp, cmap=cmap, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
+ct11 = ax11.scatter(lon_xx, lat_yy, 20, bias_freq_reg_usp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax11)
 
-ct12 = ax12.scatter(lon_xx, lat_yy, 20, bias_int_reg_usp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct12 = ax12.scatter(lon_xx, lat_yy, 20, bias_int_reg_usp, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax12)
 
-ct13 = ax13.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
-ax13.set_ylabel('Reg5 - INMET', rotation='vertical', fontsize=font_size)
+ct13 = ax13.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax13.set_ylabel('Reg5-Holt3 - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax13)
 
-ct14 = ax14.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct14 = ax14.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax14)
 
-ct15 = ax15.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp, cmap=cmap, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
+ct15 = ax15.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax15)
 
-ct16 = ax16.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct16 = ax16.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax16)
 
-ct17 = ax17.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp_i, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct17 = ax17.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp_i, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax17.set_ylabel('Reg5-Holt - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax17)
 
-ct18 = ax18.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_i, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct18 = ax18.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_i, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax18)
 
-ct19 = ax19.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_i, cmap=cmap, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
+ct19 = ax19.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_i, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax19)
 
-ct20 = ax20.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_i, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct20 = ax20.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_i, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax20)
 
-ct21 = ax21.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp_ii, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct21 = ax21.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp_ii, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax21.set_ylabel('Reg5-UW - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax21)
 
-ct22 = ax22.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_ii, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct22 = ax22.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_ii, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax22)
 
-ct23 = ax23.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_ii, cmap=cmap, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
+ct23 = ax23.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_ii, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax23)
 
-ct24 = ax24.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_ii, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct24 = ax24.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_ii, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax24)
 
-ct25 = ax25.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_ncar, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct25 = ax25.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_ncar, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax25.set_ylabel('WRF-NCAR - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax25)
 
-ct26 = ax26.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ncar, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct26 = ax26.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ncar, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax26)
 
-ct27 = ax27.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ncar, cmap=cmap, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
+ct27 = ax27.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ncar, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax27)
 
-ct28 = ax28.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ncar, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct28 = ax28.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ncar, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax28)
 
-ct29 = ax29.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_ucan, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct29 = ax29.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_ucan, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax29.set_ylabel('WRF-UCAN - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax29)
 
-ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax30)
 
-ct31 = ax31.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ucan, cmap=cmap, norm=norm_, marker='o', edgecolor='black', linewidth=0.5)
+ct31 = ax31.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ucan, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax31)
 
-ct32 = ax32.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ucan, cmap=cmap, norm=norm, marker='o', edgecolor='black', linewidth=0.5)
+ct32 = ax32.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ucan, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
 configure_subplot(ax32)
 
 cbar = plt.colorbar(ct5, cax=fig.add_axes([0.275, 0.25, 0.015, 0.40]), extend='neither')
@@ -347,7 +356,6 @@ cbar.ax.tick_params(labelsize=6)
 path_out = '{0}/figs/paper_cp'.format(path)
 name_out = 'pyplt_maps_bias_{0}_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
-plt.show()
 exit()
 
 

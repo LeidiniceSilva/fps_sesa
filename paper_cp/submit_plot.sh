@@ -15,9 +15,31 @@
 {
 set -eo pipefail
 
-#python3 plot_graph_pdf_sim_obs_sesa_pr.py
-python3 plot_graph_pdf_sim_obs_sesa_t2m_uv10.py --var tas
-#python3 plot_graph_pdf_sim_obs_sesa_t2m_uv10.py --var sfcWind
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_pr.py --var pr
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_pr_seas.py --var pr --seas 12 1 2
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_pr_seas.py --var pr --seas 6 7 8
+
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_t2m_uv10.py --var tas
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_t2m_uv10_seas.py --var sfcWind --seas 12 1 2
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_t2m_uv10_seas.py --var sfcWind --seas 6 7 8
+
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_t2m_uv10.py --var sfcWind
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_t2m_uv10_seas.py --var tas --seas 12 1 2
+python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_t2m_uv10_seas.py --var tas --seas 6 7 8
+
+exit 
+
+python3 plot_maps_bias_sim_obs_sesa_pr.py --var pr
+python3 plot_maps_bias_sim_obs_sesa_pr_seas.py --var pr --seas 12 1 2
+python3 plot_maps_bias_sim_obs_sesa_pr_seas.py --var pr --seas 6 7 8
+
+python3 plot_maps_bias_sim_obs_sesa_t2m_uv10.py --var tas
+python3 plot_maps_bias_sim_obs_sesa_t2m_uv10_seas.py --var tas --seas 12 1 2
+python3 plot_maps_bias_sim_obs_sesa_t2m_uv10_seas.py --var tas --seas 6 7 8
+
+python3 plot_maps_bias_sim_obs_sesa_t2m_uv10.py --var sfcWind
+python3 plot_maps_bias_sim_obs_sesa_t2m_uv10_seas.py --var sfcWind --seas 12 1 2
+python3 plot_maps_bias_sim_obs_sesa_t2m_uv10_seas.py --var sfcWind --seas 6 7 8
 
 
 }

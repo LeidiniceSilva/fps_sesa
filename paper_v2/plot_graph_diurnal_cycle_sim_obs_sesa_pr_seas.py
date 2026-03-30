@@ -6,6 +6,7 @@ __date__        = "Dec 08, 2025"
 __description__ = "This script plot PDFs"
 
 import os
+import argparse
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -17,13 +18,15 @@ from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
-var = 'pr'
-perc = 99
-
-seas = [12,1,2]
+parser = argparse.ArgumentParser(description='Process variable')
+parser.add_argument('--var', required=True, choices=['pr'], help='Variable name')
+parser.add_argument('--seas', nargs='+', type=int, required=True, help='e.g. 6 7 8 for JJA')
+args = parser.parse_args()
+var = args.var
+seas = args.seas
 
 if seas == [12,1,2]:
-	seas_ = 'dfj'
+	seas_ = 'djf'
 else:
 	seas_ = 'jja'
 	
@@ -55,67 +58,59 @@ def import_inmet():
 		
 			# Reading inmet 
 			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_code))
-			d_i = d_i[pre]
-			d_i = d_i.sel(time=slice('2018-06-01','2021-05-31'))
+			d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
 			d_i = d_i.sel(time=d_i.time.dt.month.isin(seas))
 			d_i = d_i.values
-			mean_i.append(d_i)
+			mean_i.append(np.concatenate([d_i[3:], d_i[:3]]))
 
 			# Reading era5 
 			d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-			d_ii = d_ii[tp]
-			d_ii = d_ii.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 			d_ii = d_ii.sel(time=d_ii.time.dt.month.isin(seas))
-			d_ii = d_iii.values 
-			mean_ii.append(d_ii)
-						
-			# Reading regcm ictp 
-			d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-			d_iii = d_iii[pr]
-			d_iii = d_iii.sel(time=slice('2018-06-01','2021-05-31'))
-			d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
-			d_iii = d_iii.values 
-			mean_iii.append(d_iii)
-	
-			# Reading regcm ictp pbl 1
-			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-			d_iv = d_iv[pr]
-			d_iv = d_iv.sel(time=slice('2018-06-01','2021-05-31'))))
-			d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
-			d_iv = d_iv.values / 24
-			mean_iv.append(d_iv)
-
-			# Reading regcm ictp pbl 2
-			d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-			d_v = d_v[pr]
-			d_v = d_v.sel(time=slice('2018-06-01','2021-05-31'))))
-			d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
-			d_v = d_v.values / 24
-			mean_v.append(d_v)
+			d_ii = d_ii.values 
+			mean_ii.append(np.concatenate([d_ii[3:], d_ii[:3]]))
 
 			# Reading regcm usp
-			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-			d_vi = d_vi[pr]
-			d_vi = d_vi.sel(time=slice('2018-06-01','2021-05-31'))))
+			d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
+			d_iii = d_iii.values / 24
+			mean_vi.append(np.concatenate([d_iii[3:], d_iii[:3]]))
+			
+			# Reading regcm ictp 
+			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
+			d_iv = d_iv.values 
+			mean_iv.append(np.concatenate([d_iv[3:], d_iv[:3]]))
+	
+			# Reading regcm ictp pbl 1
+			d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
+			d_v = d_v.values / 24
+			mean_v.append(np.concatenate([d_v[3:], d_v[:3]]))
+
+			# Reading regcm ictp pbl 2
+			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
 			d_vi = d_vi.sel(time=d_vi.time.dt.month.isin(seas))
 			d_vi = d_vi.values / 24
-			mean_vi.append(d_vi)
+			mean_vi.append(np.concatenate([d_vi[3:], d_vi[:3]]))
 
 			# Reading wrf ncar
 			d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-			d_vii = d_vii[pr]
-			d_vii = d_vii.sel(time=slice('2018-06-01','2021-05-31'))))
+			d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 			d_vii = d_vii.sel(time=d_vii.time.dt.month.isin(seas))
 			d_vii = d_vii.values / 24
-			mean_vii.append(d_vii)
+			mean_vii.append(np.concatenate([d_vii[3:], d_vii[:3]]))
 		
 			# Reading wrf ucan
 			d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-			d_viii = d_viii[pr]
-			d_viii = d_viii.sel(time=slice('2018-06-01','2021-05-31'))))
+			d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 			d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
 			d_viii = d_viii.values / 24
-			mean_viii.append(d_viii)
+			mean_viii.append(np.concatenate([d_viii[3:], d_viii[:3]]))
 		
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
 
@@ -130,67 +125,59 @@ def import_smn_i():
 			
 		# Reading smn 
 		d_i = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_name))
-		d_i = d_i[pre]
-		d_i = d_i.sel(time=slice('2018-06-01','2021-05-31'))
+		d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
 		d_i = d_i.sel(time=d_i.time.dt.month.isin(seas))
 		d_i = d_i.values
-		mean_i.append(d_i)
+		mean_i.append(np.concatenate([d_i[3:], d_i[:3]]))
 
 		# Reading era5 
 		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-		d_ii = d_ii[tp]
-		d_ii = d_ii.sel(time=slice('2018-06-01','2021-05-31'))
+		d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
 		d_ii = d_ii.sel(time=d_ii.time.dt.month.isin(seas))
-		d_ii = d_ii.values
-		mean_ii.append(d_ii)
-		
-		# Reading regcm ictp 
-		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-		d_iii = d_iii[pr]
-		d_iii = d_iii.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
-		d_iii = d_iii.values
-		mean_iii.append(d_iii)
-
-		# Reading regcm ictp pbl 1
-		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-		d_iv = d_iv[pr]
-		d_iv = d_iv.sel(time=slice('2018-06-01','2021-05-31'))
-		d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
-		d_iv = d_iv.values / 24
-		mean_iv.append(d_iv)
-
-		# Reading regcm ictp pbl 2
-		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-		d_v = d_v[pr]
-		d_v = d_v.sel(time=slice('2018-06-01','2021-05-31'))
-		d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
-		d_v = d_v.values / 24
-		mean_v.append(d_v)
+		d_ii = d_ii.values 
+		mean_ii.append(np.concatenate([d_ii[3:], d_ii[:3]]))
 
 		# Reading regcm usp
-		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-		d_vi = d_vi[pr]
-		d_vi = d_vi.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
+		d_iii = d_iii.values / 24
+		mean_vi.append(np.concatenate([d_iii[3:], d_iii[:3]]))
+			
+		# Reading regcm ictp 
+		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
+		d_iv = d_iv.values 
+		mean_iv.append(np.concatenate([d_iv[3:], d_iv[:3]]))
+	
+		# Reading regcm ictp pbl 1
+		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
+		d_v = d_v.values / 24
+		mean_v.append(np.concatenate([d_v[3:], d_v[:3]]))
+
+		# Reading regcm ictp pbl 2
+		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vi = d_vi.sel(time=d_vi.time.dt.month.isin(seas))
 		d_vi = d_vi.values / 24
-		mean_vi.append(d_vi)
+		mean_vi.append(np.concatenate([d_vi[3:], d_vi[:3]]))
 
 		# Reading wrf ncar
 		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-		d_vii = d_vii[pr]
-		d_vii = d_vii.sel(time=slice('2018-06-01','2021-05-31'))
+		d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_vii = d_vii.sel(time=d_vii.time.dt.month.isin(seas))
 		d_vii = d_vii.values / 24
-		mean_vii.append(d_vii)
+		mean_vii.append(np.concatenate([d_vii[3:], d_vii[:3]]))
 		
 		# Reading wrf ucan
 		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
-		d_viii = d_viii[pr]
-		d_viii = d_viii.sel(time=slice('2018-06-01','2021-05-31'))
+		d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
 		d_viii = d_viii.values / 24
-		mean_viii.append(d_viii)
+		mean_viii.append(np.concatenate([d_viii[3:], d_viii[:3]]))
 				
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
 	
@@ -206,60 +193,61 @@ def mask_like(reference, target):
 
 def compute_stats(dataset, perc=99):
 
-    pr = np.asarray(dataset)
-    horas = np.arange(len(pr)) % 24
+    var_ = np.asarray(dataset)
 
-    # Global percentile threshold
-    perc_global = np.nanpercentile(pr, perc)
+    # Remove non-finite values
+    var_[~np.isfinite(var_)] = np.nan
 
+    # Remove unrealistic precipitation values
+    var_[var_ < 0] = np.nan       # negative precipitation doesn't exist
+    var_[var_ > 500] = np.nan     # very high threshold (mm/h)
+
+    # Hour index
+    horas = np.arange(len(var_)) % 24
+
+    # Global percentile (for extremes definition)
+    perc_global = np.nanpercentile(var_, perc)
+
+    # Prepare outputs
+    mean_hour = np.zeros(24)
     perc_hour = np.zeros(24)
     freq = np.zeros(24)
     intens = np.zeros(24)
 
-    # Identify extreme events globally
-    extreme_all = pr >= perc_global
-    total_extreme = np.sum(extreme_all)
-
     for h in range(24):
+        var_h = var_[horas == h]
+        valid = ~np.isnan(var_h)
 
-        pr_h = pr[horas == h]
-        valid = ~np.isnan(pr_h)
-
-        # Hourly percentile
         if np.sum(valid) > 0:
-            perc_hour[h] = np.nanpercentile(pr_h, perc)
+            data = var_h[valid]
+
+            mean_hour[h] = np.nanmean(data)                 # mean per hour
+            perc_hour[h] = np.nanpercentile(data, perc)     # percentile per hour
+
+            extreme = data[data >= perc_global]             # extremes based on global perc
+            freq[h] = 100.0 * len(extreme) / len(data)      # frequency of extremes
+            intens[h] = np.nanmean(extreme) if len(extreme) > 0 else np.nan
+
         else:
+            mean_hour[h] = np.nan
             perc_hour[h] = np.nan
-
-        # Extreme events in this hour
-        extreme_h = pr_h[valid][pr_h[valid] >= perc_global]
-
-        # Frequency (%) relative to all extremes
-        if total_extreme > 0:
-            freq[h] = 100.0 * len(extreme_h) / total_extreme
-        else:
             freq[h] = np.nan
-
-        # Mean intensity of extremes
-        if len(extreme_h) > 0:
-            intens[h] = np.nanmean(extreme_h)
-        else:
             intens[h] = np.nan
 
-    return perc_hour, freq, intens
+    return mean_hour, perc_hour, freq, intens
     
     
 # Import dataset
 clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x, clim_viii_x = import_inmet()			
 clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y, clim_viii_y = import_smn_i()
 
-inmet_smn    = clim_i_x + clim_i_y
-era5         = clim_ii_x + clim_ii_y
-reg_ictp     = clim_iii_x + clim_iii_y
-reg_ictp_i_  = clim_iv_x + clim_iv_y
-reg_ictp_ii_ = clim_v_x + clim_v_y
-reg_usp      = clim_vi_x + clim_vi_y
-wrf_ncar     = clim_vii_x + clim_vii_y
+inmet_smn    = clim_i_x    + clim_i_y
+era5         = clim_ii_x   + clim_ii_y
+reg_usp      = clim_ii_x   + clim_i_y
+reg_ictp     = clim_iv_x   + clim_iv_y
+reg_ictp_i_  = clim_v_x    + clim_v_y
+reg_ictp_ii_ = clim_vi_x   + clim_vi_y
+wrf_ncar     = clim_vii_x  + clim_vii_y
 wrf_ucan     = clim_viii_x + clim_viii_y
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
@@ -436,72 +424,80 @@ wrf_ucan_c_iii = mask_like(inmet_smn_c_iii, wrf_ucan_c_iii_)
 wrf_ucan_c_iv = mask_like(inmet_smn_c_iv, wrf_ucan_c_iv_)
 wrf_ucan_c_v = mask_like(inmet_smn_c_v,wrf_ucan_c_v_)
 
-perc_inmet_smn_c_i,   freq_inmet_smn_c_i,   int_inmet_smn_c_i   = compute_stats(inmet_smn_c_i)
-perc_inmet_smn_c_ii,  freq_inmet_smn_c_ii,  int_inmet_smn_c_ii  = compute_stats(inmet_smn_c_ii)
-perc_inmet_smn_c_iii, freq_inmet_smn_c_iii, int_inmet_smn_c_iii = compute_stats(inmet_smn_c_iii)
-perc_inmet_smn_c_iv,  freq_inmet_smn_c_iv,  int_inmet_smn_c_iv  = compute_stats(inmet_smn_c_iv)
-perc_inmet_smn_c_v,   freq_inmet_smn_c_v,   int_inmet_smn_c_v   = compute_stats(inmet_smn_c_v)
+mean_inmet_smn_c_i,   perc_inmet_smn_c_i,   freq_inmet_smn_c_i,   int_inmet_smn_c_i   = compute_stats(inmet_smn_c_i)
+mean_inmet_smn_c_ii,  perc_inmet_smn_c_ii,  freq_inmet_smn_c_ii,  int_inmet_smn_c_ii  = compute_stats(inmet_smn_c_ii)
+mean_inmet_smn_c_iii, perc_inmet_smn_c_iii, freq_inmet_smn_c_iii, int_inmet_smn_c_iii = compute_stats(inmet_smn_c_iii)
+mean_inmet_smn_c_iv,  perc_inmet_smn_c_iv,  freq_inmet_smn_c_iv,  int_inmet_smn_c_iv  = compute_stats(inmet_smn_c_iv)
+mean_inmet_smn_c_v,   perc_inmet_smn_c_v,   freq_inmet_smn_c_v,   int_inmet_smn_c_v   = compute_stats(inmet_smn_c_v)
 
-perc_era5_c_i,   freq_era5_c_i,   int_era5_c_i   = compute_stats(era5_c_i)
-perc_era5_c_ii,  freq_era5_c_ii,  int_era5_c_ii  = compute_stats(era5_c_ii)
-perc_era5_c_iii, freq_era5_c_iii, int_era5_c_iii = compute_stats(era5_c_iii)
-perc_era5_c_iv,  freq_era5_c_iv,  int_era5_c_iv  = compute_stats(era5_c_iv)
-perc_era5_c_v,   freq_era5_c_v,   int_era5_c_v   = compute_stats(era5_c_v)
+mean_era5_c_i,   perc_era5_c_i,   freq_era5_c_i,   int_era5_c_i   = compute_stats(era5_c_i)
+mean_era5_c_ii,  perc_era5_c_ii,  freq_era5_c_ii,  int_era5_c_ii  = compute_stats(era5_c_ii)
+mean_era5_c_iii, perc_era5_c_iii, freq_era5_c_iii, int_era5_c_iii = compute_stats(era5_c_iii)
+mean_era5_c_iv,  perc_era5_c_iv,  freq_era5_c_iv,  int_era5_c_iv  = compute_stats(era5_c_iv)
+mean_era5_c_v,   perc_era5_c_v,   freq_era5_c_v,   int_era5_c_v   = compute_stats(era5_c_v)
 
-perc_reg_usp_c_i,   freq_reg_usp_c_i,   int_reg_usp_c_i   = compute_stats(reg_usp_c_i)
-perc_reg_usp_c_ii,  freq_reg_usp_c_ii,  int_reg_usp_c_ii  = compute_stats(reg_usp_c_ii)
-perc_reg_usp_c_iii, freq_reg_usp_c_iii, int_reg_usp_c_iii = compute_stats(reg_usp_c_iii)
-perc_reg_usp_c_iv,  freq_reg_usp_c_iv,  int_reg_usp_c_iv  = compute_stats(reg_usp_c_iv)
-perc_reg_usp_c_v,   freq_reg_usp_c_v,   int_reg_usp_c_v   = compute_stats(reg_usp_c_v)
+mean_reg_usp_c_i,   perc_reg_usp_c_i,   freq_reg_usp_c_i,   int_reg_usp_c_i   = compute_stats(reg_usp_c_i)
+mean_reg_usp_c_ii,  perc_reg_usp_c_ii,  freq_reg_usp_c_ii,  int_reg_usp_c_ii  = compute_stats(reg_usp_c_ii)
+mean_reg_usp_c_iii, perc_reg_usp_c_iii, freq_reg_usp_c_iii, int_reg_usp_c_iii = compute_stats(reg_usp_c_iii)
+mean_reg_usp_c_iv,  perc_reg_usp_c_iv,  freq_reg_usp_c_iv,  int_reg_usp_c_iv  = compute_stats(reg_usp_c_iv)
+mean_reg_usp_c_v,   perc_reg_usp_c_v,   freq_reg_usp_c_v,   int_reg_usp_c_v   = compute_stats(reg_usp_c_v)
 
-perc_reg_ictp_c_i,   freq_reg_ictp_c_i,   int_reg_ictp_c_i   = compute_stats(reg_ictp_c_i)
-perc_reg_ictp_c_ii,  freq_reg_ictp_c_ii,  int_reg_ictp_c_ii  = compute_stats(reg_ictp_c_ii)
-perc_reg_ictp_c_iii, freq_reg_ictp_c_iii, int_reg_ictp_c_iii = compute_stats(reg_ictp_c_iii)
-perc_reg_ictp_c_iv,  freq_reg_ictp_c_iv,  int_reg_ictp_c_iv  = compute_stats(reg_ictp_c_iv)
-perc_reg_ictp_c_v,   freq_reg_ictp_c_v,   int_reg_ictp_c_v   = compute_stats(reg_ictp_c_v)
+mean_reg_ictp_c_i,   perc_reg_ictp_c_i,   freq_reg_ictp_c_i,   int_reg_ictp_c_i   = compute_stats(reg_ictp_c_i)
+mean_reg_ictp_c_ii,  perc_reg_ictp_c_ii,  freq_reg_ictp_c_ii,  int_reg_ictp_c_ii  = compute_stats(reg_ictp_c_ii)
+mean_reg_ictp_c_iii, perc_reg_ictp_c_iii, freq_reg_ictp_c_iii, int_reg_ictp_c_iii = compute_stats(reg_ictp_c_iii)
+mean_reg_ictp_c_iv,  perc_reg_ictp_c_iv,  freq_reg_ictp_c_iv,  int_reg_ictp_c_iv  = compute_stats(reg_ictp_c_iv)
+mean_reg_ictp_c_v,   perc_reg_ictp_c_v,   freq_reg_ictp_c_v,   int_reg_ictp_c_v   = compute_stats(reg_ictp_c_v)
 
-perc_reg_ictp_i_c_i,   freq_reg_ictp_i_c_i,   int_reg_ictp_i_c_i   = compute_stats(reg_ictp_i_c_i)
-perc_reg_ictp_i_c_ii,  freq_reg_ictp_i_c_ii,  int_reg_ictp_i_c_ii  = compute_stats(reg_ictp_i_c_ii)
-perc_reg_ictp_i_c_iii, freq_reg_ictp_i_c_iii, int_reg_ictp_i_c_iii = compute_stats(reg_ictp_i_c_iii)
-perc_reg_ictp_i_c_iv,  freq_reg_ictp_i_c_iv,  int_reg_ictp_i_c_iv  = compute_stats(reg_ictp_i_c_iv)
-perc_reg_ictp_i_c_v,   freq_reg_ictp_i_c_v,   int_reg_ictp_i_c_v   = compute_stats(reg_ictp_i_c_v)
+mean_reg_ictp_i_c_i,   perc_reg_ictp_i_c_i,   freq_reg_ictp_i_c_i,   int_reg_ictp_i_c_i   = compute_stats(reg_ictp_i_c_i)
+mean_reg_ictp_i_c_ii,  perc_reg_ictp_i_c_ii,  freq_reg_ictp_i_c_ii,  int_reg_ictp_i_c_ii  = compute_stats(reg_ictp_i_c_ii)
+mean_reg_ictp_i_c_iii, perc_reg_ictp_i_c_iii, freq_reg_ictp_i_c_iii, int_reg_ictp_i_c_iii = compute_stats(reg_ictp_i_c_iii)
+mean_reg_ictp_i_c_iv,  perc_reg_ictp_i_c_iv,  freq_reg_ictp_i_c_iv,  int_reg_ictp_i_c_iv  = compute_stats(reg_ictp_i_c_iv)
+mean_reg_ictp_i_c_v,   perc_reg_ictp_i_c_v,   freq_reg_ictp_i_c_v,   int_reg_ictp_i_c_v   = compute_stats(reg_ictp_i_c_v)
 
-perc_reg_ictp_ii_c_i,   freq_reg_ictp_ii_c_i,   int_reg_ictp_ii_c_i   = compute_stats(reg_ictp_ii_c_i)
-perc_reg_ictp_ii_c_ii,  freq_reg_ictp_ii_c_ii,  int_reg_ictp_ii_c_ii  = compute_stats(reg_ictp_ii_c_ii)
-perc_reg_ictp_ii_c_iii, freq_reg_ictp_ii_c_iii, int_reg_ictp_ii_c_iii = compute_stats(reg_ictp_ii_c_iii)
-perc_reg_ictp_ii_c_iv,  freq_reg_ictp_ii_c_iv,  int_reg_ictp_ii_c_iv  = compute_stats(reg_ictp_ii_c_iv)
-perc_reg_ictp_ii_c_v,   freq_reg_ictp_ii_c_v,   int_reg_ictp_ii_c_v   = compute_stats(reg_ictp_ii_c_v)
+mean_reg_ictp_ii_c_i,   perc_reg_ictp_ii_c_i,   freq_reg_ictp_ii_c_i,   int_reg_ictp_ii_c_i   = compute_stats(reg_ictp_ii_c_i)
+mean_reg_ictp_ii_c_ii,  perc_reg_ictp_ii_c_ii,  freq_reg_ictp_ii_c_ii,  int_reg_ictp_ii_c_ii  = compute_stats(reg_ictp_ii_c_ii)
+mean_reg_ictp_ii_c_iii, perc_reg_ictp_ii_c_iii, freq_reg_ictp_ii_c_iii, int_reg_ictp_ii_c_iii = compute_stats(reg_ictp_ii_c_iii)
+mean_reg_ictp_ii_c_iv,  perc_reg_ictp_ii_c_iv,  freq_reg_ictp_ii_c_iv,  int_reg_ictp_ii_c_iv  = compute_stats(reg_ictp_ii_c_iv)
+mean_reg_ictp_ii_c_v,   perc_reg_ictp_ii_c_v,   freq_reg_ictp_ii_c_v,   int_reg_ictp_ii_c_v   = compute_stats(reg_ictp_ii_c_v)
 
-perc_wrf_ncar_c_i,   freq_wrf_ncar_c_i,   int_wrf_ncar_c_i   = compute_stats(wrf_ncar_c_i)
-perc_wrf_ncar_c_ii,  freq_wrf_ncar_c_ii,  int_wrf_ncar_c_ii  = compute_stats(wrf_ncar_c_ii)
-perc_wrf_ncar_c_iii, freq_wrf_ncar_c_iii, int_wrf_ncar_c_iii = compute_stats(wrf_ncar_c_iii)
-perc_wrf_ncar_c_iv,  freq_wrf_ncar_c_iv,  int_wrf_ncar_c_iv  = compute_stats(wrf_ncar_c_iv)
-perc_wrf_ncar_c_v,   freq_wrf_ncar_c_v,   int_wrf_ncar_c_v   = compute_stats(wrf_ncar_c_v)
+mean_wrf_ncar_c_i,   perc_wrf_ncar_c_i,   freq_wrf_ncar_c_i,   int_wrf_ncar_c_i   = compute_stats(wrf_ncar_c_i)
+mean_wrf_ncar_c_ii,  perc_wrf_ncar_c_ii,  freq_wrf_ncar_c_ii,  int_wrf_ncar_c_ii  = compute_stats(wrf_ncar_c_ii)
+mean_wrf_ncar_c_iii, perc_wrf_ncar_c_iii, freq_wrf_ncar_c_iii, int_wrf_ncar_c_iii = compute_stats(wrf_ncar_c_iii)
+mean_wrf_ncar_c_iv,  perc_wrf_ncar_c_iv,  freq_wrf_ncar_c_iv,  int_wrf_ncar_c_iv  = compute_stats(wrf_ncar_c_iv)
+mean_wrf_ncar_c_v,   perc_wrf_ncar_c_v,   freq_wrf_ncar_c_v,   int_wrf_ncar_c_v   = compute_stats(wrf_ncar_c_v)
 
-perc_wrf_ucan_c_i,   freq_wrf_ucan_c_i,   int_wrf_ucan_c_i   = compute_stats(wrf_ucan_c_i)
-perc_wrf_ucan_c_ii,  freq_wrf_ucan_c_ii,  int_wrf_ucan_c_ii  = compute_stats(wrf_ucan_c_ii)
-perc_wrf_ucan_c_iii, freq_wrf_ucan_c_iii, int_wrf_ucan_c_iii = compute_stats(wrf_ucan_c_iii)
-perc_wrf_ucan_c_iv,  freq_wrf_ucan_c_iv,  int_wrf_ucan_c_iv  = compute_stats(wrf_ucan_c_iv)
-perc_wrf_ucan_c_v,   freq_wrf_ucan_c_v,   int_wrf_ucan_c_v   = compute_stats(wrf_ucan_c_v)
+mean_wrf_ucan_c_i,   perc_wrf_ucan_c_i,   freq_wrf_ucan_c_i,   int_wrf_ucan_c_i   = compute_stats(wrf_ucan_c_i)
+mean_wrf_ucan_c_ii,  perc_wrf_ucan_c_ii,  freq_wrf_ucan_c_ii,  int_wrf_ucan_c_ii  = compute_stats(wrf_ucan_c_ii)
+mean_wrf_ucan_c_iii, perc_wrf_ucan_c_iii, freq_wrf_ucan_c_iii, int_wrf_ucan_c_iii = compute_stats(wrf_ucan_c_iii)
+mean_wrf_ucan_c_iv,  perc_wrf_ucan_c_iv,  freq_wrf_ucan_c_iv,  int_wrf_ucan_c_iv  = compute_stats(wrf_ucan_c_iv)
+mean_wrf_ucan_c_v,   perc_wrf_ucan_c_v,   freq_wrf_ucan_c_v,   int_wrf_ucan_c_v   = compute_stats(wrf_ucan_c_v)
 
-print(perc_inmet_smn_c_i)
+print(int_inmet_smn_c_i)
 print()
-print(perc_era5_c_ii)
+print(int_era5_c_i)
 print()
-print(perc_reg_ictp_c_iii)
+print(int_reg_usp_c_i)
 print()
-print(perc_reg_ictp_i_c_iv)
+print(int_reg_ictp_c_i)
 print()
-print(perc_reg_ictp_ii_c_v)
+print(int_reg_ictp_i_c_i)
 print()
-print(perc_wrf_ncar_c_v)
+print(int_reg_ictp_ii_c_i)
 print()
-print(perc_wrf_ucan_c_v)
+print(int_wrf_ncar_c_i)
+print()
+print(int_wrf_ucan_c_i)
 
 # Plot figure
-fig = plt.figure(figsize=(14, 16))
+fig = plt.figure(figsize=(14, 14))
 time = np.arange(0, 24)
 font_size = 8
+
+legend_i = 'mm d⁻¹'
+mvmin = 0
+mvmax = 0.8
+mvmax_ = 0.9
+mint_ = 0.1
 
 pvmin = 0
 pvmax = 10
@@ -509,17 +505,38 @@ pvmax_ = 11
 pint_ = 1
 
 fvmin = 0
-fvmax = 10
-fvmax_ = 11
-fint_ = 1
+fvmax = 4
+fvmax_ = 4.5
+fint_ = 0.5
 
 ivmin = 3
 ivmax = 14
 ivmax_ = 15
 iint_ = 1
 
-ax = fig.add_subplot(5, 3, 1)
-plt.plot(time, perc_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 1)
+plt.plot(time, mean_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, mean_era5_c_i,        linewidth=1, color='red',     marker='.', label='ERA5')
+plt.plot(time, mean_reg_usp_c_i,     linewidth=1, color='blue',    marker='.', label='Reg4')
+plt.plot(time, mean_reg_ictp_c_i,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
+plt.plot(time, mean_reg_ictp_i_c_i,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
+plt.plot(time, mean_reg_ictp_ii_c_i, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
+plt.plot(time, mean_wrf_ncar_c_i,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
+plt.plot(time, mean_wrf_ucan_c_i,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',    alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.title('MEAN ({0})'.format(legend_i), loc='center', fontsize=font_size)
+plt.ylabel('CLUSTER I', fontsize=font_size)
+plt.ylim(mvmin, mvmax)
+plt.yticks(np.arange(mvmin, mvmax_, mint_), fontsize=font_size)
+plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
+plt.xlim(0, 23)
+plt.grid(True, alpha=0.5, linestyle='--')
+ax.legend(loc=2, ncol=2, fontsize=font_size, frameon=False)
+
+ax = fig.add_subplot(5, 4, 2)
+plt.plot(time, perc_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, perc_era5_c_i,        linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, perc_reg_usp_c_i,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, perc_reg_ictp_c_i,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -527,17 +544,18 @@ plt.plot(time, perc_reg_ictp_i_c_i,  linewidth=1, color='gray',    marker='.', l
 plt.plot(time, perc_reg_ictp_ii_c_i, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, perc_wrf_ncar_c_i,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, perc_wrf_ucan_c_i,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(a) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('P99 (mm h⁻¹)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',    alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.title('P99 ({0})'.format(legend_i), loc='center', fontsize=font_size)
 plt.ylim(pvmin, pvmax)
 plt.yticks(np.arange(pvmin, pvmax_, pint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
-ax.legend(loc=2, ncol=2, fontsize=font_size, frameon=False)
 
-ax = fig.add_subplot(5, 3, 2)
-plt.plot(time, freq_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 3)
+plt.plot(time, freq_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, freq_era5_c_i,	     linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, freq_reg_usp_c_i,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, freq_reg_ictp_c_i,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -545,16 +563,18 @@ plt.plot(time, freq_reg_ictp_i_c_i,  linewidth=1, color='gray',    marker='.', l
 plt.plot(time, freq_reg_ictp_ii_c_i, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, freq_wrf_ncar_c_i,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, freq_wrf_ucan_c_i,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(b) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Frequency (%)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.title('FREQUENCY (%)'.format(legend_i), loc='center', fontsize=font_size)
 plt.ylim(fvmin, fvmax)
 plt.yticks(np.arange(fvmin, fvmax_, fint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 3)
-plt.plot(time, int_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 4)
+plt.plot(time, int_inmet_smn_c_i,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, int_era5_c_i,	    linewidth=1, color='red',	  marker='.', label='ERA5')
 plt.plot(time, int_reg_usp_c_i,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, int_reg_ictp_c_i,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -562,16 +582,37 @@ plt.plot(time, int_reg_ictp_i_c_i,  linewidth=1, color='gray',    marker='.', la
 plt.plot(time, int_reg_ictp_ii_c_i, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, int_wrf_ncar_c_i,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, int_wrf_ucan_c_i,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(c) Cluster I', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Intensity (mm h⁻¹)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.title('INTENSITY ({0})'.format(legend_i), loc='center', fontsize=font_size)
 plt.ylim(ivmin, ivmax)
 plt.yticks(np.arange(ivmin, ivmax_, iint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 4)
-plt.plot(time, perc_inmet_smn_c_ii,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 5)
+plt.plot(time, mean_inmet_smn_c_ii,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, mean_era5_c_ii,        linewidth=1, color='red',     marker='.', label='ERA5')
+plt.plot(time, mean_reg_usp_c_ii,     linewidth=1, color='blue',    marker='.', label='Reg4')
+plt.plot(time, mean_reg_ictp_c_ii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
+plt.plot(time, mean_reg_ictp_i_c_ii,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
+plt.plot(time, mean_reg_ictp_ii_c_ii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
+plt.plot(time, mean_wrf_ncar_c_ii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
+plt.plot(time, mean_wrf_ucan_c_ii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',    alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.ylabel('CLUSTER II', fontsize=font_size)
+plt.ylim(mvmin, mvmax)
+plt.yticks(np.arange(mvmin, mvmax_, mint_), fontsize=font_size)
+plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
+plt.xlim(0, 23)
+plt.grid(True, alpha=0.5, linestyle='--')
+
+ax = fig.add_subplot(5, 4, 6)
+plt.plot(time, perc_inmet_smn_c_ii,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, perc_era5_c_ii,        linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, perc_reg_usp_c_ii,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, perc_reg_ictp_c_ii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -579,16 +620,17 @@ plt.plot(time, perc_reg_ictp_i_c_ii,  linewidth=1, color='gray',    marker='.', 
 plt.plot(time, perc_reg_ictp_ii_c_ii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, perc_wrf_ncar_c_ii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, perc_wrf_ucan_c_ii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(d) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('P99 (mm h⁻¹)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(pvmin, pvmax)
 plt.yticks(np.arange(pvmin, pvmax_, pint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 5)
-plt.plot(time, freq_inmet_smn_c_ii,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 7)
+plt.plot(time, freq_inmet_smn_c_ii,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, freq_era5_c_ii,	      linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, freq_reg_usp_c_ii,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, freq_reg_ictp_c_ii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -596,33 +638,54 @@ plt.plot(time, freq_reg_ictp_i_c_ii,  linewidth=1, color='gray',    marker='.', 
 plt.plot(time, freq_reg_ictp_ii_c_ii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, freq_wrf_ncar_c_ii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, freq_wrf_ucan_c_ii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.ylabel('Frequency (%)', fontsize=font_size, fontweight='bold')
-plt.title('(e) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(fvmin, fvmax)
 plt.yticks(np.arange(fvmin, fvmax_, fint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 6)
-plt.plot(time, int_inmet_smn_c_ii,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
-plt.plot(time, int_era5_c_ii,	     linewidth=1, color='red',	  marker='.', label='ERA5')
+ax = fig.add_subplot(5, 4, 8)
+plt.plot(time, int_inmet_smn_c_ii,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, int_era5_c_ii,	     linewidth=1, color='red',	   marker='.', label='ERA5')
 plt.plot(time, int_reg_usp_c_ii,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, int_reg_ictp_c_ii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
 plt.plot(time, int_reg_ictp_i_c_ii,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
 plt.plot(time, int_reg_ictp_ii_c_ii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, int_wrf_ncar_c_ii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, int_wrf_ucan_c_ii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(f) Cluster II', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Intensity (mm h⁻¹)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(ivmin, ivmax)
 plt.yticks(np.arange(ivmin, ivmax_, iint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 7)
-plt.plot(time, perc_inmet_smn_c_iii,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 9)
+plt.plot(time, mean_inmet_smn_c_iii,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, mean_era5_c_iii,        linewidth=1, color='red',     marker='.', label='ERA5')
+plt.plot(time, mean_reg_usp_c_iii,     linewidth=1, color='blue',    marker='.', label='Reg4')
+plt.plot(time, mean_reg_ictp_c_iii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
+plt.plot(time, mean_reg_ictp_i_c_iii,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
+plt.plot(time, mean_reg_ictp_ii_c_iii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
+plt.plot(time, mean_wrf_ncar_c_iii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
+plt.plot(time, mean_wrf_ucan_c_iii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',    alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.ylabel('CLUSTER III', fontsize=font_size)
+plt.ylim(mvmin, mvmax)
+plt.yticks(np.arange(mvmin, mvmax_, mint_), fontsize=font_size)
+plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
+plt.xlim(0, 23)
+plt.grid(True, alpha=0.5, linestyle='--')
+
+ax = fig.add_subplot(5, 4, 10)
+plt.plot(time, perc_inmet_smn_c_iii,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, perc_era5_c_iii,        linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, perc_reg_usp_c_iii,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, perc_reg_ictp_c_iii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -630,16 +693,17 @@ plt.plot(time, perc_reg_ictp_i_c_iii,  linewidth=1, color='gray',    marker='.',
 plt.plot(time, perc_reg_ictp_ii_c_iii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, perc_wrf_ncar_c_iii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, perc_wrf_ucan_c_iii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.ylabel('P99 (mm h⁻¹)', fontsize=font_size, fontweight='bold')
-plt.title('(g) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(pvmin, pvmax)
 plt.yticks(np.arange(pvmin, pvmax_, pint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 8)
-plt.plot(time, freq_inmet_smn_c_iii,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 11)
+plt.plot(time, freq_inmet_smn_c_iii,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, freq_era5_c_iii,	       linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, freq_reg_usp_c_iii,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, freq_reg_ictp_c_iii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -647,33 +711,54 @@ plt.plot(time, freq_reg_ictp_i_c_iii,  linewidth=1, color='gray',    marker='.',
 plt.plot(time, freq_reg_ictp_ii_c_iii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, freq_wrf_ncar_c_iii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, freq_wrf_ucan_c_iii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(h) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Frequency (%)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(fvmin, fvmax)
 plt.yticks(np.arange(fvmin, fvmax_, fint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 9)
-plt.plot(time, int_inmet_smn_c_iii,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
-plt.plot(time, int_era5_c_iii,	      linewidth=1, color='red',	  marker='.', label='ERA5')
+ax = fig.add_subplot(5, 4, 12)
+plt.plot(time, int_inmet_smn_c_iii,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, int_era5_c_iii,	      linewidth=1, color='red',	    marker='.', label='ERA5')
 plt.plot(time, int_reg_usp_c_iii,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, int_reg_ictp_c_iii,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
 plt.plot(time, int_reg_ictp_i_c_iii,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
 plt.plot(time, int_reg_ictp_ii_c_iii, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, int_wrf_ncar_c_iii,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, int_wrf_ucan_c_iii,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(i) Cluster III', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Intensity (mm h⁻¹)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(ivmin, ivmax)
 plt.yticks(np.arange(ivmin, ivmax_, iint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 10)
-plt.plot(time, perc_inmet_smn_c_iv,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 13)
+plt.plot(time, mean_inmet_smn_c_iv,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, mean_era5_c_iv,        linewidth=1, color='red',     marker='.', label='ERA5')
+plt.plot(time, mean_reg_usp_c_iv,     linewidth=1, color='blue',    marker='.', label='Reg4')
+plt.plot(time, mean_reg_ictp_c_iv,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
+plt.plot(time, mean_reg_ictp_i_c_iv,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
+plt.plot(time, mean_reg_ictp_ii_c_iv, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
+plt.plot(time, mean_wrf_ncar_c_iv,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
+plt.plot(time, mean_wrf_ucan_c_iv,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',    alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.ylabel('CLUSTER IV', fontsize=font_size)
+plt.ylim(mvmin, mvmax)
+plt.yticks(np.arange(mvmin, mvmax_, mint_), fontsize=font_size)
+plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
+plt.xlim(0, 23)
+plt.grid(True, alpha=0.5, linestyle='--')
+
+ax = fig.add_subplot(5, 4, 14)
+plt.plot(time, perc_inmet_smn_c_iv,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, perc_era5_c_iv,	      linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, perc_reg_usp_c_iv,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, perc_reg_ictp_c_iv,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -681,16 +766,17 @@ plt.plot(time, perc_reg_ictp_i_c_iv,  linewidth=1, color='gray',    marker='.', 
 plt.plot(time, perc_reg_ictp_ii_c_iv, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, perc_wrf_ncar_c_iv,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, perc_wrf_ucan_c_iv,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.ylabel('P99 (mm h⁻¹)', fontsize=font_size, fontweight='bold')
-plt.title('(j) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(pvmin, pvmax)
 plt.yticks(np.arange(pvmin, pvmax_, pint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 11)
-plt.plot(time, freq_inmet_smn_c_iv,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 15)
+plt.plot(time, freq_inmet_smn_c_iv,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, freq_era5_c_iv,	      linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, freq_reg_usp_c_iv,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, freq_reg_ictp_c_iv,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -698,33 +784,55 @@ plt.plot(time, freq_reg_ictp_i_c_iv,  linewidth=1, color='gray',    marker='.', 
 plt.plot(time, freq_reg_ictp_ii_c_iv, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, freq_wrf_ncar_c_iv,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, freq_wrf_ucan_c_iv,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(k) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Frequency (%)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(fvmin, fvmax)
 plt.yticks(np.arange(fvmin, fvmax_, fint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 12)
-plt.plot(time, int_inmet_smn_c_iv,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
-plt.plot(time, int_era5_c_iv,	     linewidth=1, color='red',	  marker='.', label='ERA5')
+ax = fig.add_subplot(5, 4, 16)
+plt.plot(time, int_inmet_smn_c_iv,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, int_era5_c_iv,	     linewidth=1, color='red',	   marker='.', label='ERA5')
 plt.plot(time, int_reg_usp_c_iv,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, int_reg_ictp_c_iv,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
 plt.plot(time, int_reg_ictp_i_c_iv,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
 plt.plot(time, int_reg_ictp_ii_c_iv, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, int_wrf_ncar_c_iv,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, int_wrf_ucan_c_iv,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(l) Cluster IV', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Intensity (mm h⁻¹)', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
 plt.ylim(ivmin, ivmax)
 plt.yticks(np.arange(ivmin, ivmax_, iint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 13)
-plt.plot(time, perc_inmet_smn_c_v,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 17)
+plt.plot(time, mean_inmet_smn_c_v,   linewidth=1, color='black',   marker='.', label='INMET')
+plt.plot(time, mean_era5_c_v,        linewidth=1, color='red',     marker='.', label='ERA5')
+plt.plot(time, mean_reg_usp_c_v,     linewidth=1, color='blue',    marker='.', label='Reg4')
+plt.plot(time, mean_reg_ictp_c_v,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
+plt.plot(time, mean_reg_ictp_i_c_v,  linewidth=1, color='gray',    marker='.', label='Reg5-Holt')
+plt.plot(time, mean_reg_ictp_ii_c_v, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
+plt.plot(time, mean_wrf_ncar_c_v,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
+plt.plot(time, mean_wrf_ucan_c_v,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',    alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.ylabel('CLUSTER V', fontsize=font_size)
+plt.xlabel('HOURS', fontsize=font_size)
+plt.ylim(mvmin, mvmax)
+plt.yticks(np.arange(mvmin, mvmax_, mint_), fontsize=font_size)
+plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
+plt.xlim(0, 23)
+plt.grid(True, alpha=0.5, linestyle='--')
+
+ax = fig.add_subplot(5, 4, 18)
+plt.plot(time, perc_inmet_smn_c_v,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, perc_era5_c_v,	     linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, perc_reg_usp_c_v,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, perc_reg_ictp_c_v,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -732,17 +840,18 @@ plt.plot(time, perc_reg_ictp_i_c_v,  linewidth=1, color='gray',    marker='.', l
 plt.plot(time, perc_reg_ictp_ii_c_v, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, perc_wrf_ncar_c_v,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, perc_wrf_ucan_c_v,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.ylabel('P99 (mm h⁻¹)', fontsize=font_size, fontweight='bold')
-plt.title('(m) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
-plt.xlabel('Hours', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.xlabel('HOURS', fontsize=font_size)
 plt.ylim(pvmin, pvmax)
 plt.yticks(np.arange(pvmin, pvmax_, pint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 14)
-plt.plot(time, freq_inmet_smn_c_v,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 19)
+plt.plot(time, freq_inmet_smn_c_v,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, freq_era5_c_v,	     linewidth=1, color='red',     marker='.', label='ERA5')
 plt.plot(time, freq_reg_usp_c_v,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, freq_reg_ictp_c_v,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -750,17 +859,18 @@ plt.plot(time, freq_reg_ictp_i_c_v,  linewidth=1, color='gray',    marker='.', l
 plt.plot(time, freq_reg_ictp_ii_c_v, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, freq_wrf_ncar_c_v,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, freq_wrf_ucan_c_v,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(n) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Frequency (%)', fontsize=font_size, fontweight='bold')
-plt.xlabel('Hours', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.xlabel('HOURS', fontsize=font_size)
 plt.ylim(fvmin, fvmax)
 plt.yticks(np.arange(fvmin, fvmax_, fint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 plt.xlim(0, 23)
 plt.grid(True, alpha=0.5, linestyle='--')
 
-ax = fig.add_subplot(5, 3, 15)
-plt.plot(time, int_inmet_smn_c_v,   linewidth=1, color='black',   marker='.', label='INMET+SMN')
+ax = fig.add_subplot(5, 4, 20)
+plt.plot(time, int_inmet_smn_c_v,   linewidth=1, color='black',   marker='.', label='INMET')
 plt.plot(time, int_era5_c_v,	    linewidth=1, color='red',	  marker='.', label='ERA5')
 plt.plot(time, int_reg_usp_c_v,     linewidth=1, color='blue',    marker='.', label='Reg4')
 plt.plot(time, int_reg_ictp_c_v,    linewidth=1, color='magenta', marker='.', label='Reg5-Holt3')
@@ -768,9 +878,10 @@ plt.plot(time, int_reg_ictp_i_c_v,  linewidth=1, color='gray',    marker='.', la
 plt.plot(time, int_reg_ictp_ii_c_v, linewidth=1, color='brown',   marker='.', label='Reg5-UW')
 plt.plot(time, int_wrf_ncar_c_v,    linewidth=1, color='green',   marker='.', label='WRF-NCAR')
 plt.plot(time, int_wrf_ucan_c_v,    linewidth=1, color='orange',  marker='.', label='WRF-UCAN')
-plt.title('(o) Cluster V', loc='left', fontsize=font_size, fontweight='bold')
-plt.ylabel('Intensity (mm h⁻¹)', fontsize=font_size, fontweight='bold')
-plt.xlabel('Hours', fontsize=font_size, fontweight='bold')
+plt.axvspan(0, 6,   ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.axvspan(6, 18,  ymin=0, ymax=1, color='khaki',     alpha=0.25)
+plt.axvspan(18, 24, ymin=0, ymax=1, color='lightblue', alpha=0.25)
+plt.xlabel('HOURS', fontsize=font_size)
 plt.ylim(ivmin, ivmax)
 plt.yticks(np.arange(ivmin, ivmax_, iint_), fontsize=font_size)
 plt.xticks(time, ('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
@@ -779,7 +890,7 @@ plt.grid(True, alpha=0.5, linestyle='--')
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
-name_out = 'pyplt_graph_diurnal_cycle_{0}_{1}_sesa.png'.format(var, seas_)
+name_out = 'pyplt_graph_diurnal_cycle_{0}_sesa_{1}.png'.format(var, seas_)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
