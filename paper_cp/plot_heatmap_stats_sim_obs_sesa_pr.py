@@ -19,11 +19,11 @@ from dict_smn_i_stations import smn_i
 from dict_smn_ii_stations import smn_ii
 
 parser = argparse.ArgumentParser(description='Process variable')
-parser.add_argument('--var', required=True, choices=['tas', 'sfcWind'], help='Variable name')
+parser.add_argument('--var', required=True, choices=['pr'], help='Variable name')
 args = parser.parse_args()
 var = args.var
 
-dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['uv', 'ws10']}
+dict_var = {'pr': ['pre', 'tp']}
 
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -37,124 +37,218 @@ skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 3
 393, 395, 396, 400, 401, 402, 404, 405, 408, 415, 416, 418, 423, 424, 427, 434, 440, 441, 443, 446, 448, 450, 451, 454, 455, 459, 465, 467, 471, 
 474, 477, 481, 483, 488, 489, 492, 496, 504, 509, 513, 514, 516, 518, 519, 520, 523, 526, 528, 534, 538, 541, 544, 546, 552, 553, 557, 559]
 
+skip_list_smn_ii = [39, 51, 55, 58, 64, 65, 66, 72, 75, 83, 86, 90, 91, 92]
+
 
 def import_inmet():
-	
+
 	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
+
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
 			continue
 		if i in skip_list_inmet_ii:
-			continue
+			continue 
 		if inmet[i][3] <= -48 and inmet[i][2] <= -16.5:
 			station_code = inmet[i][0]
 			station_name = inmet[i][1]
-			print(station_code, station_name)
+			print(i, station_code, station_name)
 		
 			# Reading inmet 
 			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_H_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], station_code))
 			d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
 			d_i = d_i.resample(time='1D').mean()
-			d_i = d_i.values
-			mean_i.append(d_i)
+			mean_i.append(d_i.values*24)
 
 			# Reading era5 
 			d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/{0}/'.format(dict_var[var][1]) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(dict_var[var][1], station_code, station_name))
 			d_ii = d_ii[dict_var[var][1]].sel(time=slice('2018-06-01','2021-05-31'))
 			d_ii = d_ii.resample(time='1D').mean()
-			d_ii = d_ii.values 
-			mean_ii.append(d_ii)
-			
+			mean_ii.append(d_ii.values*24)
+
 			# Reading regcm usp
 			d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_iii = d_iii[var].sel(time=slice('2018-06-01','2021-05-31'))
 			d_iii = d_iii.resample(time='1D').mean()
-			d_iii = d_iii.values 
-			mean_iii.append(d_iii)
-
+			mean_iii.append(d_iii.values)
+			
 			# Reading regcm ictp 
 			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_iv = d_iv[var].sel(time=slice('2018-06-01','2021-05-31'))
 			d_iv = d_iv.resample(time='1D').mean()
-			d_iv = d_iv.values 
-			mean_iv.append(d_iv)
+			mean_iv.append(d_iv.values*24)
 	
 			# Reading regcm ictp pbl 1
 			d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_v = d_v[var].sel(time=slice('2018-06-01','2021-05-31'))
 			d_v = d_v.resample(time='1D').mean()
-			d_v = d_v.values 
-			mean_v.append(d_v)
+			mean_v.append(d_v.values)
 
 			# Reading regcm ictp pbl 2
 			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_vi = d_vi[var].sel(time=slice('2018-06-01','2021-05-31'))
 			d_vi = d_vi.resample(time='1D').mean()
-			d_vi = d_vi.values 
-			mean_vi.append(d_vi)
+			mean_vi.append(d_vi.values)
 
 			# Reading wrf ncar
 			d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_vii = d_vii[var].sel(time=slice('2018-06-01','2021-05-31'))
 			d_vii = d_vii.resample(time='1D').mean()
-			d_vii = d_vii.values 
-			mean_vii.append(d_vii)
+			mean_vii.append(d_vii.values)
 		
 			# Reading wrf ucan
 			d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_viii = d_viii[var].sel(time=slice('2018-06-01','2021-05-31'))
 			d_viii = d_viii.resample(time='1D').mean()
-			d_viii = d_viii.values 
-			mean_viii.append(d_viii)
+			mean_viii.append(d_viii.values)
 		
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
-	
-					
-def compute_stats(stations_data, threshold=None, valid_range=(-50, 60)):
 
-	mean_list = []
-	p95_list  = []
-	freq_list = []
-	int_list  = []
 
-	for da in stations_data:
-		# Ensure numpy array
-		da = np.asarray(da)
+def import_smn_i():
 
-		# Remove NaNs and unreasonable values
-		da = da[np.isfinite(da)]
-		da = da[(da >= valid_range[0]) & (da <= valid_range[1])]
+	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
+
+	for i in range(1, 73):
+		station_code = f'SMN{i:03d}'
+		station_name = smn_i[i][0]		
+		print(i, station_code, station_name)
 		
-		if len(da) == 0:
-			# Handle empty station
-			mean_list.append(float('nan'))
-			p95_list.append(float('nan'))
-			freq_list.append(float('nan'))
-			int_list.append(float('nan'))
+		# Reading smn 
+		d_i = xr.open_dataset('/home/mda_silv/users/FPS_SESA/database/obs/smn_i/smn_nc/'.format(path) + '{0}_{1}_H_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], smn_i[i][0]))
+		d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
+		d_i = d_i.resample(time='1D').mean()
+		mean_i.append(d_i.values*24)
+
+		# Reading era5 
+		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/{0}/'.format(dict_var[var][1]) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(dict_var[var][1], station_code, station_name))
+		d_ii = d_ii[dict_var[var][1]].sel(time=slice('2018-06-01','2021-05-31'))
+		d_ii = d_ii.resample(time='1D').mean()
+		mean_ii.append(d_ii.values*24)
+
+		# Reading regcm usp
+		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_iii = d_iii[var].sel(time=slice('2018-06-01','2021-05-31'))
+		d_iii = d_iii.resample(time='1D').mean()
+		mean_iii.append(d_iii.values)
+			
+		# Reading regcm ictp 
+		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_iv = d_iv[var].sel(time=slice('2018-06-01','2021-05-31'))
+		d_iv = d_iv.resample(time='1D').mean()
+		mean_iv.append(d_iv.values*24)
+	
+		# Reading regcm ictp pbl 1
+		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_v = d_v[var].sel(time=slice('2018-06-01','2021-05-31'))
+		d_v = d_v.resample(time='1D').mean()
+		mean_v.append(d_v.values)
+
+		# Reading regcm ictp pbl 2
+		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_vi = d_vi[var].sel(time=slice('2018-06-01','2021-05-31'))
+		d_vi = d_vi.resample(time='1D').mean()
+		mean_vi.append(d_vi.values)
+
+		# Reading wrf ncar
+		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_vii = d_vii[var].sel(time=slice('2018-06-01','2021-05-31'))
+		d_vii = d_vii.resample(time='1D').mean()
+		mean_vii.append(d_vii.values)
+		
+		# Reading wrf ucan
+		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_viii = d_viii[var].sel(time=slice('2018-06-01','2021-05-31'))
+		d_viii = d_viii.resample(time='1D').mean()
+		mean_viii.append(d_viii.values)
+			
+	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
+
+
+def import_smn_ii():
+	
+	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
+
+	for i in range(1, 110):
+		if i in skip_list_smn_ii:
 			continue
+		station_code = f'SMN{i:03d}'
+		station_name = smn_ii[i][0]
+		print(i, station_code, station_name)
+					
+		# Reading smn 
+		d_i = xr.open_dataset('/home/mda_silv/users/FPS_SESA/database/obs/smn_ii/smn_nc/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_D_1979-01-01_2021-12-31.nc'.format(dict_var[var][0], smn_ii[i][0]))
+		d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_i.append(d_i.values)
 
-		# Annual mean
-		mean_val = np.nanmean(da)
-		mean_list.append(mean_val)
+		# Reading era5 
+		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/{0}/'.format(dict_var[var][1]) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(dict_var[var][1], station_code, station_name))
+		d_ii = d_ii[dict_var[var][1]].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_ii.append(d_ii.values)
+
+		# Reading regcm usp
+		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_iii = d_iii[var].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_iii.append(d_iii.values/24)
+			
+		# Reading regcm ictp 
+		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_iv = d_iv[var].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_iv.append(d_iv.values)
 	
-		# 95th percentile
-		p95_val = np.nanpercentile(da, 95)
-		p95_list.append(p95_val)
+		# Reading regcm ictp pbl 1
+		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_v = d_v[var].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_v.append(d_v.values/24)
+
+		# Reading regcm ictp pbl 2
+		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_vi = d_vi[var].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_vi.append(d_vi.values/24)
+
+		# Reading wrf ncar
+		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_vii = d_vii[var].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_vii.append(d_vii.values/24)
 		
-		#Threshold for freq/intensity
-		thr = threshold if threshold is not None else p95_val
-		exceed = da >= thr
+		# Reading wrf ucan
+		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_viii = d_viii[var].sel(time=slice('2018-06-01','2021-05-31'))
+		mean_viii.append(d_viii.values/24)
 
-		# Frequency (% of days above threshold)
-		freq_val = np.sum(exceed) / len(da) * 100	
-		freq_list.append(freq_val)
-
-		# Intensity (mean of values above threshold)
-		int_val = np.nanmean(da[exceed]) if np.any(exceed) else np.nan
-		int_list.append(int_val)
+	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
 	
-	return mean_list, p95_list, freq_list, int_list
 
+def compute_stats(stations_data, valid_range=(0, 500), wet_day_threshold=0.1):
+
+    mean_list, p99_list, freq_list, int_list = [], [], [], []
+
+    for da in stations_data:
+        da = np.asarray(da)
+        da = da[np.isfinite(da)]
+        da = da[(da >= valid_range[0]) & (da <= valid_range[1])]
+
+        if len(da) == 0:
+            mean_list.append(np.nan); p99_list.append(np.nan)
+            freq_list.append(np.nan); int_list.append(np.nan)
+            continue
+
+        mean_list.append(float(np.nanmean(da)))
+
+        wet = da[da >= wet_day_threshold]
+        if len(wet) == 0:
+            p99_list.append(np.nan); freq_list.append(0.0); int_list.append(0.0)
+            continue
+
+        p99 = float(np.nanpercentile(wet, 99))
+        p99_list.append(p99)
+
+        extreme = wet[wet > p99]
+        freq_list.append(len(extreme) / len(wet) * 100)
+        int_list.append(float(np.nanmean(extreme)) if len(extreme) else 0.0)
+
+    return mean_list, p99_list, freq_list, int_list
+    
 
 def compute_rbias(obs_, sim_):
 
@@ -165,7 +259,18 @@ def compute_rbias(obs_, sim_):
     
 
 # Import dataset
-inmet_smn, era5, reg_usp, reg_ictp, reg_ictp_i, reg_ictp_ii, wrf_ncar, wrf_ucan = import_inmet()				
+mean_i_x, mean_ii_x, mean_iii_x, mean_iv_x, mean_v_x, mean_vi_x, mean_vii_x, mean_viii_x = import_inmet()			
+mean_i_y, mean_ii_y, mean_iii_y, mean_iv_y, mean_v_y, mean_vi_y, mean_vii_y, mean_viii_y = import_smn_i()			
+mean_i_z, mean_ii_z, mean_iii_z, mean_iv_z, mean_v_z, mean_vi_z, mean_vii_z, mean_viii_z = import_smn_ii()			
+
+inmet_smn   = mean_i_x    + mean_i_y    + mean_i_z
+era5        = mean_ii_x   + mean_ii_y   + mean_ii_z
+reg_usp     = mean_iii_x  + mean_iii_y  + mean_iii_z
+reg_ictp    = mean_iv_x   + mean_iv_y   + mean_iv_z
+reg_ictp_i  = mean_v_x    + mean_v_y    + mean_v_z
+reg_ictp_ii = mean_vi_x   + mean_vi_y   + mean_vi_z
+wrf_ncar    = mean_vii_x  + mean_vii_y  + mean_vii_z
+wrf_ucan    = mean_viii_x + mean_viii_y + mean_viii_z
 
 mean_inmet_smn,   perc_inmet_smn,   freq_inmet_smn,   int_inmet_smn   = compute_stats(inmet_smn)
 mean_era5,        perc_era5,        freq_era5,        int_era5        = compute_stats(era5)
@@ -695,14 +800,9 @@ font_size = 7
 labels = ['WRF-UCAN', 'WRF-NCAR', 'Reg5-UW', 'Reg5-Holt', 'Reg5-Holt3', 'Reg4', 'ERA5']
 metrics = ['MEAN', 'P95', 'FREQ', 'INT']
 
-if var == 'tas':
-	cmap = 'bwr'
-	mvmin = -20
-	mvmax = 20
-else:
-	cmap = 'PRGn'
-	mvmin = -50
-	mvmax = 50
+cmap = 'BrBG'
+mvmin = -40
+mvmax = 40
 	
 ax = fig.add_subplot(1, 5, 1)
 sns.heatmap(data_c_i, ax=ax, annot=True, fmt='.1f', cmap=cmap, vmin=mvmin, vmax=mvmax, xticklabels=metrics, yticklabels=labels, cbar_kws={"orientation": "horizontal", "label": "(%)"}, linewidths=.5, linecolor='gray', square=True)

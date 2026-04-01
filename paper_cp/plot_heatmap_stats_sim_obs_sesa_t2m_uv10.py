@@ -15,8 +15,6 @@ import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
 from matplotlib.patches import Polygon
 from dict_inmet_stations import inmet
-from dict_smn_i_stations import smn_i
-from dict_smn_ii_stations import smn_ii
 
 parser = argparse.ArgumentParser(description='Process variable')
 parser.add_argument('--var', required=True, choices=['tas', 'sfcWind'], help='Variable name')
@@ -49,7 +47,7 @@ def import_inmet():
 		if inmet[i][3] <= -48 and inmet[i][2] <= -16.5:
 			station_code = inmet[i][0]
 			station_name = inmet[i][1]
-			print(station_code, station_name)
+			print(i, station_code, station_name)
 		
 			# Reading inmet 
 			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_H_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], station_code))
@@ -653,8 +651,7 @@ data_c_ii = np.array([
     [mean_reg_ictp_i_c_ii,  perc_reg_ictp_i_c_ii,  freq_reg_ictp_i_c_ii,  int_reg_ictp_i_c_ii],
     [mean_reg_ictp_ii_c_ii, perc_reg_ictp_ii_c_ii, freq_reg_ictp_ii_c_ii, int_reg_ictp_ii_c_ii],
     [mean_wrf_ncar_c_ii,    perc_wrf_ncar_c_ii,    freq_wrf_ncar_c_ii,    int_wrf_ncar_c_ii],
-    [mean_wrf_ucan_c_ii,    perc_wrf_ucan_c_ii,    freq_wrf_ucan_c_ii,    int_wrf_ucan_c_ii]
-])
+    [mean_wrf_ucan_c_ii,    perc_wrf_ucan_c_ii,    freq_wrf_ucan_c_ii,    int_wrf_ucan_c_ii]])
 
 data_c_iii = np.array([
     [mean_era5_c_iii,        perc_era5_c_iii,        freq_era5_c_iii,        int_era5_c_iii],
@@ -673,8 +670,7 @@ data_c_iv = np.array([
     [mean_reg_ictp_i_c_iv,  perc_reg_ictp_i_c_iv,  freq_reg_ictp_i_c_iv,  int_reg_ictp_i_c_iv],
     [mean_reg_ictp_ii_c_iv, perc_reg_ictp_ii_c_iv, freq_reg_ictp_ii_c_iv, int_reg_ictp_ii_c_iv],
     [mean_wrf_ncar_c_iv,    perc_wrf_ncar_c_iv,    freq_wrf_ncar_c_iv,    int_wrf_ncar_c_iv],
-    [mean_wrf_ucan_c_iv,    perc_wrf_ucan_c_iv,    freq_wrf_ucan_c_iv,    int_wrf_ucan_c_iv]
-])
+    [mean_wrf_ucan_c_iv,    perc_wrf_ucan_c_iv,    freq_wrf_ucan_c_iv,    int_wrf_ucan_c_iv]])
 
 data_c_v = np.array([
     [mean_era5_c_v,        perc_era5_c_v,        freq_era5_c_v,        int_era5_c_v],
@@ -683,8 +679,7 @@ data_c_v = np.array([
     [mean_reg_ictp_i_c_v,  perc_reg_ictp_i_c_v,  freq_reg_ictp_i_c_v,  int_reg_ictp_i_c_v],
     [mean_reg_ictp_ii_c_v, perc_reg_ictp_ii_c_v, freq_reg_ictp_ii_c_v, int_reg_ictp_ii_c_v],
     [mean_wrf_ncar_c_v,    perc_wrf_ncar_c_v,    freq_wrf_ncar_c_v,    int_wrf_ncar_c_v],
-    [mean_wrf_ucan_c_v,    perc_wrf_ucan_c_v,    freq_wrf_ucan_c_v,    int_wrf_ucan_c_v]
-])
+    [mean_wrf_ucan_c_v,    perc_wrf_ucan_c_v,    freq_wrf_ucan_c_v,    int_wrf_ucan_c_v]])
 
 print(data_c_i)
 
