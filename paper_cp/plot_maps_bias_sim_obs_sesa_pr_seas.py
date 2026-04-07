@@ -266,9 +266,9 @@ def import_smn_ii():
 	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
 
 
-def compute_stats(stations_data, valid_range=(0, 500), wet_day_threshold=0.1):
+def compute_stats(stations_data, threshold=None, valid_range=(0, 500)):
 
-    mean_list, p99_list, freq_list, intensity_list = [], [], [], []
+    mean_list, p99_list, freq_list, int_list = [], [], [], []
 
     for da in stations_data:
         da = np.asarray(da)
@@ -277,24 +277,29 @@ def compute_stats(stations_data, valid_range=(0, 500), wet_day_threshold=0.1):
 
         if len(da) == 0:
             mean_list.append(np.nan); p99_list.append(np.nan)
-            freq_list.append(np.nan); intensity_list.append(np.nan)
+            freq_list.append(np.nan); int_list.append(np.nan)
             continue
 
-        mean_list.append(float(np.nanmean(da)))
+        # Annual mean
+        mean_val = float(np.nanmean(da))
+        mean_list.append(mean_val)
 
-        wet = da[da >= wet_day_threshold]
-        if len(wet) == 0:
-            p99_list.append(np.nan); freq_list.append(0.0); intensity_list.append(0.0)
-            continue
+        # 99th percentile
+        p99_val = float(np.nanpercentile(da, 99))
+        p99_list.append(p99_val)
 
-        p99 = float(np.percentile(wet, 99))
-        p99_list.append(p99)
+        # Threshold for freq/intensity
+        thr = threshold if threshold is not None else p99_val
 
-        extreme = wet[wet > p99]
-        freq_list.append(len(extreme) / len(wet) * 100)
-        intensity_list.append(float(np.mean(extreme)) if len(extreme) else 0.0)
+        # Frequency (% of days above threshold)
+        freq_val = float(np.sum(da > thr) / len(da) * 100)  # percentage	
+        freq_list.append(freq_val)
 
-    return mean_list, p99_list, freq_list, intensity_list
+        # Intensity (mean of values above threshold)
+        int_val = float(np.nanmean(da[da > thr])) if np.any(da > thr) else 0.0
+        int_list.append(int_val)
+
+    return mean_list, p99_list, freq_list, int_list
     
     
 def configure_subplot(ax):
@@ -381,108 +386,135 @@ fig.delaxes(ax3)
 fig.delaxes(ax4)
 
 cmap = cm.get_cmap('BrBG', 20)
-norm_i = BoundaryNorm(np.linspace(-6, 6, 20 + 1), cmap.N)
+norm_i = BoundaryNorm(np.linspace(-5, 5, 20 + 1), cmap.N)
 norm_ii = BoundaryNorm(np.linspace(-60, 60, 20 + 1), cmap.N)
-norm_iii = BoundaryNorm(np.linspace(-1, 1, 20 + 1), cmap.N)
+norm_iii = BoundaryNorm(np.linspace(-1.5, 1.5, 20 + 1), cmap.N)
 norm_iv = BoundaryNorm(np.linspace(-80, 80, 20 + 1), cmap.N)
 legend = 'mm d⁻¹'
 legend_ = '%'
 
 ct5 = ax5.scatter(lon_xx, lat_yy, 20, bias_mean_era5, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
-ax5.set_title('MEAN ({0})'.format(legend), loc='center', fontsize=font_size)
+ax5.set_title('(a)', loc='left', fontweight='bold', fontsize=font_size)
 ax5.set_ylabel(u'ERA5 - INMET', fontsize=font_size)
 configure_subplot(ax5)
 
 ct6 = ax6.scatter(lon_xx, lat_yy, 20, bias_perc_era5, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax6.set_title('P99 ({0})'.format(legend), loc='center', fontsize=font_size)
+ax6.set_title('(b)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax6)
 
 ct7 = ax7.scatter(lon_xx, lat_yy, 20, bias_freq_era5, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax7.set_title('FREQUENCY ({0})'.format(legend_), loc='center', fontsize=font_size)
+ax7.set_title('(c)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax7)
 
 ct8 = ax8.scatter(lon_xx, lat_yy, 20, bias_int_era5, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax8.set_title('INTENSITY ({0})'.format(legend), loc='center', fontsize=font_size)
+ax8.set_title('(d)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax8)
 
 ct9 = ax9.scatter(lon_xx, lat_yy, 20, bias_mean_reg_usp, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax9.set_title('(e)', loc='left', fontweight='bold', fontsize=font_size)
 ax9.set_ylabel('Reg4 - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax9)
 
 ct10 = ax10.scatter(lon_xx, lat_yy, 20, bias_perc_reg_usp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax10.set_title('(f)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax10)
 
 ct11 = ax11.scatter(lon_xx, lat_yy, 20, bias_freq_reg_usp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax11.set_title('(g)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax11)
 
 ct12 = ax12.scatter(lon_xx, lat_yy, 20, bias_int_reg_usp, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
+ax12.set_title('(h)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax12)
 
 ct13 = ax13.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax13.set_title('(i)', loc='left', fontweight='bold', fontsize=font_size)
 ax13.set_ylabel('Reg5-Holt3 - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax13)
 
 ct14 = ax14.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax14.set_title('(j)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax14)
 
 ct15 = ax15.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax15.set_title('(k)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax15)
 
 ct16 = ax16.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
+ax16.set_title('(l)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax16)
 
 ct17 = ax17.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp_i, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax17.set_title('(m)', loc='left', fontweight='bold', fontsize=font_size)
 ax17.set_ylabel('Reg5-Holt - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax17)
 
 ct18 = ax18.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_i, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax18.set_title('(n)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax18)
 
 ct19 = ax19.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_i, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax19.set_title('(o)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax19)
 
 ct20 = ax20.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_i, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
+ax20.set_title('(p)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax20)
 
 ct21 = ax21.scatter(lon_xx, lat_yy, 20, bias_mean_reg_ictp_ii, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax21.set_title('(q)', loc='left', fontweight='bold', fontsize=font_size)
 ax21.set_ylabel('Reg5-UW - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax21)
 
 ct22 = ax22.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_ii, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax22.set_title('(r)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax22)
 
 ct23 = ax23.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_ii, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax23.set_title('(s)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax23)
 
 ct24 = ax24.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_ii, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
+ax24.set_title('(t)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax24)
 
 ct25 = ax25.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_ncar, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax25.set_title('(u)', loc='left', fontweight='bold', fontsize=font_size)
 ax25.set_ylabel('WRF-NCAR - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax25)
 
 ct26 = ax26.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ncar, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax26.set_title('(v)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax26)
 
 ct27 = ax27.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ncar, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax27.set_title('(w)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax27)
 
 ct28 = ax28.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ncar, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
+ax28.set_title('(x)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax28)
 
 ct29 = ax29.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_ucan, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax29.set_title('(y)', loc='left', fontweight='bold', fontsize=font_size)
+ax26.set_xlabel('MEAN ({0})'.format(legend), loc='center', fontsize=font_size)
 ax29.set_ylabel('WRF-UCAN - INMET', rotation='vertical', fontsize=font_size)
 configure_subplot(ax29)
 
 ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax30.set_title('(z)', loc='left', fontweight='bold', fontsize=font_size)
+ax27.set_xlabel('P99 ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax30)
 
 ct31 = ax31.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ucan, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax31.set_title('(a.1)', loc='left', fontweight='bold', fontsize=font_size)
+ax7.set_xlabel('FREQUENCY ({0})'.format(legend_), loc='center', fontsize=font_size)
 configure_subplot(ax31)
 
 ct32 = ax32.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ucan, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
+ax32.set_title('(b.1)', loc='left', fontweight='bold', fontsize=font_size)
+ax7.set_xlabel('INTENSITY ({0})'.format(legend_), loc='center', fontsize=font_size)
 configure_subplot(ax32)
-
 cbar = plt.colorbar(ct5, cax=fig.add_axes([0.28, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
