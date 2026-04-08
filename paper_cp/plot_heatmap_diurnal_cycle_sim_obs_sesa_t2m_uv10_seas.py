@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Dec 08, 2025"
-__description__ = "This script plot PDFs"
+__description__ = "This script plot diurnal cycle"
 
 import os
 import argparse
@@ -429,70 +429,63 @@ print()
 print(int_wrf_ucan_c_i)
 
 data_mean_c_i   = np.vstack([mean_inmet_smn_c_i,   mean_era5_c_i,   mean_reg_usp_c_i,   mean_reg_ictp_c_i,   mean_reg_ictp_i_c_i,   mean_reg_ictp_ii_c_i,   mean_wrf_ncar_c_i,   mean_wrf_ucan_c_i])
-data_mean_c_ii  = np.vstack([mean_inmet_smn_c_ii,  mean_era5_c_ii,  mean_reg_usp_c_ii,  mean_reg_ictp_c_ii,  mean_reg_ictp_i_c_ii,  mean_reg_ictp_ii_c_ii,  mean_wrf_ncar_c_i,   mean_wrf_ucan_c_ii])
+data_mean_c_ii  = np.vstack([mean_inmet_smn_c_ii,  mean_era5_c_ii,  mean_reg_usp_c_ii,  mean_reg_ictp_c_ii,  mean_reg_ictp_i_c_ii,  mean_reg_ictp_ii_c_ii,  mean_wrf_ncar_c_ii,  mean_wrf_ucan_c_ii])
 data_mean_c_iii = np.vstack([mean_inmet_smn_c_iii, mean_era5_c_iii, mean_reg_usp_c_iii, mean_reg_ictp_c_iii, mean_reg_ictp_i_c_iii, mean_reg_ictp_ii_c_iii, mean_wrf_ncar_c_iii, mean_wrf_ucan_c_iii])
 data_mean_c_iv  = np.vstack([mean_inmet_smn_c_iv,  mean_era5_c_iv,  mean_reg_usp_c_iv,  mean_reg_ictp_c_iv,  mean_reg_ictp_i_c_iv,  mean_reg_ictp_ii_c_iv,  mean_wrf_ncar_c_iv,  mean_wrf_ucan_c_iv])
 data_mean_c_v   = np.vstack([mean_inmet_smn_c_v,   mean_era5_c_v,   mean_reg_usp_c_v,   mean_reg_ictp_c_v,   mean_reg_ictp_i_c_v,   mean_reg_ictp_ii_c_v,   mean_wrf_ncar_c_v,   mean_wrf_ucan_c_v])
 
 data_perc_c_i   = np.vstack([perc_inmet_smn_c_i,   perc_era5_c_i,   perc_reg_usp_c_i,	perc_reg_ictp_c_i,   perc_reg_ictp_i_c_i,   perc_reg_ictp_ii_c_i,   perc_wrf_ncar_c_i,   perc_wrf_ucan_c_i])
-data_perc_c_ii  = np.vstack([perc_inmet_smn_c_ii,  perc_era5_c_ii,  perc_reg_usp_c_ii,  perc_reg_ictp_c_ii,  perc_reg_ictp_i_c_ii,  perc_reg_ictp_ii_c_ii,  perc_wrf_ncar_c_i,   perc_wrf_ucan_c_ii])
+data_perc_c_ii  = np.vstack([perc_inmet_smn_c_ii,  perc_era5_c_ii,  perc_reg_usp_c_ii,  perc_reg_ictp_c_ii,  perc_reg_ictp_i_c_ii,  perc_reg_ictp_ii_c_ii,  perc_wrf_ncar_c_ii,  perc_wrf_ucan_c_ii])
 data_perc_c_iii = np.vstack([perc_inmet_smn_c_iii, perc_era5_c_iii, perc_reg_usp_c_iii, perc_reg_ictp_c_iii, perc_reg_ictp_i_c_iii, perc_reg_ictp_ii_c_iii, perc_wrf_ncar_c_iii, perc_wrf_ucan_c_iii])
 data_perc_c_iv  = np.vstack([perc_inmet_smn_c_iv,  perc_era5_c_iv,  perc_reg_usp_c_iv,  perc_reg_ictp_c_iv,  perc_reg_ictp_i_c_iv,  perc_reg_ictp_ii_c_iv,  perc_wrf_ncar_c_iv,  perc_wrf_ucan_c_iv])
 data_perc_c_v   = np.vstack([perc_inmet_smn_c_v,   perc_era5_c_v,   perc_reg_usp_c_v,	perc_reg_ictp_c_v,   perc_reg_ictp_i_c_v,   perc_reg_ictp_ii_c_v,   perc_wrf_ncar_c_v,   perc_wrf_ucan_c_v])
 
 data_freq_c_i   = np.vstack([freq_inmet_smn_c_i,   freq_era5_c_i,   freq_reg_usp_c_i,	freq_reg_ictp_c_i,   freq_reg_ictp_i_c_i,   freq_reg_ictp_ii_c_i,   freq_wrf_ncar_c_i,   freq_wrf_ucan_c_i])
-data_freq_c_ii  = np.vstack([freq_inmet_smn_c_ii,  freq_era5_c_ii,  freq_reg_usp_c_ii,  freq_reg_ictp_c_ii,  freq_reg_ictp_i_c_ii,  freq_reg_ictp_ii_c_ii,  freq_wrf_ncar_c_i,   freq_wrf_ucan_c_ii])
+data_freq_c_ii  = np.vstack([freq_inmet_smn_c_ii,  freq_era5_c_ii,  freq_reg_usp_c_ii,  freq_reg_ictp_c_ii,  freq_reg_ictp_i_c_ii,  freq_reg_ictp_ii_c_ii,  freq_wrf_ncar_c_ii,  freq_wrf_ucan_c_ii])
 data_freq_c_iii = np.vstack([freq_inmet_smn_c_iii, freq_era5_c_iii, freq_reg_usp_c_iii, freq_reg_ictp_c_iii, freq_reg_ictp_i_c_iii, freq_reg_ictp_ii_c_iii, freq_wrf_ncar_c_iii, freq_wrf_ucan_c_iii])
 data_freq_c_iv  = np.vstack([freq_inmet_smn_c_iv,  freq_era5_c_iv,  freq_reg_usp_c_iv,  freq_reg_ictp_c_iv,  freq_reg_ictp_i_c_iv,  freq_reg_ictp_ii_c_iv,  freq_wrf_ncar_c_iv,  freq_wrf_ucan_c_iv])
 data_freq_c_v   = np.vstack([freq_inmet_smn_c_v,   freq_era5_c_v,   freq_reg_usp_c_v,	freq_reg_ictp_c_v,   freq_reg_ictp_i_c_v,   freq_reg_ictp_ii_c_v,   freq_wrf_ncar_c_v,   freq_wrf_ucan_c_v])
 
 data_int_c_i   = np.vstack([int_inmet_smn_c_i,   int_era5_c_i,   int_reg_usp_c_i,   int_reg_ictp_c_i,   int_reg_ictp_i_c_i,   int_reg_ictp_ii_c_i,   int_wrf_ncar_c_i,   int_wrf_ucan_c_i])
-data_int_c_ii  = np.vstack([int_inmet_smn_c_ii,  int_era5_c_ii,  int_reg_usp_c_ii,  int_reg_ictp_c_ii,  int_reg_ictp_i_c_ii,  int_reg_ictp_ii_c_ii,  int_wrf_ncar_c_i,   int_wrf_ucan_c_ii])
+data_int_c_ii  = np.vstack([int_inmet_smn_c_ii,  int_era5_c_ii,  int_reg_usp_c_ii,  int_reg_ictp_c_ii,  int_reg_ictp_i_c_ii,  int_reg_ictp_ii_c_ii,  int_wrf_ncar_c_ii,  int_wrf_ucan_c_ii])
 data_int_c_iii = np.vstack([int_inmet_smn_c_iii, int_era5_c_iii, int_reg_usp_c_iii, int_reg_ictp_c_iii, int_reg_ictp_i_c_iii, int_reg_ictp_ii_c_iii, int_wrf_ncar_c_iii, int_wrf_ucan_c_iii])
 data_int_c_iv  = np.vstack([int_inmet_smn_c_iv,  int_era5_c_iv,  int_reg_usp_c_iv,  int_reg_ictp_c_iv,  int_reg_ictp_i_c_iv,  int_reg_ictp_ii_c_iv,  int_wrf_ncar_c_iv,  int_wrf_ucan_c_iv])
 data_int_c_v   = np.vstack([int_inmet_smn_c_v,   int_era5_c_v,   int_reg_usp_c_v,   int_reg_ictp_c_v,	int_reg_ictp_i_c_v,   int_reg_ictp_ii_c_v,   int_wrf_ncar_c_v,   int_wrf_ucan_c_v])
 
 # Plot figure
-fig = plt.figure(figsize=(12, 9))
+fig = plt.figure(figsize=(12, 10))
 fig.subplots_adjust(wspace=0.04, hspace=0.04)
 
 font_size = 8
 
-labels = ['INMET', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
+labels = ['WS', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
 
 if var == 'tas':
 	legend_i = '°C'
 	cmap_i = 'jet'
-
 	mvmin = 10
-	mvmax = 40
-	
+	mvmax = 40	
 	pvmin = 10
 	pvmax = 40
-
 	fvmin = 0
 	fvmax = 30
-
 	ivmin = 14
 	ivmax = 44
 else:
 	legend_i = 'm s⁻¹'
 	cmap_i = 'cubehelix_r'
-
 	mvmin = 0
-	mvmax = 10
-	
+	mvmax = 10	
 	pvmin = 0
 	pvmax = 10
-
 	fvmin = 0
 	fvmax = 20
-
 	ivmin = 0
 	ivmax = 12
 	
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
+ax.set_title('(a)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -503,29 +496,29 @@ ax.set_xticks(np.arange(-.5, 24, 1), minor=True)
 ax.set_yticks(np.arange(-.5, len(labels), 1), minor=True)
 ax.grid(which='minor', linestyle='--', alpha=0.25)
 ax.tick_params(which='minor', bottom=False, left=False)
-
 cax = fig.add_axes([0.12, 0.08, 0.185, 0.015])  
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 cbar.ax.tick_params(labelsize=font_size)
 
 ax = fig.add_subplot(5, 4, 2)
 im = ax.imshow(data_perc_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
+ax.set_title('(b)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
 ax.set_yticklabels([])
-ax.set_title(f'P95 ({legend_i})', fontsize=font_size)
+ax.set_title(f'P99 ({legend_i})', fontsize=font_size)
 ax.set_xticks(np.arange(-.5, 24, 1), minor=True)
 ax.set_yticks(np.arange(-.5, len(labels), 1), minor=True)
 ax.grid(which='minor', linestyle='--', alpha=0.25)
 ax.tick_params(which='minor', bottom=False, left=False)
-
 cax = fig.add_axes([0.32, 0.08, 0.185, 0.015])  
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 cbar.ax.tick_params(labelsize=font_size)
 
 ax = fig.add_subplot(5, 4, 3)
 im = ax.imshow(data_freq_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
+ax.set_title('(c)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -535,13 +528,13 @@ ax.set_xticks(np.arange(-.5, 24, 1), minor=True)
 ax.set_yticks(np.arange(-.5, len(labels), 1), minor=True)
 ax.grid(which='minor', linestyle='--', alpha=0.25)
 ax.tick_params(which='minor', bottom=False, left=False)
-
 cax = fig.add_axes([0.515, 0.08, 0.185, 0.015])  
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 cbar.ax.tick_params(labelsize=font_size)
 
 ax = fig.add_subplot(5, 4, 4)
 im = ax.imshow(data_int_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
+ax.set_title('(d)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -551,13 +544,13 @@ ax.set_xticks(np.arange(-.5, 24, 1), minor=True)
 ax.set_yticks(np.arange(-.5, len(labels), 1), minor=True)
 ax.grid(which='minor', linestyle='--', alpha=0.25)
 ax.tick_params(which='minor', bottom=False, left=False)
-
 cax = fig.add_axes([0.71, 0.08, 0.185, 0.015])  
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 cbar.ax.tick_params(labelsize=font_size)
 
 ax = fig.add_subplot(5, 4, 5)
 im = ax.imshow(data_mean_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
+ax.set_title('(e)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -570,6 +563,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 6)
 im = ax.imshow(data_perc_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
+ax.set_title('(f)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -581,6 +575,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 7)
 im = ax.imshow(data_freq_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
+ax.set_title('(g)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -592,6 +587,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 8)
 im = ax.imshow(data_int_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
+ax.set_title('(h)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -603,6 +599,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 9)
 im = ax.imshow(data_mean_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
+ax.set_title('(i)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -615,6 +612,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 10)
 im = ax.imshow(data_perc_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
+ax.set_title('(j)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -626,6 +624,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 11)
 im = ax.imshow(data_freq_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
+ax.set_title('(k)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -637,6 +636,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 12)
 im = ax.imshow(data_int_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
+ax.set_title('(l)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -648,6 +648,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 13)
 im = ax.imshow(data_mean_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
+ax.set_title('(m)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -660,6 +661,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 14)
 im = ax.imshow(data_perc_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
+ax.set_title('(n)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -671,6 +673,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 15)
 im = ax.imshow(data_freq_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
+ax.set_title('(o)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -682,6 +685,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 16)
 im = ax.imshow(data_int_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
+ax.set_title('(p)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -693,6 +697,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 17)
 im = ax.imshow(data_mean_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
+ax.set_title('(q)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -705,6 +710,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 18)
 im = ax.imshow(data_perc_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
+ax.set_title('(r)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -716,6 +722,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 19)
 im = ax.imshow(data_freq_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
+ax.set_title('(s)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -727,6 +734,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 ax = fig.add_subplot(5, 4, 20)
 im = ax.imshow(data_int_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
+ax.set_title('(t)', loc='left', fontsize=font_size, fontweight='bold')
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))

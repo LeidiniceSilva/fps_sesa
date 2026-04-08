@@ -24,7 +24,7 @@ var = args.var
 
 dict_var = {'pr': ['pre', 'tp']}
 
-vmin, vmax, step_ = 0, 500, 0.5
+vmin, vmax, step_ = 0.1, 500, 0.1
 
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -232,21 +232,22 @@ def mask_like(reference, target):
 def compute_pdf(value, min_val=vmin, max_val=vmax, step=step_):
 
 	valid = value[~np.isnan(value)]
-	ts = valid[(valid >= 0) & (valid < 500)]
+	ts = valid[(valid > 0) & (valid < 500)]
 	
 	perc = np.nanpercentile(ts, 99)
 	max_ = np.nanmax(ts)
     
 	bins = np.arange(min_val, max_val + step, step)
-	hist, _ = np.histogram(valid, bins=bins)
+	wet = valid[valid >= min_val]
+	hist, _ = np.histogram(wet, bins=bins)
 	hist = hist.astype(float)
 	hist[hist < 1] = np.nan
 	pdf = hist / (np.nansum(hist) * step)
-	bin_centers = bins[:-1] + step/2
+	bin_centers = (bins[:-1] + bins[1:]) + step/2
 
-	return perc, max_, pdf, bin_centers
-    
-    
+	return perc, max_, pdf, bin_centers	
+	   
+
 # Import dataset
 mean_i_x, mean_ii_x, mean_iii_x, mean_iv_x, mean_v_x, mean_vi_x, mean_vii_x, mean_viii_x = import_inmet()			
 mean_i_y, mean_ii_y, mean_iii_y, mean_iv_y, mean_v_y, mean_vi_y, mean_vii_y, mean_viii_y = import_smn_i()			
@@ -505,14 +506,14 @@ text_8 = 0.95
 width_ = 0.5
 		
 ax = fig.add_subplot(2, 3, 1)
-plt.bar(bins_inmet_smn_c_i,   pdf_inmet_smn_c_i,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='STATIONS')
-plt.bar(bins_era5_c_i,        pdf_era5_c_i,        facecolor='none',  edgecolor='red',     width=width_, linewidth=1, label='ERA5')
-plt.bar(bins_reg_usp_c_i,     pdf_reg_usp_c_i,     facecolor='none',  edgecolor='blue',    width=width_, linewidth=1, label='Reg4')
-plt.bar(bins_reg_ictp_c_i,    pdf_reg_ictp_c_i,    facecolor='none',  edgecolor='magenta', width=width_, linewidth=1, label='Reg5-Holt3')
-plt.bar(bins_reg_ictp_i_c_i,  pdf_reg_ictp_i_c_i,  facecolor='none',  edgecolor='gray',    width=width_, linewidth=1, label='Reg5-Holt')
-plt.bar(bins_reg_ictp_ii_c_i, pdf_reg_ictp_ii_c_i, facecolor='none',  edgecolor='brown',   width=width_, linewidth=1, label='Reg5-UW')
-plt.bar(bins_wrf_ncar_c_i,    pdf_wrf_ncar_c_i,    facecolor='none',  edgecolor='green',   width=width_, linewidth=1, label='WRF-NCAR')
-plt.bar(bins_wrf_ucan_c_i,    pdf_wrf_ucan_c_i,    facecolor='none',  edgecolor='orange',  width=width_, linewidth=1, label='WRF-UCAN')
+plt.plot(pdf_inmet_smn_c_i,   marker='o', markersize=4, mfc='black',   mec='black', alpha=0.70, linestyle='None', label='WS')
+plt.plot(pdf_era5_c_i,        marker='o', markersize=4, mfc='red',     mec='red', alpha=0.70, linestyle='None',  label='ERA5')
+plt.plot(pdf_reg_usp_c_i,     marker='o', markersize=4, mfc='blue',    mec='blue', alpha=0.70, linestyle='None',  label='Reg4')
+plt.plot(pdf_reg_ictp_c_i,    marker='o', markersize=4, mfc='magenta', mec='magenta', alpha=0.70, linestyle='None',  label='Reg5-Holt3')
+plt.plot(pdf_reg_ictp_i_c_i,  marker='o', markersize=4, mfc='gray',    mec='gray', alpha=0.70, linestyle='None',  label='Reg5-Holt')
+plt.plot(pdf_reg_ictp_ii_c_i, marker='o', markersize=4, mfc='brown',   mec='brown', alpha=0.70, linestyle='None',  label='Reg5-UW')
+plt.plot(pdf_wrf_ncar_c_i,    marker='o', markersize=4, mfc='green',   mec='green', alpha=0.70, linestyle='None',  label='WRF-NCAR')
+plt.plot(pdf_wrf_ucan_c_i,    marker='o', markersize=4, mfc='orange',  mec='orange', alpha=0.70, linestyle='None',  label='WRF-UCAN')
 plt.text(text_, text_8, 'STATIONS = {0} ({1})'.format(round(perc_inmet_smn_c_i, 1),   round(max_inmet_smn_c_i, 1)),   color='black', fontsize=font_size)
 plt.text(text_, text_7, 'ERA5 = {0} ({1})'.format(round(perc_era5_c_i, 1),            round(max_era5_c_i, 1)),        color='black', fontsize=font_size)
 plt.text(text_, text_6, 'Reg4 = {0} ({1})'.format(round(perc_reg_usp_c_i, 1),         round(max_reg_usp_c_i, 1)),     color='black', fontsize=font_size)
@@ -532,7 +533,7 @@ plt.grid(True, alpha=0.5, linestyle='--')
 plt.legend(loc=1, fontsize=font_size, frameon=True, framealpha=0.9)
 
 ax = fig.add_subplot(2, 3, 2)
-plt.bar(bins_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='STATIONS')
+plt.bar(bins_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='WS')
 plt.bar(bins_era5_c_ii,        pdf_era5_c_ii,        facecolor='none',  edgecolor='red',     width=width_, linewidth=1, label='ERA5')
 plt.bar(bins_reg_usp_c_ii,     pdf_reg_usp_c_ii,     facecolor='none',  edgecolor='blue',    width=width_, linewidth=1, label='Reg4')
 plt.bar(bins_reg_ictp_c_ii,    pdf_reg_ictp_c_ii,    facecolor='none',  edgecolor='magenta', width=width_, linewidth=1, label='Reg5-Holt3')
@@ -557,7 +558,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax = fig.add_subplot(2, 3, 3)
-plt.bar(bins_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='STATIONS')
+plt.bar(bins_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='WS')
 plt.bar(bins_era5_c_iii,        pdf_era5_c_iii,        facecolor='none',  edgecolor='red',     width=width_, linewidth=1, label='ERA5')
 plt.bar(bins_reg_usp_c_iii,     pdf_reg_usp_c_iii,     facecolor='none',  edgecolor='blue',    width=width_, linewidth=1, label='Reg4')
 plt.bar(bins_reg_ictp_c_iii,    pdf_reg_ictp_c_iii,    facecolor='none',  edgecolor='magenta', width=width_, linewidth=1, label='Reg5-Holt3')
@@ -583,7 +584,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax = fig.add_subplot(2, 3, 4)
-plt.bar(bins_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='STATIONS')
+plt.bar(bins_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='WS')
 plt.bar(bins_era5_c_iv,        pdf_era5_c_iv,        facecolor='none',  edgecolor='red',     width=width_, linewidth=1, label='ERA5')
 plt.bar(bins_reg_usp_c_iv,     pdf_reg_usp_c_iv,     facecolor='none',  edgecolor='blue',    width=width_, linewidth=1, label='Reg4')
 plt.bar(bins_reg_ictp_c_iv,    pdf_reg_ictp_c_iv,    facecolor='none',  edgecolor='magenta', width=width_, linewidth=1, label='Reg5-Holt3')
@@ -610,7 +611,7 @@ plt.yticks(np.arange(yvmin, yvmax_, yint_), fontsize=font_size)
 plt.grid(True, alpha=0.5, linestyle='--')
 
 ax = fig.add_subplot(2, 3, 5)
-plt.bar(bins_inmet_smn_c_v,   pdf_inmet_smn_c_v,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='STATIONS')
+plt.bar(bins_inmet_smn_c_v,   pdf_inmet_smn_c_v,   facecolor='lightgray', edgecolor='black', width=width_, linewidth=1, label='WS')
 plt.bar(bins_era5_c_v,        pdf_era5_c_v,        facecolor='none',  edgecolor='red',     width=width_, linewidth=1, label='ERA5')
 plt.bar(bins_reg_usp_c_v,     pdf_reg_usp_c_v,     facecolor='none',  edgecolor='blue',    width=width_, linewidth=1, label='Reg4')
 plt.bar(bins_reg_ictp_c_v,    pdf_reg_ictp_c_v,    facecolor='none',  edgecolor='magenta', width=width_, linewidth=1, label='Reg5-Holt3')

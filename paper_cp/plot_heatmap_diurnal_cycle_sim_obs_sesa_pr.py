@@ -3,7 +3,7 @@
 __author__      = "Leidinice Silva"
 __email__       = "leidinicesilva@gmail.com"
 __date__        = "Dec 08, 2025"
-__description__ = "This script plot PDFs"
+__description__ = "This script plot diurnal cycle"
 
 import os
 import argparse
@@ -16,7 +16,6 @@ from scipy.stats import gaussian_kde
 from matplotlib.patches import Polygon
 from dict_inmet_stations import inmet
 from dict_smn_i_stations import smn_i
-from dict_smn_ii_stations import smn_ii
 
 parser = argparse.ArgumentParser(description='Process variable')
 parser.add_argument('--var', required=True, choices=['pr'], help='Variable name')
@@ -220,7 +219,7 @@ clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y, cli
 
 inmet_smn    = clim_i_x    + clim_i_y
 era5         = clim_ii_x   + clim_ii_y
-reg_usp      = clim_ii_x   + clim_i_y
+reg_usp      = clim_iii_x  + clim_iii_y
 reg_ictp     = clim_iv_x   + clim_iv_y
 reg_ictp_i_  = clim_v_x    + clim_v_y
 reg_ictp_ii_ = clim_vi_x   + clim_vi_y
@@ -466,25 +465,25 @@ print()
 print(int_wrf_ucan_c_i)
 
 data_mean_c_i   = np.vstack([mean_inmet_smn_c_i,   mean_era5_c_i,   mean_reg_usp_c_i,   mean_reg_ictp_c_i,   mean_reg_ictp_i_c_i,   mean_reg_ictp_ii_c_i,   mean_wrf_ncar_c_i,   mean_wrf_ucan_c_i])
-data_mean_c_ii  = np.vstack([mean_inmet_smn_c_ii,  mean_era5_c_ii,  mean_reg_usp_c_ii,  mean_reg_ictp_c_ii,  mean_reg_ictp_i_c_ii,  mean_reg_ictp_ii_c_ii,  mean_wrf_ncar_c_i,   mean_wrf_ucan_c_ii])
+data_mean_c_ii  = np.vstack([mean_inmet_smn_c_ii,  mean_era5_c_ii,  mean_reg_usp_c_ii,  mean_reg_ictp_c_ii,  mean_reg_ictp_i_c_ii,  mean_reg_ictp_ii_c_ii,  mean_wrf_ncar_c_ii,  mean_wrf_ucan_c_ii])
 data_mean_c_iii = np.vstack([mean_inmet_smn_c_iii, mean_era5_c_iii, mean_reg_usp_c_iii, mean_reg_ictp_c_iii, mean_reg_ictp_i_c_iii, mean_reg_ictp_ii_c_iii, mean_wrf_ncar_c_iii, mean_wrf_ucan_c_iii])
 data_mean_c_iv  = np.vstack([mean_inmet_smn_c_iv,  mean_era5_c_iv,  mean_reg_usp_c_iv,  mean_reg_ictp_c_iv,  mean_reg_ictp_i_c_iv,  mean_reg_ictp_ii_c_iv,  mean_wrf_ncar_c_iv,  mean_wrf_ucan_c_iv])
 data_mean_c_v   = np.vstack([mean_inmet_smn_c_v,   mean_era5_c_v,   mean_reg_usp_c_v,   mean_reg_ictp_c_v,   mean_reg_ictp_i_c_v,   mean_reg_ictp_ii_c_v,   mean_wrf_ncar_c_v,   mean_wrf_ucan_c_v])
 
 data_perc_c_i   = np.vstack([perc_inmet_smn_c_i,   perc_era5_c_i,   perc_reg_usp_c_i,	perc_reg_ictp_c_i,   perc_reg_ictp_i_c_i,   perc_reg_ictp_ii_c_i,   perc_wrf_ncar_c_i,   perc_wrf_ucan_c_i])
-data_perc_c_ii  = np.vstack([perc_inmet_smn_c_ii,  perc_era5_c_ii,  perc_reg_usp_c_ii,  perc_reg_ictp_c_ii,  perc_reg_ictp_i_c_ii,  perc_reg_ictp_ii_c_ii,  perc_wrf_ncar_c_i,   perc_wrf_ucan_c_ii])
+data_perc_c_ii  = np.vstack([perc_inmet_smn_c_ii,  perc_era5_c_ii,  perc_reg_usp_c_ii,  perc_reg_ictp_c_ii,  perc_reg_ictp_i_c_ii,  perc_reg_ictp_ii_c_ii,  perc_wrf_ncar_c_ii,  perc_wrf_ucan_c_ii])
 data_perc_c_iii = np.vstack([perc_inmet_smn_c_iii, perc_era5_c_iii, perc_reg_usp_c_iii, perc_reg_ictp_c_iii, perc_reg_ictp_i_c_iii, perc_reg_ictp_ii_c_iii, perc_wrf_ncar_c_iii, perc_wrf_ucan_c_iii])
 data_perc_c_iv  = np.vstack([perc_inmet_smn_c_iv,  perc_era5_c_iv,  perc_reg_usp_c_iv,  perc_reg_ictp_c_iv,  perc_reg_ictp_i_c_iv,  perc_reg_ictp_ii_c_iv,  perc_wrf_ncar_c_iv,  perc_wrf_ucan_c_iv])
 data_perc_c_v   = np.vstack([perc_inmet_smn_c_v,   perc_era5_c_v,   perc_reg_usp_c_v,	perc_reg_ictp_c_v,   perc_reg_ictp_i_c_v,   perc_reg_ictp_ii_c_v,   perc_wrf_ncar_c_v,   perc_wrf_ucan_c_v])
 
 data_freq_c_i   = np.vstack([freq_inmet_smn_c_i,   freq_era5_c_i,   freq_reg_usp_c_i,	freq_reg_ictp_c_i,   freq_reg_ictp_i_c_i,   freq_reg_ictp_ii_c_i,   freq_wrf_ncar_c_i,   freq_wrf_ucan_c_i])
-data_freq_c_ii  = np.vstack([freq_inmet_smn_c_ii,  freq_era5_c_ii,  freq_reg_usp_c_ii,  freq_reg_ictp_c_ii,  freq_reg_ictp_i_c_ii,  freq_reg_ictp_ii_c_ii,  freq_wrf_ncar_c_i,   freq_wrf_ucan_c_ii])
+data_freq_c_ii  = np.vstack([freq_inmet_smn_c_ii,  freq_era5_c_ii,  freq_reg_usp_c_ii,  freq_reg_ictp_c_ii,  freq_reg_ictp_i_c_ii,  freq_reg_ictp_ii_c_ii,  freq_wrf_ncar_c_ii,  freq_wrf_ucan_c_ii])
 data_freq_c_iii = np.vstack([freq_inmet_smn_c_iii, freq_era5_c_iii, freq_reg_usp_c_iii, freq_reg_ictp_c_iii, freq_reg_ictp_i_c_iii, freq_reg_ictp_ii_c_iii, freq_wrf_ncar_c_iii, freq_wrf_ucan_c_iii])
 data_freq_c_iv  = np.vstack([freq_inmet_smn_c_iv,  freq_era5_c_iv,  freq_reg_usp_c_iv,  freq_reg_ictp_c_iv,  freq_reg_ictp_i_c_iv,  freq_reg_ictp_ii_c_iv,  freq_wrf_ncar_c_iv,  freq_wrf_ucan_c_iv])
 data_freq_c_v   = np.vstack([freq_inmet_smn_c_v,   freq_era5_c_v,   freq_reg_usp_c_v,	freq_reg_ictp_c_v,   freq_reg_ictp_i_c_v,   freq_reg_ictp_ii_c_v,   freq_wrf_ncar_c_v,   freq_wrf_ucan_c_v])
 
 data_int_c_i   = np.vstack([int_inmet_smn_c_i,   int_era5_c_i,   int_reg_usp_c_i,   int_reg_ictp_c_i,   int_reg_ictp_i_c_i,   int_reg_ictp_ii_c_i,   int_wrf_ncar_c_i,   int_wrf_ucan_c_i])
-data_int_c_ii  = np.vstack([int_inmet_smn_c_ii,  int_era5_c_ii,  int_reg_usp_c_ii,  int_reg_ictp_c_ii,  int_reg_ictp_i_c_ii,  int_reg_ictp_ii_c_ii,  int_wrf_ncar_c_i,   int_wrf_ucan_c_ii])
+data_int_c_ii  = np.vstack([int_inmet_smn_c_ii,  int_era5_c_ii,  int_reg_usp_c_ii,  int_reg_ictp_c_ii,  int_reg_ictp_i_c_ii,  int_reg_ictp_ii_c_ii,  int_wrf_ncar_c_ii,  int_wrf_ucan_c_ii])
 data_int_c_iii = np.vstack([int_inmet_smn_c_iii, int_era5_c_iii, int_reg_usp_c_iii, int_reg_ictp_c_iii, int_reg_ictp_i_c_iii, int_reg_ictp_ii_c_iii, int_wrf_ncar_c_iii, int_wrf_ucan_c_iii])
 data_int_c_iv  = np.vstack([int_inmet_smn_c_iv,  int_era5_c_iv,  int_reg_usp_c_iv,  int_reg_ictp_c_iv,  int_reg_ictp_i_c_iv,  int_reg_ictp_ii_c_iv,  int_wrf_ncar_c_iv,  int_wrf_ucan_c_iv])
 data_int_c_v   = np.vstack([int_inmet_smn_c_v,   int_era5_c_v,   int_reg_usp_c_v,   int_reg_ictp_c_v,	int_reg_ictp_i_c_v,   int_reg_ictp_ii_c_v,   int_wrf_ncar_c_v,   int_wrf_ucan_c_v])
@@ -495,22 +494,18 @@ fig.subplots_adjust(wspace=0.04, hspace=0.04)
 
 font_size = 8
 
-labels = ['INMET', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
+labels = ['WS', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
 	
 legend_i = 'mm h⁻¹'
 cmap_i = 'terrain_r'
 mvmin = 0
 mvmax = 0.8
-
 pvmin = 0
 pvmax = 10
-
 fvmin = 0
 fvmax = 6
-
 ivmin = 0
 ivmax = 15
-
 
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
