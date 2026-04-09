@@ -460,13 +460,13 @@ else:
 	legend_i = 'm s⁻¹'
 	cmap_i = 'cubehelix_r'
 	mvmin = 0
-	mvmax = 10	
+	mvmax = 8	
 	pvmin = 0
 	pvmax = 10
 	fvmin = 0
 	fvmax = 20
 	ivmin = 0
-	ivmax = 12
+	ivmax = 10
 	
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
@@ -492,7 +492,7 @@ ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
 ax.set_yticklabels([])
-ax.set_title(f'P99 ({legend_i})', fontsize=font_size)
+ax.set_title(f'P95 ({legend_i})', fontsize=font_size)
 ax.set_xticks(np.arange(-.5, 24, 1), minor=True)
 ax.set_yticks(np.arange(-.5, len(labels), 1), minor=True)
 ax.grid(which='minor', linestyle='--', alpha=0.25)

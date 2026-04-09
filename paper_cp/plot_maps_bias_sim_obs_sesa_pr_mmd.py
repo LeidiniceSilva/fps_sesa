@@ -284,6 +284,7 @@ def configure_subplot(ax):
 	ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
 		
 	ax.add_feature(cfeature.OCEAN, facecolor='#a6cee3')
+	ax.add_feature(cfeature.LAND, facecolor='lightgray') 
 	ax.add_feature(cfeature.BORDERS, linewidth=0.75)
 	ax.coastlines(linewidth=0.75)
 	
@@ -355,9 +356,9 @@ fig.delaxes(ax3)
 fig.delaxes(ax4)
 
 cmap = cm.get_cmap('BrBG', 20)
-norm_i = BoundaryNorm(np.linspace(-5, 5, 20 + 1), cmap.N)
-norm_ii = BoundaryNorm(np.linspace(-60, 60, 20 + 1), cmap.N)
-norm_iii = BoundaryNorm(np.linspace(-0.4, 0.4, 20 + 1), cmap.N)
+norm_i = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+norm_ii = BoundaryNorm(np.linspace(-40, 40, 20 + 1), cmap.N)
+norm_iii = BoundaryNorm(np.linspace(-0.3, 0.3, 20 + 1), cmap.N)
 norm_iv = BoundaryNorm(np.linspace(-80, 80, 20 + 1), cmap.N)
 legend = 'mm d⁻¹'
 
@@ -498,7 +499,7 @@ cbar.ax.tick_params(labelsize=6)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
-name_out = 'pyplt_maps_bias_{0}_sesa.png'.format(var)
+name_out = 'pyplt_maps_bias_{0}_mmd_sesa.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 exit()
 

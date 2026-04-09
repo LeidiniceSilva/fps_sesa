@@ -163,6 +163,7 @@ def configure_subplot(ax):
 	ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
 		
 	ax.add_feature(cfeature.OCEAN, facecolor='#a6cee3')
+	ax.add_feature(cfeature.LAND, facecolor='lightgray') 
 	ax.add_feature(cfeature.BORDERS, linewidth=0.75)
 	ax.coastlines(linewidth=0.75)
 	
@@ -344,7 +345,7 @@ configure_subplot(ax29)
 
 ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax30.set_title('(z)', loc='left', fontweight='bold', fontsize=font_size)
-ax30.set_xlabel('P99 ({0})'.format(legend), loc='center', fontsize=font_size)
+ax30.set_xlabel('P95 ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax30)
 
 ct31 = ax31.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ucan, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)

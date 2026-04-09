@@ -315,6 +315,7 @@ def configure_subplot(ax):
 	ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
 		
 	ax.add_feature(cfeature.OCEAN, facecolor='#a6cee3')
+	ax.add_feature(cfeature.LAND, facecolor='lightgray') 
 	ax.add_feature(cfeature.BORDERS, linewidth=0.75)
 	ax.coastlines(linewidth=0.75)
 	

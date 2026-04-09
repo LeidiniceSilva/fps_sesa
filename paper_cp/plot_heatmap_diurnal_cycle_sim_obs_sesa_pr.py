@@ -503,7 +503,7 @@ mvmax = 0.8
 pvmin = 0
 pvmax = 10
 fvmin = 0
-fvmax = 6
+fvmax = 5
 ivmin = 0
 ivmax = 15
 
