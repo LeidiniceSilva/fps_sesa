@@ -25,7 +25,7 @@ dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['uv', 'ws10']}
 if var == 'tas':
 	vmin, vmax, step_ = -30, 50, 1
 else:
-	vmin, vmax, step_ = 0, 40, 0.1
+	vmin, vmax, step_ = 0, 40, 0.4
 			
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -54,9 +54,8 @@ def import_inmet():
 			print(i, station_code, station_name)
 		
 			# Reading inmet 
-			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_H_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], station_code))
+			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_D_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], station_code))
 			d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
-			d_i = d_i.resample(time='1D').mean()
 			d_i = d_i.values
 			mean_i.append(d_i)
 
@@ -128,13 +127,13 @@ def compute_pdf(value, min_val=vmin, max_val=vmax, step=step_):
 	if var == 'tas':        # Celsius
         	ts = valid[(valid > -80) & (valid < 60)]
 	elif var == 'sfcWind':  # m/s
-		ts = valid[(valid >= 0) & (valid < 80)]
+		ts = valid[(valid >= 0) & (valid < 40)]
 	
 	perc = np.nanpercentile(ts, 95)
 	max_ = np.nanmax(ts)
     
 	bins = np.arange(min_val, max_val + step, step)
-	hist, _ = np.histogram(valid, bins=bins)
+	hist, _ = np.histogram(ts, bins=bins)
 	hist = hist.astype(float)
 	hist[hist < 1] = np.nan
 	pdf = hist / (np.nansum(hist) * step)
@@ -380,33 +379,39 @@ font_size = 8
 
 if var == 'tas':
 	legend = '°C'
+	legend_ = 'Tas'
 	xvmin = 0
 	xvmax = 40
-	yvmin = 1e-3
-	yvmax = 0
+	yvmin = 0
+	yvmax = 0.2
+	text_ = 0.02
+	text_1 = 0.45
+	text_2 = 0.4
+	text_3 = 0.35
+	text_4 = 0.3
+	text_5 = 0.25
+	text_6 = 0.2
+	text_7 = 0.15
+	text_8 = 0.1
 else:
 	legend = 'm s⁻¹'
-	xvmin = 0
+	legend_ = 'sfcWind'
+	xvmin = 0.5
 	xvmax =10
-	xvmax_ = 11
-	xint_ = 1
 	yvmin = 0
-	yvmax = 1
-	yvmax_ = 1.1
-	yint_ = 0.1
-	text_ = 0.25
-	text_1 = 0.6
-	text_2 = 0.65
-	text_3 = 0.7
-	text_4 = 0.75
-	text_5 = 0.8
-	text_6 = 0.85
-	text_7 = 0.9
-	text_8 = 0.95
-	width_ = 0.5
-		
+	yvmax = 0.8
+	text_ = 0.62
+	text_1 = 0.45
+	text_2 = 0.4
+	text_3 = 0.35
+	text_4 = 0.3
+	text_5 = 0.25
+	text_6 = 0.2
+	text_7 = 0.15
+	text_8 = 0.1
+			
 ax = fig.add_subplot(2, 3, 1)
-plt.plot(bins_inmet_smn_c_i,   pdf_inmet_smn_c_i,   color='black',   linestyle='--', linewidth=1, label='WS')
+plt.plot(bins_inmet_smn_c_i,   pdf_inmet_smn_c_i,   color='black',   linestyle='-', linewidth=1, label='WS')
 plt.plot(bins_era5_c_i,        pdf_era5_c_i,        color='red',     linestyle='--', linewidth=1, label='ERA5')
 plt.plot(bins_reg_usp_c_i,     pdf_reg_usp_c_i,     color='blue',    linestyle='--', linewidth=1, label='Reg4')
 plt.plot(bins_reg_ictp_c_i,    pdf_reg_ictp_c_i,    color='magenta', linestyle='--', linewidth=1, label='Reg5-Holt3')
@@ -414,65 +419,177 @@ plt.plot(bins_reg_ictp_i_c_i,  pdf_reg_ictp_i_c_i,  color='gray',    linestyle='
 plt.plot(bins_reg_ictp_ii_c_i, pdf_reg_ictp_ii_c_i, color='brown',   linestyle='--', linewidth=1, label='Reg5-UW')
 plt.plot(bins_wrf_ncar_c_i,    pdf_wrf_ncar_c_i,    color='green',   linestyle='--', linewidth=1, label='WRF-NCAR')
 plt.plot(bins_wrf_ucan_c_i,    pdf_wrf_ucan_c_i,    color='orange',  linestyle='--', linewidth=1, label='WRF-UCAN')
+plt.axvline(perc_inmet_smn_c_i,   color='black',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_era5_c_i,        color='red',     linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_usp_c_i,     color='blue',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_c_i,    color='magenta', linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_i_c_i,  color='gray',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_ii_c_i, color='brown',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ncar_c_i,    color='green',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ucan_c_i,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_inmet_smn_c_i, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_era5_c_i, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_usp_c_i, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_c_i, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_i_c_i, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_ii_c_i, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ncar_c_i, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ucan_c_i, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(a)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER I', loc='center', fontsize=font_size)
 plt.ylabel('PDF (#)', fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
 plt.xticks(fontsize=font_size)
 plt.yticks(fontsize=font_size)
-ax.grid(True, which='major', axis='x', linestyle='--', linewidth=0.8)
-ax.grid(True, which='major', axis='y', linestyle='--', linewidth=0.8)
-ax.grid(True, which='minor', axis='y', linestyle='--', linewidth=0.4)
-plt.legend(loc=1, fontsize=font_size, frameon=True, framealpha=0.9)
+plt.minorticks_on()
+plt.grid(True, which='major', linestyle='--', linewidth=0.8)
+plt.grid(True, which='minor', axis='y', linestyle='--', linewidth=0.4)
+plt.legend(loc=2, fontsize=font_size, frameon=True, framealpha=0.9)
 
 ax = fig.add_subplot(2, 3, 2)
-plt.bar(bins_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   facecolor='lightgray', edgecolor='black', linewidth=1, label='WS')
-plt.bar(bins_era5_c_ii,        pdf_era5_c_ii,        facecolor='none',  edgecolor='red',       linewidth=1, label='ERA5')
-plt.bar(bins_reg_usp_c_ii,     pdf_reg_usp_c_ii,     facecolor='none',  edgecolor='blue',      linewidth=1, label='Reg4')
-plt.bar(bins_reg_ictp_c_ii,    pdf_reg_ictp_c_ii,    facecolor='none',  edgecolor='magenta',   linewidth=1, label='Reg5-Holt3')
-plt.bar(bins_reg_ictp_i_c_ii,  pdf_reg_ictp_i_c_ii,  facecolor='none',  edgecolor='gray',      linewidth=1, label='Reg5-Holt')
-plt.bar(bins_reg_ictp_ii_c_ii, pdf_reg_ictp_ii_c_ii, facecolor='none',  edgecolor='brown',     linewidth=1, label='Reg5-UW')
-plt.bar(bins_wrf_ncar_c_ii,    pdf_wrf_ncar_c_ii,    facecolor='none',  edgecolor='green',     linewidth=1, label='WRF-NCAR')
-plt.bar(bins_wrf_ucan_c_ii,    pdf_wrf_ucan_c_ii,    facecolor='none',  edgecolor='orange',    linewidth=1, label='WRF-UCAN')
+plt.plot(bins_inmet_smn_c_ii,   pdf_inmet_smn_c_ii,   color='black',   linestyle='-', linewidth=1, label='WS')
+plt.plot(bins_era5_c_ii,        pdf_era5_c_ii,        color='red',     linestyle='--', linewidth=1, label='ERA5')
+plt.plot(bins_reg_usp_c_ii,     pdf_reg_usp_c_ii,     color='blue',    linestyle='--', linewidth=1, label='Reg4')
+plt.plot(bins_reg_ictp_c_ii,    pdf_reg_ictp_c_ii,    color='magenta', linestyle='--', linewidth=1, label='Reg5-Holt3')
+plt.plot(bins_reg_ictp_i_c_ii,  pdf_reg_ictp_i_c_ii,  color='gray',    linestyle='--', linewidth=1, label='Reg5-Holt')
+plt.plot(bins_reg_ictp_ii_c_ii, pdf_reg_ictp_ii_c_ii, color='brown',   linestyle='--', linewidth=1, label='Reg5-UW')
+plt.plot(bins_wrf_ncar_c_ii,    pdf_wrf_ncar_c_ii,    color='green',   linestyle='--', linewidth=1, label='WRF-NCAR')
+plt.plot(bins_wrf_ucan_c_ii,    pdf_wrf_ucan_c_ii,    color='orange',  linestyle='--', linewidth=1, label='WRF-UCAN')
+plt.axvline(perc_inmet_smn_c_ii,   color='black',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_era5_c_ii,        color='red',     linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_usp_c_ii,     color='blue',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_c_ii,    color='magenta', linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_i_c_ii,  color='gray',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_ii_c_ii, color='brown',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ncar_c_ii,    color='green',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ucan_c_ii,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_inmet_smn_c_ii, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_era5_c_ii, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_usp_c_ii, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_c_ii, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_i_c_ii, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_ii_c_ii, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ncar_c_ii, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ucan_c_ii, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(b)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER II', loc='center', fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(fontsize=font_size)
+plt.yticks(fontsize=font_size)
+plt.minorticks_on()
+plt.grid(True, which='major', linestyle='--', linewidth=0.8)
+plt.grid(True, which='minor', axis='y', linestyle='--', linewidth=0.4)
 
 ax = fig.add_subplot(2, 3, 3)
-plt.bar(bins_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   facecolor='lightgray', edgecolor='black', linewidth=1, label='WS')
-plt.bar(bins_era5_c_iii,        pdf_era5_c_iii,        facecolor='none',  edgecolor='red',       linewidth=1, label='ERA5')
-plt.bar(bins_reg_usp_c_iii,     pdf_reg_usp_c_iii,     facecolor='none',  edgecolor='blue',      linewidth=1, label='Reg4')
-plt.bar(bins_reg_ictp_c_iii,    pdf_reg_ictp_c_iii,    facecolor='none',  edgecolor='magenta',   linewidth=1, label='Reg5-Holt3')
-plt.bar(bins_reg_ictp_i_c_iii,  pdf_reg_ictp_i_c_iii,  facecolor='none',  edgecolor='gray',      linewidth=1, label='Reg5-Holt')
-plt.bar(bins_reg_ictp_ii_c_iii, pdf_reg_ictp_ii_c_iii, facecolor='none',  edgecolor='brown',     linewidth=1, label='Reg5-UW')
-plt.bar(bins_wrf_ncar_c_iii,    pdf_wrf_ncar_c_iii,    facecolor='none',  edgecolor='green',     linewidth=1, label='WRF-NCAR')
-plt.bar(bins_wrf_ucan_c_iii,    pdf_wrf_ucan_c_iii,    facecolor='none',  edgecolor='orange',    linewidth=1, label='WRF-UCAN')
+plt.plot(bins_inmet_smn_c_iii,   pdf_inmet_smn_c_iii,   color='black',   linestyle='-', linewidth=1, label='WS')
+plt.plot(bins_era5_c_iii,        pdf_era5_c_iii,        color='red',     linestyle='--', linewidth=1, label='ERA5')
+plt.plot(bins_reg_usp_c_iii,     pdf_reg_usp_c_iii,     color='blue',    linestyle='--', linewidth=1, label='Reg4')
+plt.plot(bins_reg_ictp_c_iii,    pdf_reg_ictp_c_iii,    color='magenta', linestyle='--', linewidth=1, label='Reg5-Holt3')
+plt.plot(bins_reg_ictp_i_c_iii,  pdf_reg_ictp_i_c_iii,  color='gray',    linestyle='--', linewidth=1, label='Reg5-Holt')
+plt.plot(bins_reg_ictp_ii_c_iii, pdf_reg_ictp_ii_c_iii, color='brown',   linestyle='--', linewidth=1, label='Reg5-UW')
+plt.plot(bins_wrf_ncar_c_iii,    pdf_wrf_ncar_c_iii,    color='green',   linestyle='--', linewidth=1, label='WRF-NCAR')
+plt.plot(bins_wrf_ucan_c_iii,    pdf_wrf_ucan_c_iii,    color='orange',  linestyle='--', linewidth=1, label='WRF-UCAN')
+plt.axvline(perc_inmet_smn_c_iii,   color='black',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_era5_c_iii,        color='red',     linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_usp_c_iii,     color='blue',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_c_iii,    color='magenta', linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_i_c_iii,  color='gray',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_ii_c_iii, color='brown',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ncar_c_iii,    color='green',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ucan_c_iii,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_inmet_smn_c_iii, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_era5_c_iii, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_usp_c_iii, 1)),	 transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_c_iii, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_i_c_iii, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_ii_c_iii, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ncar_c_iii, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ucan_c_iii, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(c)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER III', loc='center', fontsize=font_size)
+plt.xlabel('{0}'.format(legend), fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(fontsize=font_size)
+plt.yticks(fontsize=font_size)
+plt.minorticks_on()
+plt.grid(True, which='major', linestyle='--', linewidth=0.8)
+plt.grid(True, which='minor', axis='y', linestyle='--', linewidth=0.4)
 
 ax = fig.add_subplot(2, 3, 4)
-plt.bar(bins_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   facecolor='lightgray', edgecolor='black', linewidth=1, label='WS')
-plt.bar(bins_era5_c_iv,        pdf_era5_c_iv,        facecolor='none',  edgecolor='red',       linewidth=1, label='ERA5')
-plt.bar(bins_reg_usp_c_iv,     pdf_reg_usp_c_iv,     facecolor='none',  edgecolor='blue',      linewidth=1, label='Reg4')
-plt.bar(bins_reg_ictp_c_iv,    pdf_reg_ictp_c_iv,    facecolor='none',  edgecolor='magenta',   linewidth=1, label='Reg5-Holt3')
-plt.bar(bins_reg_ictp_i_c_iv,  pdf_reg_ictp_i_c_iv,  facecolor='none',  edgecolor='gray',      linewidth=1, label='Reg5-Holt')
-plt.bar(bins_reg_ictp_ii_c_iv, pdf_reg_ictp_ii_c_iv, facecolor='none',  edgecolor='brown',     linewidth=1, label='Reg5-UW')
-plt.bar(bins_wrf_ncar_c_iv,    pdf_wrf_ncar_c_iv,    facecolor='none',  edgecolor='green',     linewidth=1, label='WRF-NCAR')
-plt.bar(bins_wrf_ucan_c_iv,    pdf_wrf_ucan_c_iv,    facecolor='none',  edgecolor='orange',    linewidth=1, label='WRF-UCAN')
+plt.plot(bins_inmet_smn_c_iv,   pdf_inmet_smn_c_iv,   color='black',   linestyle='-', linewidth=1, label='WS')
+plt.plot(bins_era5_c_iv,        pdf_era5_c_iv,        color='red',     linestyle='--', linewidth=1, label='ERA5')
+plt.plot(bins_reg_usp_c_iv,     pdf_reg_usp_c_iv,     color='blue',    linestyle='--', linewidth=1, label='Reg4')
+plt.plot(bins_reg_ictp_c_iv,    pdf_reg_ictp_c_iv,    color='magenta', linestyle='--', linewidth=1, label='Reg5-Holt3')
+plt.plot(bins_reg_ictp_i_c_iv,  pdf_reg_ictp_i_c_iv,  color='gray',    linestyle='--', linewidth=1, label='Reg5-Holt')
+plt.plot(bins_reg_ictp_ii_c_iv, pdf_reg_ictp_ii_c_iv, color='brown',   linestyle='--', linewidth=1, label='Reg5-UW')
+plt.plot(bins_wrf_ncar_c_iv,    pdf_wrf_ncar_c_iv,    color='green',   linestyle='--', linewidth=1, label='WRF-NCAR')
+plt.plot(bins_wrf_ucan_c_iv,    pdf_wrf_ucan_c_iv,    color='orange',  linestyle='--', linewidth=1, label='WRF-UCAN')
+plt.axvline(perc_inmet_smn_c_iv,   color='black',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_era5_c_iv,        color='red',     linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_usp_c_iv,     color='blue',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_c_iv,    color='magenta', linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_i_c_iv,  color='gray',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_ii_c_iv, color='brown',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ncar_c_iv,    color='green',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ucan_c_iv,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_inmet_smn_c_iv, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_era5_c_iv, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_usp_c_iv, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_c_iv, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_i_c_iv, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_ii_c_iv, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ncar_c_iv, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ucan_c_iv, 1)),	transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(d)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER IV', loc='center', fontsize=font_size)
 plt.ylabel('PDF (#)', fontsize=font_size)
 plt.xlabel('{0}'.format(legend), fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(fontsize=font_size)
+plt.yticks(fontsize=font_size)
+plt.minorticks_on()
+plt.grid(True, which='major', linestyle='--', linewidth=0.8)
+plt.grid(True, which='minor', axis='y', linestyle='--', linewidth=0.4)
 
 ax = fig.add_subplot(2, 3, 5)
-plt.bar(bins_inmet_smn_c_v,   pdf_inmet_smn_c_v,   facecolor='lightgray', edgecolor='black', linewidth=1, label='WS')
-plt.bar(bins_era5_c_v,        pdf_era5_c_v,        facecolor='none',  edgecolor='red',       linewidth=1, label='ERA5')
-plt.bar(bins_reg_usp_c_v,     pdf_reg_usp_c_v,     facecolor='none',  edgecolor='blue',      linewidth=1, label='Reg4')
-plt.bar(bins_reg_ictp_c_v,    pdf_reg_ictp_c_v,    facecolor='none',  edgecolor='magenta',   linewidth=1, label='Reg5-Holt3')
-plt.bar(bins_reg_ictp_i_c_v,  pdf_reg_ictp_i_c_v,  facecolor='none',  edgecolor='gray',      linewidth=1, label='Reg5-Holt')
-plt.bar(bins_reg_ictp_ii_c_v, pdf_reg_ictp_ii_c_v, facecolor='none',  edgecolor='brown',     linewidth=1, label='Reg5-UW')
-plt.bar(bins_wrf_ncar_c_v,    pdf_wrf_ncar_c_v,    facecolor='none',  edgecolor='green',     linewidth=1, label='WRF-NCAR')
-plt.bar(bins_wrf_ucan_c_v,    pdf_wrf_ucan_c_v,    facecolor='none',  edgecolor='orange',    linewidth=1, label='WRF-UCAN')
+plt.plot(bins_inmet_smn_c_v,   pdf_inmet_smn_c_v,   color='black',   linestyle='-', linewidth=1, label='WS')
+plt.plot(bins_era5_c_v,        pdf_era5_c_v,        color='red',     linestyle='--', linewidth=1, label='ERA5')
+plt.plot(bins_reg_usp_c_v,     pdf_reg_usp_c_v,     color='blue',    linestyle='--', linewidth=1, label='Reg4')
+plt.plot(bins_reg_ictp_c_v,    pdf_reg_ictp_c_v,    color='magenta', linestyle='--', linewidth=1, label='Reg5-Holt3')
+plt.plot(bins_reg_ictp_i_c_v,  pdf_reg_ictp_i_c_v,  color='gray',    linestyle='--', linewidth=1, label='Reg5-Holt')
+plt.plot(bins_reg_ictp_ii_c_v, pdf_reg_ictp_ii_c_v, color='brown',   linestyle='--', linewidth=1, label='Reg5-UW')
+plt.plot(bins_wrf_ncar_c_v,    pdf_wrf_ncar_c_v,    color='green',   linestyle='--', linewidth=1, label='WRF-NCAR')
+plt.plot(bins_wrf_ucan_c_v,    pdf_wrf_ucan_c_v,    color='orange',  linestyle='--', linewidth=1, label='WRF-UCAN')
+plt.axvline(perc_inmet_smn_c_v,   color='black',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_era5_c_v,        color='red',     linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_usp_c_v,     color='blue',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_c_v,    color='magenta', linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_i_c_v,  color='gray',    linestyle='-', linewidth=0.75)
+plt.axvline(perc_reg_ictp_ii_c_v, color='brown',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ncar_c_v,    color='green',   linestyle='-', linewidth=0.75)
+plt.axvline(perc_wrf_ucan_c_v,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_inmet_smn_c_v, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_era5_c_v, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_usp_c_v, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_c_v, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_i_c_v, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_reg_ictp_ii_c_v, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ncar_c_v, 1)),    transform=ax.transAxes, color='green',	fontsize=font_size)
+plt.text(text_, text_8, r'${0}_{{\max}} = {1}$'.format(legend_, round(max_wrf_ucan_c_v, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(e)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER V', loc='center', fontsize=font_size)
+plt.xlabel('{0}'.format(legend), fontsize=font_size)
+plt.xlim(xvmin, xvmax)
+plt.ylim(yvmin, yvmax)
+plt.xticks(fontsize=font_size)
+plt.yticks(fontsize=font_size)
+plt.minorticks_on()
+plt.grid(True, which='major', linestyle='--', linewidth=0.8)
+plt.grid(True, which='minor', axis='y', linestyle='--', linewidth=0.4)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)

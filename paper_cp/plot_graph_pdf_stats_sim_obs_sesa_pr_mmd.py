@@ -232,6 +232,8 @@ def mask_like(reference, target):
 def compute_pdf(value, min_val=vmin, max_val=vmax, step=step_):
 
 	valid = value[~np.isnan(value)]	
+	valid = valid[(valid > 0) & (valid < 500)]
+	
 	perc = np.nanpercentile(valid, 99)
 	max_ = np.nanmax(valid)
     
@@ -241,7 +243,7 @@ def compute_pdf(value, min_val=vmin, max_val=vmax, step=step_):
 	hist = hist.astype(float)
 	hist[hist < 1] = np.nan
 	pdf = hist / (np.nansum(hist) * step)
-	bin_centers = (bins[:-1] + bins[1:]) + step/2
+	bin_centers = (bins[:-1] + bins[1:] + step) / 2
 
 	return perc, max_, bin_centers, pdf
 	
@@ -485,9 +487,18 @@ font_size = 8
 
 legend = 'mm d⁻¹'
 xvmin = 0
-xvmax = 500
+xvmax = 300
 yvmin = 1e-4
 yvmax = 0
+text_ = 0.65
+text_1 = 0.45
+text_2 = 0.4
+text_3 = 0.35
+text_4 = 0.3
+text_5 = 0.25
+text_6 = 0.2
+text_7 = 0.15
+text_8 = 0.1
 		
 ax = fig.add_subplot(2, 3, 1)
 plt.plot(pdf_inmet_smn_c_i,   bins_inmet_smn_c_i,   marker='.', markersize=4, markerfacecolor='None', markeredgecolor='black',   markeredgewidth=0.5, linestyle='None', label='WS')
@@ -506,6 +517,14 @@ plt.axvline(perc_reg_ictp_i_c_i,  color='gray',    linestyle='-', linewidth=0.75
 plt.axvline(perc_reg_ictp_ii_c_i, color='brown',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ncar_c_i,    color='green',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ucan_c_i,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'$Pr_{{\max}} = {0}$'.format(round(max_inmet_smn_c_i, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'$Pr_{{\max}} = {0}$'.format(round(max_era5_c_i, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_usp_c_i, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_c_i, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_i_c_i, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_ii_c_i, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ncar_c_i, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ucan_c_i, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(a)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER I', loc='center', fontsize=font_size)
 plt.ylabel('PDF (#)', fontsize=font_size)
@@ -536,6 +555,14 @@ plt.axvline(perc_reg_ictp_i_c_ii,  color='gray',    linestyle='-', linewidth=0.7
 plt.axvline(perc_reg_ictp_ii_c_ii, color='brown',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ncar_c_ii,    color='green',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ucan_c_ii,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'$Pr_{{\max}} = {0}$'.format(round(max_inmet_smn_c_ii, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'$Pr_{{\max}} = {0}$'.format(round(max_era5_c_ii, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_usp_c_ii, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_c_ii, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_i_c_ii, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_ii_c_ii, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ncar_c_ii, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ucan_c_ii, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(b)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER II', loc='center', fontsize=font_size)
 plt.yscale('log')
@@ -564,6 +591,14 @@ plt.axvline(perc_reg_ictp_i_c_iii,  color='gray',    linestyle='-', linewidth=0.
 plt.axvline(perc_reg_ictp_ii_c_iii, color='brown',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ncar_c_iii,    color='green',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ucan_c_iii,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'$Pr_{{\max}} = {0}$'.format(round(max_inmet_smn_c_iii, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'$Pr_{{\max}} = {0}$'.format(round(max_era5_c_iii, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_usp_c_iii, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_c_iii, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_i_c_iii, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_ii_c_iii, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ncar_c_iii, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ucan_c_iii, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(c)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER III', loc='center', fontsize=font_size)
 plt.xlabel('{0}'.format(legend), fontsize=font_size)
@@ -593,6 +628,14 @@ plt.axvline(perc_reg_ictp_i_c_iv,  color='gray',    linestyle='-', linewidth=0.7
 plt.axvline(perc_reg_ictp_ii_c_iv, color='brown',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ncar_c_iv,    color='green',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ucan_c_iv,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'$Pr_{{\max}} = {0}$'.format(round(max_inmet_smn_c_iv, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'$Pr_{{\max}} = {0}$'.format(round(max_era5_c_iv, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_usp_c_iv, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_c_iv, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_i_c_iv, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_ii_c_iv, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ncar_c_iv, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ucan_c_iv, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(d)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER IV', loc='center', fontsize=font_size)
 plt.ylabel('PDF (#)', fontsize=font_size)
@@ -623,6 +666,14 @@ plt.axvline(perc_reg_ictp_i_c_v,  color='gray',    linestyle='-', linewidth=0.75
 plt.axvline(perc_reg_ictp_ii_c_v, color='brown',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ncar_c_v,    color='green',   linestyle='-', linewidth=0.75)
 plt.axvline(perc_wrf_ucan_c_v,    color='orange',  linestyle='-', linewidth=0.75)
+plt.text(text_, text_1, r'$Pr_{{\max}} = {0}$'.format(round(max_inmet_smn_c_v, 1)),   transform=ax.transAxes, color='black',   fontsize=font_size)
+plt.text(text_, text_2, r'$Pr_{{\max}} = {0}$'.format(round(max_era5_c_v, 1)),        transform=ax.transAxes, color='red',     fontsize=font_size)
+plt.text(text_, text_3, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_usp_c_v, 1)),     transform=ax.transAxes, color='blue',    fontsize=font_size)
+plt.text(text_, text_4, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_c_v, 1)),    transform=ax.transAxes, color='magenta', fontsize=font_size)
+plt.text(text_, text_5, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_i_c_v, 1)),  transform=ax.transAxes, color='gray',    fontsize=font_size)
+plt.text(text_, text_6, r'$Pr_{{\max}} = {0}$'.format(round(max_reg_ictp_ii_c_v, 1)), transform=ax.transAxes, color='brown',   fontsize=font_size)
+plt.text(text_, text_7, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ncar_c_v, 1)),    transform=ax.transAxes, color='green',   fontsize=font_size)
+plt.text(text_, text_8, r'$Pr_{{\max}} = {0}$'.format(round(max_wrf_ucan_c_v, 1)),    transform=ax.transAxes, color='orange',  fontsize=font_size)
 plt.title('(e)', loc='left', fontsize=font_size, fontweight='bold')
 plt.title('CLUSTER V', loc='center', fontsize=font_size)
 plt.xlabel('{0}'.format(legend), fontsize=font_size)
