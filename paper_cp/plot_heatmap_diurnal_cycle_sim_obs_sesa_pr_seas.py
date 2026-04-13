@@ -198,8 +198,8 @@ def compute_stats(dataset, perc=99):
     var_[~np.isfinite(var_)] = np.nan
 
     # Remove unrealistic precipitation values
-    var_[var_ < 0] = np.nan       # negative precipitation doesn't exist
-    var_[var_ > 500] = np.nan     # very high threshold (mm/h)
+    var_[var_ < 0] = np.nan        # negative precipitation doesn't exist
+    var_[var_ > 1000] = np.nan     # very high threshold (mm/h)
 
     # Hour index
     horas = np.arange(len(var_)) % 24

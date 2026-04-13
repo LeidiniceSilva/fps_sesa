@@ -275,7 +275,7 @@ bias_int_wrf_ncar    = np.array(int_wrf_ncar)    - np.array(int_inmet_smn)
 bias_int_wrf_ucan    = np.array(int_wrf_ucan)    - np.array(int_inmet_smn)
 
 # Plot figure   
-fig, axes = plt.subplots(8,4, figsize=(6, 11), subplot_kw={"projection": ccrs.PlateCarree()})
+fig, axes = plt.subplots(8,4, figsize=(6.4, 11), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12), (ax13, ax14, ax15, ax16), (ax17, ax18, ax19, ax20), (ax21, ax22, ax23, ax24), (ax25, ax26, ax27, ax28), (ax29, ax30, ax31, ax32)  = axes
 fig.delaxes(ax1)
 fig.delaxes(ax2)

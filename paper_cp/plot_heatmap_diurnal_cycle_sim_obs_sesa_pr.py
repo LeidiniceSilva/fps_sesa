@@ -499,13 +499,13 @@ labels = ['WS', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR'
 legend_i = 'mm h⁻¹'
 cmap_i = 'terrain_r'
 mvmin = 0
-mvmax = 0.8
+mvmax = 0.6
 pvmin = 0
-pvmax = 10
+pvmax = 8
 fvmin = 0
-fvmax = 5
+fvmax = 4
 ivmin = 0
-ivmax = 15
+ivmax = 10
 
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)

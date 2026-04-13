@@ -375,13 +375,13 @@ configure_subplot(ax32)
 cbar = plt.colorbar(ct5, cax=fig.add_axes([0.275, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
-cbar = plt.colorbar(ct6, cax=fig.add_axes([0.485, 0.25, 0.015, 0.40]), extend='neither')
+cbar = plt.colorbar(ct6, cax=fig.add_axes([0.48, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
-cbar = plt.colorbar(ct7, cax=fig.add_axes([0.685, 0.25, 0.015, 0.40]), extend='neither')
+cbar = plt.colorbar(ct7, cax=fig.add_axes([0.68, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
-cbar = plt.colorbar(ct8, cax=fig.add_axes([0.885, 0.25, 0.015, 0.40]), extend='neither')
+cbar = plt.colorbar(ct8, cax=fig.add_axes([0.88, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
 # Path out to save figure
