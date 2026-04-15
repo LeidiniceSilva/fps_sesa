@@ -298,6 +298,7 @@ legend = 'mm h⁻¹'
 
 ct6 = ax6.scatter(lon_xx, lat_yy, 20, bias_perc_era5, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax6.set_title('(b)', loc='left', fontweight='bold', fontsize=font_size)
+ax6.set_ylabel(u'ERA5 - WS', fontsize=font_size)
 configure_subplot(ax6)
 
 ct7 = ax7.scatter(lon_xx, lat_yy, 20, bias_freq_era5, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
@@ -310,6 +311,7 @@ configure_subplot(ax8)
 
 ct10 = ax10.scatter(lon_xx, lat_yy, 20, bias_perc_reg_usp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax10.set_title('(f)', loc='left', fontweight='bold', fontsize=font_size)
+ax10.set_ylabel(u'Reg4 - WS', fontsize=font_size)
 configure_subplot(ax10)
 
 ct11 = ax11.scatter(lon_xx, lat_yy, 20, bias_freq_reg_usp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
@@ -322,6 +324,7 @@ configure_subplot(ax12)
 
 ct14 = ax14.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax14.set_title('(j)', loc='left', fontweight='bold', fontsize=font_size)
+ax14.set_ylabel(u'Reg5-Holt3 - WS', fontsize=font_size)
 configure_subplot(ax14)
 
 ct15 = ax15.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
@@ -334,6 +337,7 @@ configure_subplot(ax16)
 
 ct18 = ax18.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_i, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax18.set_title('(n)', loc='left', fontweight='bold', fontsize=font_size)
+ax18.set_ylabel(u'Reg5-Holt - WS', fontsize=font_size)
 configure_subplot(ax18)
 
 ct19 = ax19.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_i, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
@@ -346,6 +350,7 @@ configure_subplot(ax20)
 
 ct22 = ax22.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_ii, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax22.set_title('(r)', loc='left', fontweight='bold', fontsize=font_size)
+ax22.set_ylabel(u'Reg5-UW - WS', fontsize=font_size)
 configure_subplot(ax22)
 
 ct23 = ax23.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_ii, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
@@ -358,6 +363,7 @@ configure_subplot(ax24)
 
 ct26 = ax26.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ncar, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax26.set_title('(v)', loc='left', fontweight='bold', fontsize=font_size)
+ax26.set_ylabel(u'WRF-NCAR - WS', fontsize=font_size)
 configure_subplot(ax26)
 
 ct27 = ax27.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ncar, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
@@ -370,6 +376,7 @@ configure_subplot(ax28)
 
 ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax30.set_title('(z)', loc='left', fontweight='bold', fontsize=font_size)
+ax30.set_ylabel(u'WRF-UCAN - WS', fontsize=font_size)
 ax30.set_xlabel('P99.9 ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax30)
 
