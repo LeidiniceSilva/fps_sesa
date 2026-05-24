@@ -12,14 +12,12 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 import cartopy.feature as cfeature
 
 from matplotlib.path import Path
 from dict_inmet_stations import inmet
-from dict_smn_i_stations import smn_i
-from dict_smn_ii_stations import smn_ii
 from matplotlib.patches import Polygon
 from matplotlib.colors import BoundaryNorm
 from netCDF4 import Dataset as nc
@@ -27,13 +25,13 @@ from cartopy import config
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 parser = argparse.ArgumentParser(description='Process variable')
-parser.add_argument('--var', required=True, choices=['pr'], help='Variable name')
+parser.add_argument('--var', required=True, choices=['tas', 'sfcWind'], help='Variable name')
 parser.add_argument('--seas', nargs='+', type=int, required=True, help='e.g. 6 7 8 for JJA')
 args = parser.parse_args()
 var = args.var
 seas = args.seas
 
-dict_var = {'pr': ['pre', 'tp']}
+dict_var = {'tas': ['tmp', 't2m'], 'sfcWind': ['uv', 'ws10']}
 
 if seas == [12,1,2]:
 	seas_ = 'djf'
@@ -52,13 +50,12 @@ skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 3
 316, 317, 319, 322, 325, 330, 331, 334, 337, 341, 344, 347, 348, 350, 353, 354, 357, 358, 360, 361, 362, 364, 370, 383, 384, 385, 389, 390, 392, 
 393, 395, 396, 400, 401, 402, 404, 405, 408, 415, 416, 418, 423, 424, 427, 434, 440, 441, 443, 446, 448, 450, 451, 454, 455, 459, 465, 467, 471, 
 474, 477, 481, 483, 488, 489, 492, 496, 504, 509, 513, 514, 516, 518, 519, 520, 523, 526, 528, 534, 538, 541, 544, 546, 552, 553, 557, 559]
-
-skip_list_smn_ii = [39, 51, 55, 58, 64, 65, 66, 72, 75, 83, 86, 90, 91, 92]
+    
     
 def import_inmet():
 
 	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], [], [], []
-
+	
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
 			continue
@@ -74,16 +71,15 @@ def import_inmet():
 			print(i, station_code, station_name)
 		
 			# Reading inmet 
-			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_H_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], station_code))
+			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/daily/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_D_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], station_code))
 			d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
-			d_i = d_i.resample(time='1D').sum()
 			d_i = d_i.sel(time=d_i.time.dt.month.isin(seas))
 			mean_i.append(d_i.values)
 
 			# Reading era5 
 			d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/{0}/'.format(dict_var[var][1]) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(dict_var[var][1], station_code, station_name))
 			d_ii = d_ii[dict_var[var][1]].sel(time=slice('2018-06-01','2021-05-31'))
-			d_ii = d_ii.resample(time='1D').sum()
+			d_ii = d_ii.resample(time='1D').mean()
 			d_ii = d_ii.sel(time=d_ii.time.dt.month.isin(seas))
 			mean_ii.append(d_ii.values)
 
@@ -97,7 +93,7 @@ def import_inmet():
 			# Reading regcm ictp 
 			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_iv = d_iv[var].sel(time=slice('2018-06-01','2021-05-31'))
-			d_iv = d_iv.resample(time='1D').sum()
+			d_iv = d_iv.resample(time='1D').mean()
 			d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
 			mean_iv.append(d_iv.values)
 	
@@ -112,7 +108,6 @@ def import_inmet():
 			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_vi = d_vi[var].sel(time=slice('2018-06-01','2021-05-31'))
 			d_vi = d_vi.resample(time='1D').mean()
-			d_vi = d_vi.sel(time=d_vi.time.dt.month.isin(seas))
 			mean_vi.append(d_vi.values)
 
 			# Reading wrf ncar
@@ -132,143 +127,10 @@ def import_inmet():
 	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
 
 
-def import_smn_i():
 
-	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], [], [], []
+def compute_stats(stations_data, threshold=None, valid_range=(-50, 60)):
 
-	for i in range(1, 73):
-		iy.append(smn_i[i][1])
-		ix.append(smn_i[i][2])
-		station_code = f'SMN{i:03d}'
-		station_name = smn_i[i][0]		
-		print(i, station_code, station_name)
-		
-		# Reading smn 
-		d_i = xr.open_dataset('/home/mda_silv/users/FPS_SESA/database/obs/smn_i/smn_nc/'.format(path) + '{0}_{1}_H_2018-01-01_2021-12-31.nc'.format(dict_var[var][0], smn_i[i][0]))
-		d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
-		d_i = d_i.resample(time='1D').sum()
-		d_i = d_i.sel(time=d_i.time.dt.month.isin(seas))
-		mean_i.append(d_i.values)
-
-		# Reading era5 
-		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/{0}/'.format(dict_var[var][1]) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(dict_var[var][1], station_code, station_name))
-		d_ii = d_ii[dict_var[var][1]].sel(time=slice('2018-06-01','2021-05-31'))
-		d_ii = d_ii.resample(time='1D').sum()
-		d_ii = d_ii.sel(time=d_ii.time.dt.month.isin(seas))
-		mean_ii.append(d_ii.values)
-
-		# Reading regcm usp
-		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_iii = d_iii[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_iii = d_iii.resample(time='1D').mean()
-		d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
-		mean_iii.append(d_iii.values)
-			
-		# Reading regcm ictp 
-		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_iv = d_iv[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_iv = d_iv.resample(time='1D').sum()
-		d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
-		mean_iv.append(d_iv.values)
-	
-		# Reading regcm ictp pbl 1
-		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_v = d_v[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_v = d_v.resample(time='1D').mean()
-		d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
-		mean_v.append(d_v.values)
-
-		# Reading regcm ictp pbl 2
-		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_vi = d_vi[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.resample(time='1D').mean()
-		d_vi = d_vi.sel(time=d_vi.time.dt.month.isin(seas))
-		mean_vi.append(d_vi.values)
-
-		# Reading wrf ncar
-		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_vii = d_vii[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_vii = d_vii.sel(time=d_vii.time.dt.month.isin(seas))
-		d_vii = d_vii.resample(time='1D').mean()
-		mean_vii.append(d_vii.values)
-		
-		# Reading wrf ucan
-		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_viii = d_viii[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_viii = d_viii.resample(time='1D').mean()
-		d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
-		mean_viii.append(d_viii.values)
-			
-	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
-
-
-def import_smn_ii():
-	
-	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], [], [], []
-
-	for i in range(1, 110):
-		if i in skip_list_smn_ii:
-			continue
-		iy.append(smn_ii[i][1])
-		ix.append(smn_ii[i][2])
-		station_code = f'SMN{i:03d}'
-		station_name = smn_ii[i][0]
-		print(i, station_code, station_name)
-					
-		# Reading smn 
-		d_i = xr.open_dataset('/home/mda_silv/users/FPS_SESA/database/obs/smn_ii/smn_nc/{1}/'.format(path, dict_var[var][0]) + '{0}_{1}_D_1979-01-01_2021-12-31.nc'.format(dict_var[var][0], smn_ii[i][0]))
-		d_i = d_i[dict_var[var][0]].sel(time=slice('2018-06-01','2021-05-31'))
-		d_i = d_i.sel(time=d_i.time.dt.month.isin(seas))
-		mean_i.append(d_i.values)
-
-		# Reading era5 
-		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/{0}/'.format(dict_var[var][1]) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(dict_var[var][1], station_code, station_name))
-		d_ii = d_ii[dict_var[var][1]].sel(time=slice('2018-06-01','2021-05-31'))
-		d_ii = d_ii.sel(time=d_ii.time.dt.month.isin(seas))
-		mean_ii.append(d_ii.values)
-
-		# Reading regcm usp
-		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_iii = d_iii[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
-		mean_iii.append(d_iii.values/24)
-			
-		# Reading regcm ictp 
-		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_iv = d_iv[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
-		mean_iv.append(d_iv.values)
-	
-		# Reading regcm ictp pbl 1
-		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_v = d_v[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
-		mean_v.append(d_v.values/24)
-
-		# Reading regcm ictp pbl 2
-		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_vi = d_vi[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_vi = d_vi.sel(time=d_vi.time.dt.month.isin(seas))
-		mean_vi.append(d_vi.values/24)
-
-		# Reading wrf ncar
-		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_vii = d_vii[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_vii = d_vii.sel(time=d_vii.time.dt.month.isin(seas))
-		mean_vii.append(d_vii.values/24)
-		
-		# Reading wrf ucan
-		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/{0}/'.format(var) + '{0}_{1}_{2}_D_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
-		d_viii = d_viii[var].sel(time=slice('2018-06-01','2021-05-31'))
-		d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
-		mean_viii.append(d_viii.values/24)
-
-	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
-
-
-def compute_stats(stations_data, threshold=None, valid_range=(0, 500)):
-
-    mean_list, p99_list, freq_list, int_list = [], [], [], []
+    mean_list, p95_list, freq_list, int_list = [], [], [], []
 
     for da in stations_data:
         da = np.asarray(da)
@@ -281,30 +143,30 @@ def compute_stats(stations_data, threshold=None, valid_range=(0, 500)):
             continue
 
         # Annual mean
-        mean_val = float(np.nanmean(da))
+        mean_val = float(np.mean(da))
         mean_list.append(mean_val)
 
-        # 99th percentile
-        p99_val = float(np.nanpercentile(da, 99))
-        p99_list.append(p99_val)
+        # 95th percentile
+        p95_val = float(np.percentile(da, 95))
+        p95_list.append(p95_val)
 
         # Threshold for freq/intensity
-        thr = threshold if threshold is not None else p99_val
+        thr = threshold if threshold is not None else p95_val
 
         # Frequency (% of days above threshold)
         freq_val = float(np.sum(da > thr) / len(da) * 100)  # percentage	
         freq_list.append(freq_val)
 
         # Intensity (mean of values above threshold)
-        int_val = float(np.nanmean(da[da > thr])) if np.any(da > thr) else 0.0
+        int_val = float(np.mean(da[da > thr])) if np.any(da > thr) else 0.0
         int_list.append(int_val)
 
-    return mean_list, p99_list, freq_list, int_list
+    return mean_list, p95_list, freq_list, int_list
     
     
 def configure_subplot(ax):
 
-	lon_bounds = [-70, -46]
+	lon_bounds = [-62, -46]
 	lat_bounds = [-36, -16]
 
 	ax.set_extent([lon_bounds[0], lon_bounds[1], lat_bounds[0], lat_bounds[1]], crs=ccrs.PlateCarree())
@@ -321,22 +183,8 @@ def configure_subplot(ax):
 	
 
 # Import dataset
-lat_x, lon_x, mean_i_x, mean_ii_x, mean_iii_x, mean_iv_x, mean_v_x, mean_vi_x, mean_vii_x, mean_viii_x = import_inmet()			
-lat_y, lon_y, mean_i_y, mean_ii_y, mean_iii_y, mean_iv_y, mean_v_y, mean_vi_y, mean_vii_y, mean_viii_y = import_smn_i()			
-lat_z, lon_z, mean_i_z, mean_ii_z, mean_iii_z, mean_iv_z, mean_v_z, mean_vi_z, mean_vii_z, mean_viii_z = import_smn_ii()			
+lat_yy, lon_xx, inmet_smn, era5, reg_usp, reg_ictp, reg_ictp_i, reg_ictp_ii, wrf_ncar, wrf_ucan = import_inmet()			
 
-lat_yy = lat_x + lat_y + lat_z
-lon_xx = lon_x + lon_y + lon_z
-
-inmet_smn   = mean_i_x    + mean_i_y    + mean_i_z
-era5        = mean_ii_x   + mean_ii_y   + mean_ii_z
-reg_usp     = mean_iii_x  + mean_iii_y  + mean_iii_z
-reg_ictp    = mean_iv_x   + mean_iv_y   + mean_iv_z
-reg_ictp_i  = mean_v_x    + mean_v_y    + mean_v_z
-reg_ictp_ii = mean_vi_x   + mean_vi_y   + mean_vi_z
-wrf_ncar    = mean_vii_x  + mean_vii_y  + mean_vii_z
-wrf_ucan    = mean_viii_x + mean_viii_y + mean_viii_z
-	
 mean_inmet_smn,   perc_inmet_smn,   freq_inmet_smn,   int_inmet_smn   = compute_stats(inmet_smn)
 mean_era5,        perc_era5,        freq_era5,        int_era5        = compute_stats(era5)
 mean_reg_usp,     perc_reg_usp,     freq_reg_usp,     int_reg_usp     = compute_stats(reg_usp)
@@ -379,19 +227,27 @@ bias_int_wrf_ncar    = np.array(int_wrf_ncar)    - np.array(int_inmet_smn)
 bias_int_wrf_ucan    = np.array(int_wrf_ucan)    - np.array(int_inmet_smn)
 
 # Plot figure   
-fig, axes = plt.subplots(8,4, figsize=(8, 11), subplot_kw={"projection": ccrs.PlateCarree()})
+fig, axes = plt.subplots(8,4, figsize=(6, 11), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12), (ax13, ax14, ax15, ax16), (ax17, ax18, ax19, ax20), (ax21, ax22, ax23, ax24), (ax25, ax26, ax27, ax28), (ax29, ax30, ax31, ax32)  = axes
 fig.delaxes(ax1)
 fig.delaxes(ax2)
 fig.delaxes(ax3)
 fig.delaxes(ax4)
 
-cmap = cm.get_cmap('BrBG', 20)
-norm_i = BoundaryNorm(np.linspace(-5, 5, 20 + 1), cmap.N)
-norm_ii = BoundaryNorm(np.linspace(-60, 60, 20 + 1), cmap.N)
-norm_iii = BoundaryNorm(np.linspace(-0.4, 0.4, 20 + 1), cmap.N)
-norm_iv = BoundaryNorm(np.linspace(-80, 80, 20 + 1), cmap.N)
-legend = 'mm d⁻¹'
+if var == 'tas':
+	cmap = cm.get_cmap('bwr', 20)
+	norm_i = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	norm_ii = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	norm_iii = BoundaryNorm(np.linspace(-0.4, 0.4, 20 + 1), cmap.N)
+	norm_iv = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	legend = '°C'
+else:
+	cmap = cm.get_cmap('PRGn', 20)
+	norm_i = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	norm_ii = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	norm_iii = BoundaryNorm(np.linspace(-0.4, 0.4, 20 + 1), cmap.N)
+	norm_iv = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
+	legend = 'm s⁻¹'
 
 ct5 = ax5.scatter(lon_xx, lat_yy, 20, bias_mean_era5, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax5.set_title('(a)', loc='left', fontweight='bold', fontsize=font_size)
@@ -503,7 +359,7 @@ configure_subplot(ax29)
 
 ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
 ax30.set_title('(z)', loc='left', fontweight='bold', fontsize=font_size)
-ax30.set_xlabel('P99 ({0})'.format(legend), loc='center', fontsize=font_size)
+ax30.set_xlabel('P95 ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax30)
 
 ct31 = ax31.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ucan, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
@@ -516,16 +372,16 @@ ax32.set_title('(b.1)', loc='left', fontweight='bold', fontsize=font_size)
 ax32.set_xlabel('INTENSITY ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax32)
 
-cbar = plt.colorbar(ct5, cax=fig.add_axes([0.28, 0.25, 0.015, 0.40]), extend='neither')
+cbar = plt.colorbar(ct5, cax=fig.add_axes([0.275, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
-cbar = plt.colorbar(ct6, cax=fig.add_axes([0.485, 0.25, 0.015, 0.40]), extend='neither')
+cbar = plt.colorbar(ct6, cax=fig.add_axes([0.48, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
-cbar = plt.colorbar(ct7, cax=fig.add_axes([0.685, 0.25, 0.015, 0.40]), extend='neither')
+cbar = plt.colorbar(ct7, cax=fig.add_axes([0.68, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
-cbar = plt.colorbar(ct8, cax=fig.add_axes([0.89, 0.25, 0.015, 0.40]), extend='neither')
+cbar = plt.colorbar(ct8, cax=fig.add_axes([0.88, 0.25, 0.015, 0.40]), extend='neither')
 cbar.ax.tick_params(labelsize=6)
 
 # Path out to save figure
@@ -536,5 +392,9 @@ exit()
 
 
 
+
+
+
+	
 
 

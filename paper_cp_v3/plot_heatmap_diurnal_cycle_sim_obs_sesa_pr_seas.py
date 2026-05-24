@@ -19,9 +19,16 @@ from dict_smn_i_stations import smn_i
 
 parser = argparse.ArgumentParser(description='Process variable')
 parser.add_argument('--var', required=True, choices=['pr'], help='Variable name')
+parser.add_argument('--seas', nargs='+', type=int, required=True, help='e.g. 6 7 8 for JJA')
 args = parser.parse_args()
 var = args.var
+seas = args.seas
 
+if seas == [12,1,2]:
+	seas_ = 'djf'
+else:
+	seas_ = 'jja'
+	
 path = '/home/mda_silv/users/FPS_SESA'
 
 skip_list_inmet_i = [15,23,47,105,112,117,124,137,149,158,174,183,335,343,359,398,399,413,417,422,426,444,453,457,458,479,490,495,505,529,566] 
@@ -51,48 +58,56 @@ def import_inmet():
 			# Reading inmet 
 			d_i = xr.open_dataset('{0}/database/obs/inmet/inmet_br/inmet_nc/hourly/pre/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_code))
 			d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
+			d_i = d_i.sel(time=d_i.time.dt.month.isin(seas))
 			d_i = d_i.values
 			mean_i.append(np.concatenate([d_i[3:], d_i[:3]]))
 
 			# Reading era5 
 			d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 			d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ii = d_ii.sel(time=d_ii.time.dt.month.isin(seas))
 			d_ii = d_ii.values 
 			mean_ii.append(np.concatenate([d_ii[3:], d_ii[:3]]))
 
 			# Reading regcm usp
 			d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 			d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
 			d_iii = d_iii.values / 24
 			mean_iii.append(np.concatenate([d_iii[3:], d_iii[:3]]))
 			
 			# Reading regcm ictp 
 			d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 			d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
 			d_iv = d_iv.values 
 			mean_iv.append(np.concatenate([d_iv[3:], d_iv[:3]]))
 	
 			# Reading regcm ictp pbl 1
 			d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 			d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
 			d_v = d_v.values / 24
 			mean_v.append(np.concatenate([d_v[3:], d_v[:3]]))
 
 			# Reading regcm ictp pbl 2
 			d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 			d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vi = d_vi.sel(time=d_vi.time.dt.month.isin(seas))
 			d_vi = d_vi.values / 24
 			mean_vi.append(np.concatenate([d_vi[3:], d_vi[:3]]))
 
 			# Reading wrf ncar
 			d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 			d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_vii = d_vii.sel(time=d_vii.time.dt.month.isin(seas))
 			d_vii = d_vii.values / 24
 			mean_vii.append(np.concatenate([d_vii[3:], d_vii[:3]]))
 		
 			# Reading wrf ucan
 			d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 			d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
 			d_viii = d_viii.values / 24
 			mean_viii.append(np.concatenate([d_viii[3:], d_viii[:3]]))
 		
@@ -110,48 +125,56 @@ def import_smn_i():
 		# Reading smn 
 		d_i = xr.open_dataset('{0}/database/obs/smn_i/smn_nc/'.format(path) + 'pre_{0}_H_2018-01-01_2021-12-31.nc'.format(station_name))
 		d_i = d_i.pre.sel(time=slice('2018-06-01','2021-05-31'))
+		d_i = d_i.sel(time=d_i.time.dt.month.isin(seas))
 		d_i = d_i.values
 		mean_i.append(np.concatenate([d_i[3:], d_i[:3]]))
 
 		# Reading era5 
 		d_ii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/obs/era5/tp/' + 'tp_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_ii = d_ii.tp.sel(time=slice('2018-06-01','2021-05-31'))
+		d_ii = d_ii.sel(time=d_ii.time.dt.month.isin(seas))
 		d_ii = d_ii.values 
 		mean_ii.append(np.concatenate([d_ii[3:], d_ii[:3]]))
 
 		# Reading regcm usp
 		d_iii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_usp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_iii = d_iii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iii = d_iii.sel(time=d_iii.time.dt.month.isin(seas))
 		d_iii = d_iii.values / 24
 		mean_iii.append(np.concatenate([d_iii[3:], d_iii[:3]]))
 			
 		# Reading regcm ictp 
 		d_iv = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_iv = d_iv.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_iv = d_iv.sel(time=d_iv.time.dt.month.isin(seas))
 		d_iv = d_iv.values 
 		mean_iv.append(np.concatenate([d_iv[3:], d_iv[:3]]))
 	
 		# Reading regcm ictp pbl 1
 		d_v = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl1/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_v = d_v.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_v = d_v.sel(time=d_v.time.dt.month.isin(seas))
 		d_v = d_v.values / 24
 		mean_v.append(np.concatenate([d_v[3:], d_v[:3]]))
 
 		# Reading regcm ictp pbl 2
 		d_vi = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/reg_ictp_pbl2/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_vi = d_vi.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_vi = d_vi.sel(time=d_vi.time.dt.month.isin(seas))
 		d_vi = d_vi.values / 24
 		mean_vi.append(np.concatenate([d_vi[3:], d_vi[:3]]))
 
 		# Reading wrf ncar
 		d_vii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ncar/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_vii = d_vii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_vii = d_vii.sel(time=d_vii.time.dt.month.isin(seas))
 		d_vii = d_vii.values / 24
 		mean_vii.append(np.concatenate([d_vii[3:], d_vii[:3]]))
 		
 		# Reading wrf ucan
 		d_viii = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_ucan/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
 		d_viii = d_viii.values / 24
 		mean_viii.append(np.concatenate([d_viii[3:], d_viii[:3]]))
 				
@@ -175,8 +198,8 @@ def compute_stats(dataset, perc=99):
     var_[~np.isfinite(var_)] = np.nan
 
     # Remove unrealistic precipitation values
-    var_[var_ < 0] = np.nan       # negative precipitation doesn't exist
-    var_[var_ > 500] = np.nan     # very high threshold (mm/h)
+    var_[var_ < 0] = np.nan        # negative precipitation doesn't exist
+    var_[var_ > 1000] = np.nan     # very high threshold (mm/h)
 
     # Hour index
     horas = np.arange(len(var_)) % 24
@@ -497,15 +520,15 @@ font_size = 8
 labels = ['WS', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
 	
 legend_i = 'mm h⁻¹'
-cmap_i = 'terrain_r'
+cmap_i = 'BuPu'
 mvmin = 0
-mvmax = 0.6
+mvmax = 0.8
 pvmin = 0
-pvmax = 8
+pvmax = 10
 fvmin = 0
-fvmax = 4
+fvmax = 6
 ivmin = 0
-ivmax = 10
+ivmax = 15
 
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
@@ -770,6 +793,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
-name_out = 'pyplt_graph_diurnal_cycle_{0}_sesa.png'.format(var)
+name_out = 'pyplt_graph_diurnal_cycle_{0}_sesa_{1}.png'.format(var, seas_)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
+plt.show()
 exit()
