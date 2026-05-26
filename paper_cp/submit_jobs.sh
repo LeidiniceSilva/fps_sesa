@@ -15,13 +15,13 @@
 {
 set -eo pipefail
 
-python3 extract_ts_inmet_smn_i_sim.py --var pr --mdl wrf_cima --inst INMET
-python3 extract_ts_inmet_smn_i_sim.py --var pr --mdl wrf_cima --inst SMN
+python3 extract_ts_inmet_smn_ii_sim.py --var pr --mdl reg_usp --inst SMN
+python3 extract_ts_inmet_smn_ii_sim.py --var pr --mdl reg_ictp --inst SMN
+python3 extract_ts_inmet_smn_ii_sim.py --var pr --mdl reg_ictp_pbl1 --inst SMN
+python3 extract_ts_inmet_smn_ii_sim.py --var pr --mdl reg_ictp_pbl2 --inst SMN
+python3 extract_ts_inmet_smn_ii_sim.py --var pr --mdl wrf_cima --inst SMN
+python3 extract_ts_inmet_smn_ii_sim.py --var pr --mdl wrf_ncar --inst SMN
+python3 extract_ts_inmet_smn_ii_sim.py --var pr --mdl wrf_ucan --inst SMN
 
-#python3 extract_ts_inmet_smn_i_sim.py --var tas --mdl wrf_cima --inst INMET
-python3 extract_ts_inmet_smn_i_sim.py --var tas --mdl wrf_cima --inst SMN
-
-python3 extract_ts_inmet_smn_i_sim.py --var sfcWind --mdl wrf_cima --inst INMET
-#python3 extract_ts_inmet_smn_i_sim.py --var sfcWind --mdl wrf_cima --inst SMN
 
 }
