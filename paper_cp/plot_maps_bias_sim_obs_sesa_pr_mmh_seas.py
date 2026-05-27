@@ -53,11 +53,10 @@ skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 3
 393, 395, 396, 400, 401, 402, 404, 405, 408, 415, 416, 418, 423, 424, 427, 434, 440, 441, 443, 446, 448, 450, 451, 454, 455, 459, 465, 467, 471, 
 474, 477, 481, 483, 488, 489, 492, 496, 504, 509, 513, 514, 516, 518, 519, 520, 523, 526, 528, 534, 538, 541, 544, 546, 552, 553, 557, 559]
 
-skip_list_smn_ii = [39, 51, 55, 58, 64, 65, 66, 72, 75, 83, 86, 90, 91, 92]
     
 def import_inmet():
 
-	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], [], [], []
+	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix = [], [], [], [], [], [], [], [], [], [], []
 
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
@@ -121,12 +120,18 @@ def import_inmet():
 			d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
 			mean_viii.append(d_viii.values/24)
 		
-	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
+			# Reading wrf cima
+			d_ix = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_cima/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+			d_ix = d_ix[var].sel(time=slice('2018-06-01','2021-05-31'))
+			d_ix = d_ix.sel(time=d_ix.time.dt.month.isin(seas))
+			mean_ix.append(d_ix.values)
+					
+	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix
 
 
 def import_smn_i():
 
-	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], [], [], []
+	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix = [], [], [], [], [], [], [], [], [], [], []
 
 	for i in range(1, 73):
 		iy.append(smn_i[i][1])
@@ -182,16 +187,24 @@ def import_smn_i():
 		d_viii = d_viii[var].sel(time=slice('2018-06-01','2021-05-31'))
 		d_viii = d_viii.sel(time=d_viii.time.dt.month.isin(seas))
 		mean_viii.append(d_viii.values/24)
-			
-	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
+		
+		# Reading wrf cima
+		d_ix = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_cima/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
+		d_ix = d_ix[var].sel(time=slice('2018-06-01','2021-05-31'))
+		d_ix = d_ix.sel(time=d_ix.time.dt.month.isin(seas))
+		mean_ix.append(d_ix.values)
+					
+	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix
 
 
-def compute_stats(stations_data, threshold=None, valid_range=(0, 500)):
+def compute_stats(stations_data, wet_threshold=0.1, valid_range=(0, 500)):
 
     mean_list, p99_list, freq_list, int_list = [], [], [], []
 
     for da in stations_data:
         da = np.asarray(da)
+        total_days = len(da)
+        
         da = da[np.isfinite(da)]
         da = da[(da >= valid_range[0]) & (da <= valid_range[1])]
 
@@ -200,24 +213,18 @@ def compute_stats(stations_data, threshold=None, valid_range=(0, 500)):
             freq_list.append(np.nan); int_list.append(np.nan)
             continue
 
-        # Annual mean
-        mean_val = float(np.nanmean(da))
-        mean_list.append(mean_val)
+        # Mean and p99 (all values)
+        mean_list.append(float(np.nanmean(da)))
+        p99_list.append(float(np.nanpercentile(da, 99.9)))
 
-        # 99th percentile
-        p99_val = float(np.nanpercentile(da, 99.9))
-        p99_list.append(p99_val)
-
-        # Threshold for freq/intensity
-        thr = threshold if threshold is not None else p99_val
-
-        # Frequency (% of days above threshold)
-        freq_val = float(np.sum(da > thr) / len(da) * 100)  # percentage	
-        freq_list.append(freq_val)
-
-        # Intensity (mean of values above threshold)
-        int_val = float(np.nanmean(da[da > thr])) if np.any(da > thr) else 0.0
-        int_list.append(int_val)
+        # Wet days (values >= wet_threshold)
+        wet_days = da[da >= wet_threshold]
+        
+        # Frequency (fraction of wet days over total days)
+        freq_list.append(float(len(wet_days) / total_days * 100))
+        
+        # Intensity (mean of wet days)
+        int_list.append(float(np.nanmean(wet_days)) if len(wet_days) > 0 else np.nan)
 
     return mean_list, p99_list, freq_list, int_list
     
@@ -241,8 +248,8 @@ def configure_subplot(ax):
 	
 
 # Import dataset
-lat_x, lon_x, mean_i_x, mean_ii_x, mean_iii_x, mean_iv_x, mean_v_x, mean_vi_x, mean_vii_x, mean_viii_x = import_inmet()			
-lat_y, lon_y, mean_i_y, mean_ii_y, mean_iii_y, mean_iv_y, mean_v_y, mean_vi_y, mean_vii_y, mean_viii_y = import_smn_i()			
+lat_x, lon_x, mean_i_x, mean_ii_x, mean_iii_x, mean_iv_x, mean_v_x, mean_vi_x, mean_vii_x, mean_viii_x, mean_ix_x = import_inmet()			
+lat_y, lon_y, mean_i_y, mean_ii_y, mean_iii_y, mean_iv_y, mean_v_y, mean_vi_y, mean_vii_y, mean_viii_y, mean_ix_y = import_smn_i()			
 
 lat_yy = lat_x + lat_y 
 lon_xx = lon_x + lon_y 
@@ -252,9 +259,10 @@ era5        = mean_ii_x   + mean_ii_y
 reg_usp     = mean_iii_x  + mean_iii_y  
 reg_ictp    = mean_iv_x   + mean_iv_y   
 reg_ictp_i  = mean_v_x    + mean_v_y    
-reg_ictp_ii = mean_vi_x   + mean_vi_y  
+reg_ictp_ii = mean_vi_x   + mean_vi_y   
 wrf_ncar    = mean_vii_x  + mean_vii_y  
 wrf_ucan    = mean_viii_x + mean_viii_y 
+wrf_cima    = mean_ix_x   + mean_ix_y   
 	
 mean_inmet_smn,   perc_inmet_smn,   freq_inmet_smn,   int_inmet_smn   = compute_stats(inmet_smn)
 mean_era5,        perc_era5,        freq_era5,        int_era5        = compute_stats(era5)
@@ -264,6 +272,8 @@ mean_reg_ictp_i,  perc_reg_ictp_i,  freq_reg_ictp_i,  int_reg_ictp_i  = compute_
 mean_reg_ictp_ii, perc_reg_ictp_ii, freq_reg_ictp_ii, int_reg_ictp_ii = compute_stats(reg_ictp_ii)
 mean_wrf_ncar,    perc_wrf_ncar,    freq_wrf_ncar,    int_wrf_ncar    = compute_stats(wrf_ncar)
 mean_wrf_ucan,    perc_wrf_ucan,    freq_wrf_ucan,    int_wrf_ucan    = compute_stats(wrf_ucan)                                                                                                                           
+mean_wrf_cima,    perc_wrf_cima,    freq_wrf_cima,    int_wrf_cima    = compute_stats(wrf_cima)                                                                                                                           
+
 bias_mean_era5        = np.array(mean_era5)        - np.array(mean_inmet_smn)
 bias_mean_reg_usp     = np.array(mean_reg_usp)     - np.array(mean_inmet_smn)
 bias_mean_reg_ictp    = np.array(mean_reg_ictp)    - np.array(mean_inmet_smn)
@@ -271,6 +281,7 @@ bias_mean_reg_ictp_i  = np.array(mean_reg_ictp_i)  - np.array(mean_inmet_smn)
 bias_mean_reg_ictp_ii = np.array(mean_reg_ictp_ii) - np.array(mean_inmet_smn)
 bias_mean_wrf_ncar    = np.array(mean_wrf_ncar)    - np.array(mean_inmet_smn)
 bias_mean_wrf_ucan    = np.array(mean_wrf_ucan)    - np.array(mean_inmet_smn)
+bias_mean_wrf_cima    = np.array(mean_wrf_cima)    - np.array(mean_inmet_smn)
 
 bias_perc_era5        = np.array(perc_era5)        - np.array(perc_inmet_smn)
 bias_perc_reg_usp     = np.array(perc_reg_usp)	   - np.array(perc_inmet_smn)
@@ -279,6 +290,7 @@ bias_perc_reg_ictp_i  = np.array(perc_reg_ictp_i)  - np.array(perc_inmet_smn)
 bias_perc_reg_ictp_ii = np.array(perc_reg_ictp_ii) - np.array(perc_inmet_smn)
 bias_perc_wrf_ncar    = np.array(perc_wrf_ncar)    - np.array(perc_inmet_smn)
 bias_perc_wrf_ucan    = np.array(perc_wrf_ucan)    - np.array(perc_inmet_smn)
+bias_perc_wrf_cima    = np.array(perc_wrf_cima)    - np.array(perc_inmet_smn)
 
 bias_freq_era5        = np.array(freq_era5)        - np.array(freq_inmet_smn)
 bias_freq_reg_usp     = np.array(freq_reg_usp)     - np.array(freq_inmet_smn)
@@ -287,6 +299,7 @@ bias_freq_reg_ictp_i  = np.array(freq_reg_ictp_i)  - np.array(freq_inmet_smn)
 bias_freq_reg_ictp_ii = np.array(freq_reg_ictp_ii) - np.array(freq_inmet_smn)
 bias_freq_wrf_ncar    = np.array(freq_wrf_ncar)    - np.array(freq_inmet_smn)
 bias_freq_wrf_ucan    = np.array(freq_wrf_ucan)    - np.array(freq_inmet_smn)
+bias_freq_wrf_cima    = np.array(freq_wrf_cima)    - np.array(freq_inmet_smn)
 
 bias_int_era5        = np.array(int_era5)        - np.array(int_inmet_smn)
 bias_int_reg_usp     = np.array(int_reg_usp)     - np.array(int_inmet_smn)
@@ -295,135 +308,149 @@ bias_int_reg_ictp_i  = np.array(int_reg_ictp_i)  - np.array(int_inmet_smn)
 bias_int_reg_ictp_ii = np.array(int_reg_ictp_ii) - np.array(int_inmet_smn)
 bias_int_wrf_ncar    = np.array(int_wrf_ncar)    - np.array(int_inmet_smn)
 bias_int_wrf_ucan    = np.array(int_wrf_ucan)    - np.array(int_inmet_smn)
+bias_int_wrf_cima    = np.array(int_wrf_cima)    - np.array(int_inmet_smn)
+
+print(bias_mean_wrf_cima)
+print()
+print(bias_perc_wrf_cima)
+print()
+print(bias_freq_wrf_cima)
+print()
+print(bias_int_wrf_cima)
+print()
 
 # Plot figure   
-fig, axes = plt.subplots(8,4, figsize=(6.4, 11), subplot_kw={"projection": ccrs.PlateCarree()})
-(ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12), (ax13, ax14, ax15, ax16), (ax17, ax18, ax19, ax20), (ax21, ax22, ax23, ax24), (ax25, ax26, ax27, ax28), (ax29, ax30, ax31, ax32)  = axes
-fig.delaxes(ax1)
-fig.delaxes(ax2)
-fig.delaxes(ax3)
-fig.delaxes(ax4)
-fig.delaxes(ax5)
-fig.delaxes(ax9)
-fig.delaxes(ax13)
-fig.delaxes(ax17)
-fig.delaxes(ax21)
-fig.delaxes(ax25)
-fig.delaxes(ax29)
+fig, axes = plt.subplots(8,3, figsize=(3.5, 10), subplot_kw={"projection": ccrs.PlateCarree()})
+(ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9), (ax10, ax11, ax12), (ax13, ax14, ax15), (ax16, ax17, ax18), (ax19, ax20, ax21), (ax22, ax23, ax24)  = axes
 
 cmap = cm.get_cmap('BrBG', 20)
-norm_i = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
-norm_ii = BoundaryNorm(np.linspace(-20, 20, 20 + 1), cmap.N)
-norm_iii = BoundaryNorm(np.linspace(-0.05, 0.05, 20 + 1), cmap.N)
-norm_iv = BoundaryNorm(np.linspace(-40, 40, 20 + 1), cmap.N)
+norm_i = BoundaryNorm(np.linspace(-20, 20, 20 + 1), cmap.N)
+norm_ii = BoundaryNorm(np.linspace(-10, 10, 20 + 1), cmap.N)
+norm_iii = BoundaryNorm(np.linspace(-10, 10, 20 + 1), cmap.N)
 legend = 'mm h⁻¹'
 
-ct6 = ax6.scatter(lon_xx, lat_yy, 20, bias_perc_era5, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax6.set_title('(b)', loc='left', fontweight='bold', fontsize=font_size)
-ax6.set_ylabel(u'ERA5 - WS', fontsize=font_size)
+ct1 = ax1.scatter(lon_xx, lat_yy, 20, bias_perc_era5, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax1.set_title('(a)', loc='left', fontweight='bold', fontsize=font_size)
+ax1.set_ylabel(u'ERA5 - WS', fontsize=font_size)
+configure_subplot(ax1)
+
+ct2 = ax2.scatter(lon_xx, lat_yy, 20, bias_freq_era5, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax2.set_title('(b)', loc='left', fontweight='bold', fontsize=font_size)
+configure_subplot(ax2)
+
+ct3 = ax3.scatter(lon_xx, lat_yy, 20, bias_int_era5, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax3.set_title('(c)', loc='left', fontweight='bold', fontsize=font_size)
+configure_subplot(ax3)
+
+ct4 = ax4.scatter(lon_xx, lat_yy, 20, bias_perc_reg_usp, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax4.set_title('(d)', loc='left', fontweight='bold', fontsize=font_size)
+ax4.set_ylabel('Reg4 - WS', rotation='vertical', fontsize=font_size)
+configure_subplot(ax4)
+
+ct5 = ax5.scatter(lon_xx, lat_yy, 20, bias_freq_reg_usp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax5.set_title('(e)', loc='left', fontweight='bold', fontsize=font_size)
+configure_subplot(ax5)
+
+ct6 = ax6.scatter(lon_xx, lat_yy, 20, bias_int_reg_usp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax6.set_title('(f)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax6)
 
-ct7 = ax7.scatter(lon_xx, lat_yy, 20, bias_freq_era5, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax7.set_title('(c)', loc='left', fontweight='bold', fontsize=font_size)
+ct7 = ax7.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax7.set_title('(g)', loc='left', fontweight='bold', fontsize=font_size)
+ax7.set_ylabel(u'Reg5 - WS', fontsize=font_size)
 configure_subplot(ax7)
 
-ct8 = ax8.scatter(lon_xx, lat_yy, 20, bias_int_era5, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax8.set_title('(d)', loc='left', fontweight='bold', fontsize=font_size)
+ct8 = ax8.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax8.set_title('(h)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax8)
 
-ct10 = ax10.scatter(lon_xx, lat_yy, 20, bias_perc_reg_usp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax10.set_title('(f)', loc='left', fontweight='bold', fontsize=font_size)
-ax10.set_ylabel(u'Reg4 - WS', fontsize=font_size)
+ct9 = ax9.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax9.set_title('(i)', loc='left', fontweight='bold', fontsize=font_size)
+configure_subplot(ax9)
+
+ct10 = ax10.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_i, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax10.set_title('(j)', loc='left', fontweight='bold', fontsize=font_size)
+ax10.set_ylabel('Reg5-Holt - WS', rotation='vertical', fontsize=font_size)
 configure_subplot(ax10)
 
-ct11 = ax11.scatter(lon_xx, lat_yy, 20, bias_freq_reg_usp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax11.set_title('(g)', loc='left', fontweight='bold', fontsize=font_size)
+ct11 = ax11.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_i, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax11.set_title('(k)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax11)
 
-ct12 = ax12.scatter(lon_xx, lat_yy, 20, bias_int_reg_usp, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax12.set_title('(h)', loc='left', fontweight='bold', fontsize=font_size)
+ct12 = ax12.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_i, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax12.set_title('(l)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax12)
 
-ct14 = ax14.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax14.set_title('(j)', loc='left', fontweight='bold', fontsize=font_size)
-ax14.set_ylabel(u'Reg5-Holt3 - WS', fontsize=font_size)
+ct13 = ax13.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_ii, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax13.set_title('(m)', loc='left', fontweight='bold', fontsize=font_size)
+ax13.set_ylabel('Reg5-UW - WS', rotation='vertical', fontsize=font_size)
+configure_subplot(ax13)
+
+ct14 = ax14.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_ii, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax14.set_title('(n)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax14)
 
-ct15 = ax15.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax15.set_title('(k)', loc='left', fontweight='bold', fontsize=font_size)
+ct15 = ax15.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_ii, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax15.set_title('(o)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax15)
 
-ct16 = ax16.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax16.set_title('(l)', loc='left', fontweight='bold', fontsize=font_size)
+ct16 = ax16.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ncar, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax16.set_title('(p)', loc='left', fontweight='bold', fontsize=font_size)
+ax16.set_ylabel('WRF-NCAR - WS', rotation='vertical', fontsize=font_size)
 configure_subplot(ax16)
 
-ct18 = ax18.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_i, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax18.set_title('(n)', loc='left', fontweight='bold', fontsize=font_size)
-ax18.set_ylabel(u'Reg5-Holt - WS', fontsize=font_size)
+ct17 = ax17.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ncar, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax17.set_title('(q)', loc='left', fontweight='bold', fontsize=font_size)
+configure_subplot(ax17)
+
+ct18 = ax18.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ncar, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax18.set_title('(r)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax18)
 
-ct19 = ax19.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_i, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax19.set_title('(o)', loc='left', fontweight='bold', fontsize=font_size)
+ct19 = ax19.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax19.set_title('(s)', loc='left', fontweight='bold', fontsize=font_size)
+ax19.set_ylabel('WRF-UCAN - WS', rotation='vertical', fontsize=font_size)
 configure_subplot(ax19)
 
-ct20 = ax20.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_i, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax20.set_title('(p)', loc='left', fontweight='bold', fontsize=font_size)
+ct20 = ax20.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax20.set_title('(t)', loc='left', fontweight='bold', fontsize=font_size)
 configure_subplot(ax20)
 
-ct22 = ax22.scatter(lon_xx, lat_yy, 20, bias_perc_reg_ictp_ii, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax22.set_title('(r)', loc='left', fontweight='bold', fontsize=font_size)
-ax22.set_ylabel(u'Reg5-UW - WS', fontsize=font_size)
+ct21 = ax21.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ucan, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax21.set_title('(u)', loc='left', fontweight='bold', fontsize=font_size)
+configure_subplot(ax21)
+
+ct22 = ax22.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_cima, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
+ax22.set_title('(v)', loc='left', fontweight='bold', fontsize=font_size)
+ax22.set_xlabel('P99 ({0})'.format(legend), loc='center', fontsize=font_size)
+ax22.set_ylabel('WRF-CIMA - WS', rotation='vertical', fontsize=font_size)
 configure_subplot(ax22)
 
-ct23 = ax23.scatter(lon_xx, lat_yy, 20, bias_freq_reg_ictp_ii, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax23.set_title('(s)', loc='left', fontweight='bold', fontsize=font_size)
+ct23 = ax23.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_cima, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
+ax23.set_title('(w)', loc='left', fontweight='bold', fontsize=font_size)
+ax23.set_xlabel('FREQUENCY (%)', loc='center', fontsize=font_size)
 configure_subplot(ax23)
 
-ct24 = ax24.scatter(lon_xx, lat_yy, 20, bias_int_reg_ictp_ii, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax24.set_title('(t)', loc='left', fontweight='bold', fontsize=font_size)
+ct24 = ax24.scatter(lon_xx, lat_yy, 20, bias_int_wrf_cima, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
+ax24.set_title('(x)', loc='left', fontweight='bold', fontsize=font_size)
+ax24.set_xlabel('INTENSITY ({0})'.format(legend), loc='center', fontsize=font_size)
 configure_subplot(ax24)
 
-ct26 = ax26.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ncar, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax26.set_title('(v)', loc='left', fontweight='bold', fontsize=font_size)
-ax26.set_ylabel(u'WRF-NCAR - WS', fontsize=font_size)
-configure_subplot(ax26)
+cbar = plt.colorbar(ct1, cax=fig.add_axes([0.92, 0.68, 0.02, 0.20]), extend='neither')
+cbar.ax.tick_params(labelsize=font_size)
+cbar.set_label('P99.9 ({0})'.format(legend), fontsize=font_size)
 
-ct27 = ax27.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ncar, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax27.set_title('(w)', loc='left', fontweight='bold', fontsize=font_size)
-configure_subplot(ax27)
+cbar = plt.colorbar(ct2, cax=fig.add_axes([0.92, 0.40, 0.02, 0.20]), extend='neither')
+cbar.ax.tick_params(labelsize=font_size)
+cbar.set_label('FREQUENCY (%)', fontsize=font_size)
 
-ct28 = ax28.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ncar, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax28.set_title('(x)', loc='left', fontweight='bold', fontsize=font_size)
-configure_subplot(ax28)
-
-ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
-ax30.set_title('(z)', loc='left', fontweight='bold', fontsize=font_size)
-ax30.set_ylabel(u'WRF-UCAN - WS', fontsize=font_size)
-ax30.set_xlabel('P99.9 ({0})'.format(legend), loc='center', fontsize=font_size)
-configure_subplot(ax30)
-
-ct31 = ax31.scatter(lon_xx, lat_yy, 20, bias_freq_wrf_ucan, cmap=cmap, norm=norm_iii, marker='o', edgecolor='black', linewidth=0.5)
-ax31.set_title('(a.1)', loc='left', fontweight='bold', fontsize=font_size)
-ax31.set_xlabel('FREQUENCY (%)', loc='center', fontsize=font_size)
-configure_subplot(ax31)
-
-ct32 = ax32.scatter(lon_xx, lat_yy, 20, bias_int_wrf_ucan, cmap=cmap, norm=norm_iv, marker='o', edgecolor='black', linewidth=0.5)
-ax32.set_title('(b.1)', loc='left', fontweight='bold', fontsize=font_size)
-ax32.set_xlabel('INTENSITY ({0})'.format(legend), loc='center', fontsize=font_size)
-configure_subplot(ax32)
-
-cbar = plt.colorbar(ct6, cax=fig.add_axes([0.48, 0.25, 0.015, 0.40]), extend='neither')
-cbar.ax.tick_params(labelsize=6)
-
-cbar = plt.colorbar(ct7, cax=fig.add_axes([0.68, 0.25, 0.015, 0.40]), extend='neither')
-cbar.ax.tick_params(labelsize=6)
-
-cbar = plt.colorbar(ct8, cax=fig.add_axes([0.88, 0.25, 0.015, 0.40]), extend='neither')
-cbar.ax.tick_params(labelsize=6)
+cbar = plt.colorbar(ct3, cax=fig.add_axes([0.92, 0.12, 0.02, 0.20]), extend='neither')
+cbar.ax.tick_params(labelsize=font_size)
+cbar.set_label('INTENSITY ({0})'.format(legend), fontsize=font_size)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
-name_out = 'pyplt_maps_bias_{0}_mmh_sesa_{1}.png'.format(var, seas_)
+name_out = 'pyplt_maps_bias_sesa_{0}_mmh_{1}.png'.format(var, seas_)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 exit()
 

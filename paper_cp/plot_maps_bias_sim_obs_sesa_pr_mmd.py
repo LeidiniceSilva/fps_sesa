@@ -52,7 +52,7 @@ def import_inmet():
 
 	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix = [], [], [], [], [], [], [], [], [], [], []
 
-	for i in range(1, 2):
+	for i in range(1, 567):
 		if i in skip_list_inmet_i:
 			continue
 		if i in skip_list_inmet_ii:
@@ -127,7 +127,7 @@ def import_smn_i():
 
 	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix = [], [], [], [], [], [], [], [], [], [], []
 
-	for i in range(1, 2):
+	for i in range(1, 73):
 		iy.append(smn_i[i][1])
 		ix.append(smn_i[i][2])
 		station_code = f'SMN{i:03d}'
@@ -195,7 +195,7 @@ def import_smn_ii():
 	
 	iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix = [], [], [], [], [], [], [], [], [], [], []
 
-	for i in range(1, 2):
+	for i in range(1, 110):
 		if i in skip_list_smn_ii:
 			continue
 		iy.append(smn_ii[i][1])
@@ -252,12 +252,14 @@ def import_smn_ii():
 	return iy, ix, mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix
 
 
-def compute_stats(stations_data, threshold=None, valid_range=(0, 500)):
+def compute_stats(stations_data, wet_threshold=1.0, valid_range=(0, 500)):
 
     mean_list, p99_list, freq_list, int_list = [], [], [], []
 
     for da in stations_data:
         da = np.asarray(da)
+        total_days = len(da)
+        
         da = da[np.isfinite(da)]
         da = da[(da >= valid_range[0]) & (da <= valid_range[1])]
 
@@ -266,24 +268,18 @@ def compute_stats(stations_data, threshold=None, valid_range=(0, 500)):
             freq_list.append(np.nan); int_list.append(np.nan)
             continue
 
-        # Annual mean
-        mean_val = float(np.nanmean(da))
-        mean_list.append(mean_val)
+        # Mean and p99 (all values)
+        mean_list.append(float(np.nanmean(da)))
+        p99_list.append(float(np.nanpercentile(da, 99)))
 
-        # 99th percentile
-        p99_val = float(np.nanpercentile(da, 99))
-        p99_list.append(p99_val)
-
-        # Threshold for freq/intensity
-        thr = threshold if threshold is not None else p99_val
-
-        # Frequency (% of days above threshold)
-        freq_val = float(np.sum(da > thr) / len(da) * 100)  # percentage	
-        freq_list.append(freq_val)
-
-        # Intensity (mean of values above threshold)
-        int_val = float(np.nanmean(da[da > thr])) if np.any(da > thr) else 0.0
-        int_list.append(int_val)
+        # Wet days (values >= wet_threshold)
+        wet_days = da[da >= wet_threshold]
+        
+        # Frequency (fraction of wet days over total days)
+        freq_list.append(float(len(wet_days) / total_days * 100))
+        
+        # Intensity (mean of wet days)
+        int_list.append(float(np.nanmean(wet_days)) if len(wet_days) > 0 else np.nan)
 
     return mean_list, p99_list, freq_list, int_list
     
@@ -370,6 +366,15 @@ bias_int_wrf_ncar    = np.array(int_wrf_ncar)    - np.array(int_inmet_smn)
 bias_int_wrf_ucan    = np.array(int_wrf_ucan)    - np.array(int_inmet_smn)
 bias_int_wrf_cima    = np.array(int_wrf_cima)    - np.array(int_inmet_smn)
 
+print(bias_mean_wrf_cima)
+print()
+print(bias_perc_wrf_cima)
+print()
+print(bias_freq_wrf_cima)
+print()
+print(bias_int_wrf_cima)
+print()
+
 # Plot figure   
 fig, axes = plt.subplots(8,4, figsize=(6, 10), subplot_kw={"projection": ccrs.PlateCarree()})
 (ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8), (ax9, ax10, ax11, ax12), (ax13, ax14, ax15, ax16), (ax17, ax18, ax19, ax20), (ax21, ax22, ax23, ax24), (ax25, ax26, ax27, ax28), (ax29, ax30, ax31, ax32)  = axes
@@ -377,8 +382,8 @@ fig, axes = plt.subplots(8,4, figsize=(6, 10), subplot_kw={"projection": ccrs.Pl
 cmap = cm.get_cmap('BrBG', 20)
 norm_i = BoundaryNorm(np.linspace(-4, 4, 20 + 1), cmap.N)
 norm_ii = BoundaryNorm(np.linspace(-40, 40, 20 + 1), cmap.N)
-norm_iii = BoundaryNorm(np.linspace(-0.2, 0.2, 20 + 1), cmap.N)
-norm_iv = BoundaryNorm(np.linspace(-70, 70, 20 + 1), cmap.N)
+norm_iii = BoundaryNorm(np.linspace(-20, 20, 20 + 1), cmap.N)
+norm_iv = BoundaryNorm(np.linspace(-20, 20, 20 + 1), cmap.N)
 legend = 'mm d⁻¹'
 
 ct1 = ax1.scatter(lon_xx, lat_yy, 20, bias_mean_era5, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
@@ -485,7 +490,7 @@ configure_subplot(ax24)
 
 ct25 = ax25.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_ucan, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax25.set_title('(y)', loc='left', fontweight='bold', fontsize=font_size)
-ax25.set_ylabel('WRF-CIMA - WS', rotation='vertical', fontsize=font_size)
+ax25.set_ylabel('WRF-UCAN - WS', rotation='vertical', fontsize=font_size)
 configure_subplot(ax25)
 
 ct26 = ax26.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_ucan, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
@@ -503,7 +508,7 @@ configure_subplot(ax28)
 ct29 = ax29.scatter(lon_xx, lat_yy, 20, bias_mean_wrf_cima, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
 ax29.set_title('(c.1)', loc='left', fontweight='bold', fontsize=font_size)
 ax29.set_xlabel('MEAN ({0})'.format(legend), loc='center', fontsize=font_size)
-ax29.set_ylabel('WRF-UCAN - WS', rotation='vertical', fontsize=font_size)
+ax29.set_ylabel('WRF-CIMA - WS', rotation='vertical', fontsize=font_size)
 configure_subplot(ax29)
 
 ct30 = ax30.scatter(lon_xx, lat_yy, 20, bias_perc_wrf_cima, cmap=cmap, norm=norm_ii, marker='o', edgecolor='black', linewidth=0.5)
@@ -539,7 +544,7 @@ cbar.set_label('INTENSITY ({0})'.format(legend), fontsize=font_size)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
-name_out = 'pyplt_maps_bias_{0}_mmd_sesa.png'.format(var)
+name_out = 'pyplt_maps_bias_sesa_{0}_mmd.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
 plt.show()
 exit()
