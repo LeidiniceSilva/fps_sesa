@@ -37,7 +37,7 @@ skip_list_inmet_ii = [2, 3, 4, 14, 19, 20, 21, 24, 25, 26, 27, 28, 32, 33, 34, 3
 
 def import_inmet():
 	
-	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
+	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix = [], [], [], [], [], [], [], [], []
 	for i in range(1, 567):
 		if i in skip_list_inmet_i:
 			continue
@@ -95,13 +95,19 @@ def import_inmet():
 			d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 			d_viii = d_viii.values / 24
 			mean_viii.append(np.concatenate([d_viii[3:], d_viii[:3]]))
-		
-	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
+
+			# Reading wrf cima
+			d_ix = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_cima/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+			d_ix = d_ix.pr.sel(time=slice('2018-06-01','2021-05-31'))
+			d_ix = d_ix.values 
+			mean_ix.append(np.concatenate([d_ix[3:], d_ix[:3]]))
+					
+	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix
 
 
 def import_smn_i():
 
-	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii = [], [], [], [], [], [], [], []
+	mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix = [], [], [], [], [], [], [], [], []
 	for i in range(1, 73):
 		station_code = f'SMN{i:03d}'
 		station_name = smn_i[i][0]
@@ -154,8 +160,14 @@ def import_smn_i():
 		d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_viii = d_viii.values / 24
 		mean_viii.append(np.concatenate([d_viii[3:], d_viii[:3]]))
-				
-	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii
+
+		# Reading wrf cima
+		d_ix = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_cima/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
+		d_ix = d_ix.pr.sel(time=slice('2018-06-01','2021-05-31'))
+		d_ix = d_ix.values 
+		mean_ix.append(np.concatenate([d_ix[3:], d_ix[:3]]))
+			
+	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix
 	
 
 def mask_like(reference, target):
@@ -169,44 +181,48 @@ def mask_like(reference, target):
 
 def compute_stats(dataset, perc=99):
 
-    var_ = np.asarray(dataset)
+    var_ = np.asarray(dataset, dtype=float)
 
-    # Remove non-finite values
+    # Remove invalid values
     var_[~np.isfinite(var_)] = np.nan
+    var_[var_ < 0] = np.nan
+    var_[var_ > 500] = np.nan
 
-    # Remove unrealistic precipitation values
-    var_[var_ < 0] = np.nan       # negative precipitation doesn't exist
-    var_[var_ > 500] = np.nan     # very high threshold (mm/h)
-
-    # Hour index
     horas = np.arange(len(var_)) % 24
 
-    # Global percentile (for extremes definition)
+    # Percentil global (usado apenas para extremos)
     perc_global = np.nanpercentile(var_, perc)
 
-    # Prepare outputs
     mean_hour = np.zeros(24)
     perc_hour = np.zeros(24)
     freq = np.zeros(24)
     intens = np.zeros(24)
 
     for h in range(24):
+
         var_h = var_[horas == h]
-        valid = ~np.isnan(var_h)
 
-        if np.sum(valid) > 0:
-            data = var_h[valid]
+        # mean and p99
+        valid_all = ~np.isnan(var_h)
 
-            mean_hour[h] = np.nanmean(data)                 # mean per hour
-            perc_hour[h] = np.nanpercentile(data, perc)     # percentile per hour
-
-            extreme = data[data >= perc_global]             # extremes based on global perc
-            freq[h] = 100.0 * len(extreme) / len(data)      # frequency of extremes
-            intens[h] = np.nanmean(extreme) if len(extreme) > 0 else np.nan
-
+        if np.any(valid_all):
+            data_all = var_h[valid_all]
+            mean_hour[h] = np.nanmean(data_all)
+            perc_hour[h] = np.nanpercentile(data_all, perc)
         else:
             mean_hour[h] = np.nan
             perc_hour[h] = np.nan
+
+        # freq and int
+        wet = var_h >= 0.1
+        data_wet = var_h[wet & ~np.isnan(var_h)]
+
+        if len(data_wet) > 0:
+            extreme = data_wet[data_wet >= perc_global]
+
+            freq[h] = 100.0 * len(extreme) / len(data_wet)
+            intens[h] = np.nanmean(extreme) if len(extreme) > 0 else np.nan
+        else:
             freq[h] = np.nan
             intens[h] = np.nan
 
@@ -214,8 +230,8 @@ def compute_stats(dataset, perc=99):
     
     
 # Import dataset
-clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x, clim_viii_x = import_inmet()			
-clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y, clim_viii_y = import_smn_i()
+clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x, clim_viii_x, clim_ix_x = import_inmet()			
+clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y, clim_viii_y, clim_ix_y = import_smn_i()
 
 inmet_smn    = clim_i_x    + clim_i_y
 era5         = clim_ii_x   + clim_ii_y
@@ -225,6 +241,7 @@ reg_ictp_i_  = clim_v_x    + clim_v_y
 reg_ictp_ii_ = clim_vi_x   + clim_vi_y
 wrf_ncar     = clim_vii_x  + clim_vii_y
 wrf_ucan     = clim_viii_x + clim_viii_y
+wrf_cima     = clim_ix_x + clim_ix_y
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
 list_hc = list_hc[:len(inmet_smn)]
@@ -251,56 +268,62 @@ reg_ictp_i_i,  reg_ictp_i_ii,  reg_ictp_i_iii,  reg_ictp_i_iv,  reg_ictp_i_v  = 
 reg_ictp_ii_i, reg_ictp_ii_ii, reg_ictp_ii_iii, reg_ictp_ii_iv, reg_ictp_ii_v = [], [], [], [], []
 wrf_ncar_i,    wrf_ncar_ii,    wrf_ncar_iii,    wrf_ncar_iv,    wrf_ncar_v    = [], [], [], [], []
 wrf_ucan_i,    wrf_ucan_ii,    wrf_ucan_iii,    wrf_ucan_iv,    wrf_ucan_v    = [], [], [], [], []
+wrf_cima_i,    wrf_cima_ii,    wrf_cima_iii,    wrf_cima_iv,    wrf_cima_v    = [], [], [], [], []
 
 for c_i in count_i:
+	inmet_smn_i.append(inmet_smn[c_i])
+	era5_i.append(era5[c_i])
 	reg_usp_i.append(reg_usp[c_i])
 	reg_ictp_i.append(reg_ictp[c_i])
 	reg_ictp_i_i.append(reg_ictp_i_[c_i])
 	reg_ictp_ii_i.append(reg_ictp_ii_[c_i])
 	wrf_ncar_i.append(wrf_ncar[c_i])
 	wrf_ucan_i.append(wrf_ucan[c_i])
-	inmet_smn_i.append(inmet_smn[c_i])
-	era5_i.append(era5[c_i])
+	wrf_cima_i.append(wrf_cima[c_i])
 
 for c_ii in count_ii:
+	inmet_smn_ii.append(inmet_smn[c_ii])
+	era5_ii.append(era5[c_ii])
 	reg_usp_ii.append(reg_usp[c_ii])
 	reg_ictp_ii.append(reg_ictp[c_ii])
 	reg_ictp_i_ii.append(reg_ictp_i_[c_ii])
 	reg_ictp_ii_ii.append(reg_ictp_ii_[c_ii])
 	wrf_ncar_ii.append(wrf_ncar[c_ii])
 	wrf_ucan_ii.append(wrf_ucan[c_ii])
-	inmet_smn_ii.append(inmet_smn[c_ii])
-	era5_ii.append(era5[c_ii])
+	wrf_cima_ii.append(wrf_cima[c_ii])
 	
 for c_iii in count_iii:
+	inmet_smn_iii.append(inmet_smn[c_iii])
+	era5_iii.append(era5[c_iii])
 	reg_usp_iii.append(reg_usp[c_iii])
 	reg_ictp_iii.append(reg_ictp[c_iii])
 	reg_ictp_i_iii.append(reg_ictp_i_[c_iii])
 	reg_ictp_ii_iii.append(reg_ictp_ii_[c_iii])
 	wrf_ncar_iii.append(wrf_ncar[c_iii])
 	wrf_ucan_iii.append(wrf_ucan[c_iii])
-	inmet_smn_iii.append(inmet_smn[c_iii])
-	era5_iii.append(era5[c_iii])
+	wrf_cima_iii.append(wrf_cima[c_iii])
 	
 for c_iv in count_iv:
+	inmet_smn_iv.append(inmet_smn[c_iv])
+	era5_iv.append(era5[c_iv])
 	reg_usp_iv.append(reg_usp[c_iv])
 	reg_ictp_iv.append(reg_ictp[c_iv])
 	reg_ictp_i_iv.append(reg_ictp_i_[c_iv])
 	reg_ictp_ii_iv.append(reg_ictp_ii_[c_iv])
 	wrf_ncar_iv.append(wrf_ncar[c_iv])
 	wrf_ucan_iv.append(wrf_ucan[c_iv])
-	inmet_smn_iv.append(inmet_smn[c_iv])
-	era5_iv.append(era5[c_iv])
+	wrf_cima_iv.append(wrf_cima[c_iv])
 	
 for c_v in count_v:
+	inmet_smn_v.append(inmet_smn[c_v])
+	era5_v.append(era5[c_v])
 	reg_usp_v.append(reg_usp[c_v])
 	reg_ictp_v.append(reg_ictp[c_v])
 	reg_ictp_i_v.append(reg_ictp_i_[c_v])
 	reg_ictp_ii_v.append(reg_ictp_ii_[c_v])
 	wrf_ncar_v.append(wrf_ncar[c_v])
 	wrf_ucan_v.append(wrf_ucan[c_v])
-	inmet_smn_v.append(inmet_smn[c_v])
-	era5_v.append(era5[c_v])
+	wrf_cima_v.append(wrf_cima[c_v])
 
 # Group I
 inmet_smn_c_i   = np.concatenate(inmet_smn_i)
@@ -316,11 +339,11 @@ era5_c_iii_ = np.concatenate(era5_iii)
 era5_c_iv_  = np.concatenate(era5_iv)
 era5_c_v_   = np.concatenate(era5_v)
 
-era5_c_i = mask_like(inmet_smn_c_i, era5_c_i_)
-era5_c_ii = mask_like(inmet_smn_c_ii, era5_c_ii_)
+era5_c_i   = mask_like(inmet_smn_c_i, era5_c_i_)
+era5_c_ii  = mask_like(inmet_smn_c_ii, era5_c_ii_)
 era5_c_iii = mask_like(inmet_smn_c_iii, era5_c_iii_)
-era5_c_iv = mask_like(inmet_smn_c_iv, era5_c_iv_)
-era5_c_v = mask_like(inmet_smn_c_v, era5_c_v_)
+era5_c_iv  = mask_like(inmet_smn_c_iv, era5_c_iv_)
+era5_c_v   = mask_like(inmet_smn_c_v, era5_c_v_)
 
 # Group III
 reg_usp_c_i_   = np.concatenate(reg_usp_i)
@@ -329,11 +352,11 @@ reg_usp_c_iii_ = np.concatenate(reg_usp_iii)
 reg_usp_c_iv_  = np.concatenate(reg_usp_iv)
 reg_usp_c_v_   = np.concatenate(reg_usp_v)
 
-reg_usp_c_i = mask_like(inmet_smn_c_i, reg_usp_c_i_)
-reg_usp_c_ii = mask_like(inmet_smn_c_ii, reg_usp_c_ii_)
+reg_usp_c_i   = mask_like(inmet_smn_c_i, reg_usp_c_i_)
+reg_usp_c_ii  = mask_like(inmet_smn_c_ii, reg_usp_c_ii_)
 reg_usp_c_iii = mask_like(inmet_smn_c_iii, reg_usp_c_iii_)
-reg_usp_c_iv = mask_like(inmet_smn_c_iv, reg_usp_c_iv_)
-reg_usp_c_v = mask_like(inmet_smn_c_v, reg_usp_c_v_)
+reg_usp_c_iv  = mask_like(inmet_smn_c_iv, reg_usp_c_iv_)
+reg_usp_c_v   = mask_like(inmet_smn_c_v, reg_usp_c_v_)
 
 # Group IV
 reg_ictp_c_i_   = np.concatenate(reg_ictp_i)
@@ -342,11 +365,11 @@ reg_ictp_c_iii_ = np.concatenate(reg_ictp_iii)
 reg_ictp_c_iv_  = np.concatenate(reg_ictp_iv)
 reg_ictp_c_v_   = np.concatenate(reg_ictp_v)
 
-reg_ictp_c_i = mask_like(inmet_smn_c_i, reg_ictp_c_i_)
-reg_ictp_c_ii = mask_like(inmet_smn_c_ii, reg_ictp_c_ii_)
+reg_ictp_c_i   = mask_like(inmet_smn_c_i, reg_ictp_c_i_)
+reg_ictp_c_ii  = mask_like(inmet_smn_c_ii, reg_ictp_c_ii_)
 reg_ictp_c_iii = mask_like(inmet_smn_c_iii, reg_ictp_c_iii_)
-reg_ictp_c_iv = mask_like(inmet_smn_c_iv, reg_ictp_c_iv_)
-reg_ictp_c_v = mask_like(inmet_smn_c_v, reg_ictp_c_v_)
+reg_ictp_c_iv  = mask_like(inmet_smn_c_iv, reg_ictp_c_iv_)
+reg_ictp_c_v   = mask_like(inmet_smn_c_v, reg_ictp_c_v_)
 
 # Group V
 reg_ictp_i_c_i_   = np.concatenate(reg_ictp_i_i)
@@ -355,11 +378,11 @@ reg_ictp_i_c_iii_ = np.concatenate(reg_ictp_i_iii)
 reg_ictp_i_c_iv_  = np.concatenate(reg_ictp_i_iv)
 reg_ictp_i_c_v_  = np.concatenate(reg_ictp_i_v)
 
-reg_ictp_i_c_i = mask_like(inmet_smn_c_i, reg_ictp_i_c_i_)
-reg_ictp_i_c_ii = mask_like(inmet_smn_c_ii, reg_ictp_i_c_ii_)
+reg_ictp_i_c_i   = mask_like(inmet_smn_c_i, reg_ictp_i_c_i_)
+reg_ictp_i_c_ii  = mask_like(inmet_smn_c_ii, reg_ictp_i_c_ii_)
 reg_ictp_i_c_iii = mask_like(inmet_smn_c_iii, reg_ictp_i_c_iii_)
-reg_ictp_i_c_iv = mask_like(inmet_smn_c_iv, reg_ictp_i_c_iv_)
-reg_ictp_i_c_v = mask_like(inmet_smn_c_v, reg_ictp_i_c_v_)
+reg_ictp_i_c_iv  = mask_like(inmet_smn_c_iv, reg_ictp_i_c_iv_)
+reg_ictp_i_c_v   = mask_like(inmet_smn_c_v, reg_ictp_i_c_v_)
 
 # Group VI
 reg_ictp_ii_c_i_   = np.concatenate(reg_ictp_ii_i)
@@ -368,11 +391,11 @@ reg_ictp_ii_c_iii_ = np.concatenate(reg_ictp_ii_iii)
 reg_ictp_ii_c_iv_  = np.concatenate(reg_ictp_ii_iv)
 reg_ictp_ii_c_v_   = np.concatenate(reg_ictp_ii_v)
 
-reg_ictp_ii_c_i = mask_like(inmet_smn_c_i, reg_ictp_ii_c_i_)
-reg_ictp_ii_c_ii = mask_like(inmet_smn_c_ii, reg_ictp_ii_c_ii_)
+reg_ictp_ii_c_i   = mask_like(inmet_smn_c_i, reg_ictp_ii_c_i_)
+reg_ictp_ii_c_ii  = mask_like(inmet_smn_c_ii, reg_ictp_ii_c_ii_)
 reg_ictp_ii_c_iii = mask_like(inmet_smn_c_iii, reg_ictp_ii_c_iii_)
-reg_ictp_ii_c_iv = mask_like(inmet_smn_c_iv, reg_ictp_ii_c_iv_)
-reg_ictp_ii_c_v = mask_like(inmet_smn_c_v, reg_ictp_ii_c_v_)
+reg_ictp_ii_c_iv  = mask_like(inmet_smn_c_iv, reg_ictp_ii_c_iv_)
+reg_ictp_ii_c_v   = mask_like(inmet_smn_c_v, reg_ictp_ii_c_v_)
 
 # Group VII
 wrf_ncar_c_i_   = np.concatenate(wrf_ncar_i)
@@ -381,11 +404,11 @@ wrf_ncar_c_iii_ = np.concatenate(wrf_ncar_iii)
 wrf_ncar_c_iv_  = np.concatenate(wrf_ncar_iv)
 wrf_ncar_c_v_   = np.concatenate(wrf_ncar_v)
 
-wrf_ncar_c_i = mask_like(inmet_smn_c_i, wrf_ncar_c_i_)
-wrf_ncar_c_ii = mask_like(inmet_smn_c_ii, wrf_ncar_c_ii_)
+wrf_ncar_c_i   = mask_like(inmet_smn_c_i, wrf_ncar_c_i_)
+wrf_ncar_c_ii  = mask_like(inmet_smn_c_ii, wrf_ncar_c_ii_)
 wrf_ncar_c_iii = mask_like(inmet_smn_c_iii, wrf_ncar_c_iii_)
-wrf_ncar_c_iv = mask_like(inmet_smn_c_iv, wrf_ncar_c_iv_)
-wrf_ncar_c_v = mask_like(inmet_smn_c_v, wrf_ncar_c_v_)
+wrf_ncar_c_iv  = mask_like(inmet_smn_c_iv, wrf_ncar_c_iv_)
+wrf_ncar_c_v   = mask_like(inmet_smn_c_v, wrf_ncar_c_v_)
 
 # Group VIII
 wrf_ucan_c_i_   = np.concatenate(wrf_ucan_i)
@@ -394,11 +417,24 @@ wrf_ucan_c_iii_ = np.concatenate(wrf_ucan_iii)
 wrf_ucan_c_iv_  = np.concatenate(wrf_ucan_iv)
 wrf_ucan_c_v_   = np.concatenate(wrf_ucan_v)
 
-wrf_ucan_c_i = mask_like(inmet_smn_c_i, wrf_ucan_c_i_)
-wrf_ucan_c_ii = mask_like(inmet_smn_c_ii, wrf_ucan_c_ii_)
+wrf_ucan_c_i   = mask_like(inmet_smn_c_i, wrf_ucan_c_i_)
+wrf_ucan_c_ii  = mask_like(inmet_smn_c_ii, wrf_ucan_c_ii_)
 wrf_ucan_c_iii = mask_like(inmet_smn_c_iii, wrf_ucan_c_iii_)
-wrf_ucan_c_iv = mask_like(inmet_smn_c_iv, wrf_ucan_c_iv_)
-wrf_ucan_c_v = mask_like(inmet_smn_c_v,wrf_ucan_c_v_)
+wrf_ucan_c_iv  = mask_like(inmet_smn_c_iv, wrf_ucan_c_iv_)
+wrf_ucan_c_v   = mask_like(inmet_smn_c_v,wrf_ucan_c_v_)
+
+# Group VIII
+wrf_cima_c_i_   = np.concatenate(wrf_cima_i)
+wrf_cima_c_ii_  = np.concatenate(wrf_cima_ii)
+wrf_cima_c_iii_ = np.concatenate(wrf_cima_iii)
+wrf_cima_c_iv_  = np.concatenate(wrf_cima_iv)
+wrf_cima_c_v_   = np.concatenate(wrf_cima_v)
+
+wrf_cima_c_i   = mask_like(inmet_smn_c_i, wrf_cima_c_i_)
+wrf_cima_c_ii  = mask_like(inmet_smn_c_ii, wrf_cima_c_ii_)
+wrf_cima_c_iii = mask_like(inmet_smn_c_iii, wrf_cima_c_iii_)
+wrf_cima_c_iv  = mask_like(inmet_smn_c_iv, wrf_cima_c_iv_)
+wrf_cima_c_v   = mask_like(inmet_smn_c_v,wrf_cima_c_v_)
 
 mean_inmet_smn_c_i,   perc_inmet_smn_c_i,   freq_inmet_smn_c_i,   int_inmet_smn_c_i   = compute_stats(inmet_smn_c_i)
 mean_inmet_smn_c_ii,  perc_inmet_smn_c_ii,  freq_inmet_smn_c_ii,  int_inmet_smn_c_ii  = compute_stats(inmet_smn_c_ii)
@@ -448,68 +484,59 @@ mean_wrf_ucan_c_iii, perc_wrf_ucan_c_iii, freq_wrf_ucan_c_iii, int_wrf_ucan_c_ii
 mean_wrf_ucan_c_iv,  perc_wrf_ucan_c_iv,  freq_wrf_ucan_c_iv,  int_wrf_ucan_c_iv  = compute_stats(wrf_ucan_c_iv)
 mean_wrf_ucan_c_v,   perc_wrf_ucan_c_v,   freq_wrf_ucan_c_v,   int_wrf_ucan_c_v   = compute_stats(wrf_ucan_c_v)
 
-print(int_inmet_smn_c_i)
-print()
-print(int_era5_c_i)
-print()
-print(int_reg_usp_c_i)
-print()
-print(int_reg_ictp_c_i)
-print()
-print(int_reg_ictp_i_c_i)
-print()
-print(int_reg_ictp_ii_c_i)
-print()
-print(int_wrf_ncar_c_i)
-print()
-print(int_wrf_ucan_c_i)
+mean_wrf_cima_c_i,   perc_wrf_cima_c_i,   freq_wrf_cima_c_i,   int_wrf_cima_c_i   = compute_stats(wrf_cima_c_i)
+mean_wrf_cima_c_ii,  perc_wrf_cima_c_ii,  freq_wrf_cima_c_ii,  int_wrf_cima_c_ii  = compute_stats(wrf_cima_c_ii)
+mean_wrf_cima_c_iii, perc_wrf_cima_c_iii, freq_wrf_cima_c_iii, int_wrf_cima_c_iii = compute_stats(wrf_cima_c_iii)
+mean_wrf_cima_c_iv,  perc_wrf_cima_c_iv,  freq_wrf_cima_c_iv,  int_wrf_cima_c_iv  = compute_stats(wrf_cima_c_iv)
+mean_wrf_cima_c_v,   perc_wrf_cima_c_v,   freq_wrf_cima_c_v,   int_wrf_cima_c_v   = compute_stats(wrf_cima_c_v)
 
-data_mean_c_i   = np.vstack([mean_inmet_smn_c_i,   mean_era5_c_i,   mean_reg_usp_c_i,   mean_reg_ictp_c_i,   mean_reg_ictp_i_c_i,   mean_reg_ictp_ii_c_i,   mean_wrf_ncar_c_i,   mean_wrf_ucan_c_i])
-data_mean_c_ii  = np.vstack([mean_inmet_smn_c_ii,  mean_era5_c_ii,  mean_reg_usp_c_ii,  mean_reg_ictp_c_ii,  mean_reg_ictp_i_c_ii,  mean_reg_ictp_ii_c_ii,  mean_wrf_ncar_c_ii,  mean_wrf_ucan_c_ii])
-data_mean_c_iii = np.vstack([mean_inmet_smn_c_iii, mean_era5_c_iii, mean_reg_usp_c_iii, mean_reg_ictp_c_iii, mean_reg_ictp_i_c_iii, mean_reg_ictp_ii_c_iii, mean_wrf_ncar_c_iii, mean_wrf_ucan_c_iii])
-data_mean_c_iv  = np.vstack([mean_inmet_smn_c_iv,  mean_era5_c_iv,  mean_reg_usp_c_iv,  mean_reg_ictp_c_iv,  mean_reg_ictp_i_c_iv,  mean_reg_ictp_ii_c_iv,  mean_wrf_ncar_c_iv,  mean_wrf_ucan_c_iv])
-data_mean_c_v   = np.vstack([mean_inmet_smn_c_v,   mean_era5_c_v,   mean_reg_usp_c_v,   mean_reg_ictp_c_v,   mean_reg_ictp_i_c_v,   mean_reg_ictp_ii_c_v,   mean_wrf_ncar_c_v,   mean_wrf_ucan_c_v])
+data_mean_c_i   = np.vstack([mean_inmet_smn_c_i,   mean_era5_c_i,   mean_reg_usp_c_i,   mean_reg_ictp_c_i,   mean_reg_ictp_i_c_i,   mean_reg_ictp_ii_c_i,   mean_wrf_ncar_c_i,   mean_wrf_ucan_c_i,   mean_wrf_cima_c_i])
+data_mean_c_ii  = np.vstack([mean_inmet_smn_c_ii,  mean_era5_c_ii,  mean_reg_usp_c_ii,  mean_reg_ictp_c_ii,  mean_reg_ictp_i_c_ii,  mean_reg_ictp_ii_c_ii,  mean_wrf_ncar_c_ii,  mean_wrf_ucan_c_ii,  mean_wrf_cima_c_ii])
+data_mean_c_iii = np.vstack([mean_inmet_smn_c_iii, mean_era5_c_iii, mean_reg_usp_c_iii, mean_reg_ictp_c_iii, mean_reg_ictp_i_c_iii, mean_reg_ictp_ii_c_iii, mean_wrf_ncar_c_iii, mean_wrf_ucan_c_iii, mean_wrf_cima_c_iii])
+data_mean_c_iv  = np.vstack([mean_inmet_smn_c_iv,  mean_era5_c_iv,  mean_reg_usp_c_iv,  mean_reg_ictp_c_iv,  mean_reg_ictp_i_c_iv,  mean_reg_ictp_ii_c_iv,  mean_wrf_ncar_c_iv,  mean_wrf_ucan_c_iv,  mean_wrf_cima_c_iv])
+data_mean_c_v   = np.vstack([mean_inmet_smn_c_v,   mean_era5_c_v,   mean_reg_usp_c_v,   mean_reg_ictp_c_v,   mean_reg_ictp_i_c_v,   mean_reg_ictp_ii_c_v,   mean_wrf_ncar_c_v,   mean_wrf_ucan_c_v,   mean_wrf_cima_c_v])
 
-data_perc_c_i   = np.vstack([perc_inmet_smn_c_i,   perc_era5_c_i,   perc_reg_usp_c_i,	perc_reg_ictp_c_i,   perc_reg_ictp_i_c_i,   perc_reg_ictp_ii_c_i,   perc_wrf_ncar_c_i,   perc_wrf_ucan_c_i])
-data_perc_c_ii  = np.vstack([perc_inmet_smn_c_ii,  perc_era5_c_ii,  perc_reg_usp_c_ii,  perc_reg_ictp_c_ii,  perc_reg_ictp_i_c_ii,  perc_reg_ictp_ii_c_ii,  perc_wrf_ncar_c_ii,  perc_wrf_ucan_c_ii])
-data_perc_c_iii = np.vstack([perc_inmet_smn_c_iii, perc_era5_c_iii, perc_reg_usp_c_iii, perc_reg_ictp_c_iii, perc_reg_ictp_i_c_iii, perc_reg_ictp_ii_c_iii, perc_wrf_ncar_c_iii, perc_wrf_ucan_c_iii])
-data_perc_c_iv  = np.vstack([perc_inmet_smn_c_iv,  perc_era5_c_iv,  perc_reg_usp_c_iv,  perc_reg_ictp_c_iv,  perc_reg_ictp_i_c_iv,  perc_reg_ictp_ii_c_iv,  perc_wrf_ncar_c_iv,  perc_wrf_ucan_c_iv])
-data_perc_c_v   = np.vstack([perc_inmet_smn_c_v,   perc_era5_c_v,   perc_reg_usp_c_v,	perc_reg_ictp_c_v,   perc_reg_ictp_i_c_v,   perc_reg_ictp_ii_c_v,   perc_wrf_ncar_c_v,   perc_wrf_ucan_c_v])
+data_perc_c_i   = np.vstack([perc_inmet_smn_c_i,   perc_era5_c_i,   perc_reg_usp_c_i,	perc_reg_ictp_c_i,   perc_reg_ictp_i_c_i,   perc_reg_ictp_ii_c_i,   perc_wrf_ncar_c_i,   perc_wrf_ucan_c_i,   perc_wrf_cima_c_i])
+data_perc_c_ii  = np.vstack([perc_inmet_smn_c_ii,  perc_era5_c_ii,  perc_reg_usp_c_ii,  perc_reg_ictp_c_ii,  perc_reg_ictp_i_c_ii,  perc_reg_ictp_ii_c_ii,  perc_wrf_ncar_c_ii,  perc_wrf_ucan_c_ii,  perc_wrf_cima_c_ii])
+data_perc_c_iii = np.vstack([perc_inmet_smn_c_iii, perc_era5_c_iii, perc_reg_usp_c_iii, perc_reg_ictp_c_iii, perc_reg_ictp_i_c_iii, perc_reg_ictp_ii_c_iii, perc_wrf_ncar_c_iii, perc_wrf_ucan_c_iii, perc_wrf_cima_c_iii])
+data_perc_c_iv  = np.vstack([perc_inmet_smn_c_iv,  perc_era5_c_iv,  perc_reg_usp_c_iv,  perc_reg_ictp_c_iv,  perc_reg_ictp_i_c_iv,  perc_reg_ictp_ii_c_iv,  perc_wrf_ncar_c_iv,  perc_wrf_ucan_c_iv,  perc_wrf_cima_c_iv])
+data_perc_c_v   = np.vstack([perc_inmet_smn_c_v,   perc_era5_c_v,   perc_reg_usp_c_v,	perc_reg_ictp_c_v,   perc_reg_ictp_i_c_v,   perc_reg_ictp_ii_c_v,   perc_wrf_ncar_c_v,   perc_wrf_ucan_c_v,   perc_wrf_cima_c_v])
 
-data_freq_c_i   = np.vstack([freq_inmet_smn_c_i,   freq_era5_c_i,   freq_reg_usp_c_i,	freq_reg_ictp_c_i,   freq_reg_ictp_i_c_i,   freq_reg_ictp_ii_c_i,   freq_wrf_ncar_c_i,   freq_wrf_ucan_c_i])
-data_freq_c_ii  = np.vstack([freq_inmet_smn_c_ii,  freq_era5_c_ii,  freq_reg_usp_c_ii,  freq_reg_ictp_c_ii,  freq_reg_ictp_i_c_ii,  freq_reg_ictp_ii_c_ii,  freq_wrf_ncar_c_ii,  freq_wrf_ucan_c_ii])
-data_freq_c_iii = np.vstack([freq_inmet_smn_c_iii, freq_era5_c_iii, freq_reg_usp_c_iii, freq_reg_ictp_c_iii, freq_reg_ictp_i_c_iii, freq_reg_ictp_ii_c_iii, freq_wrf_ncar_c_iii, freq_wrf_ucan_c_iii])
-data_freq_c_iv  = np.vstack([freq_inmet_smn_c_iv,  freq_era5_c_iv,  freq_reg_usp_c_iv,  freq_reg_ictp_c_iv,  freq_reg_ictp_i_c_iv,  freq_reg_ictp_ii_c_iv,  freq_wrf_ncar_c_iv,  freq_wrf_ucan_c_iv])
-data_freq_c_v   = np.vstack([freq_inmet_smn_c_v,   freq_era5_c_v,   freq_reg_usp_c_v,	freq_reg_ictp_c_v,   freq_reg_ictp_i_c_v,   freq_reg_ictp_ii_c_v,   freq_wrf_ncar_c_v,   freq_wrf_ucan_c_v])
+data_freq_c_i   = np.vstack([freq_inmet_smn_c_i,   freq_era5_c_i,   freq_reg_usp_c_i,	freq_reg_ictp_c_i,   freq_reg_ictp_i_c_i,   freq_reg_ictp_ii_c_i,   freq_wrf_ncar_c_i,   freq_wrf_ucan_c_i, freq_wrf_cima_c_i])
+data_freq_c_ii  = np.vstack([freq_inmet_smn_c_ii,  freq_era5_c_ii,  freq_reg_usp_c_ii,  freq_reg_ictp_c_ii,  freq_reg_ictp_i_c_ii,  freq_reg_ictp_ii_c_ii,  freq_wrf_ncar_c_ii,  freq_wrf_ucan_c_ii, freq_wrf_cima_c_ii])
+data_freq_c_iii = np.vstack([freq_inmet_smn_c_iii, freq_era5_c_iii, freq_reg_usp_c_iii, freq_reg_ictp_c_iii, freq_reg_ictp_i_c_iii, freq_reg_ictp_ii_c_iii, freq_wrf_ncar_c_iii, freq_wrf_ucan_c_iii, freq_wrf_cima_c_iii])
+data_freq_c_iv  = np.vstack([freq_inmet_smn_c_iv,  freq_era5_c_iv,  freq_reg_usp_c_iv,  freq_reg_ictp_c_iv,  freq_reg_ictp_i_c_iv,  freq_reg_ictp_ii_c_iv,  freq_wrf_ncar_c_iv,  freq_wrf_ucan_c_iv, freq_wrf_cima_c_iv])
+data_freq_c_v   = np.vstack([freq_inmet_smn_c_v,   freq_era5_c_v,   freq_reg_usp_c_v,	freq_reg_ictp_c_v,   freq_reg_ictp_i_c_v,   freq_reg_ictp_ii_c_v,   freq_wrf_ncar_c_v,   freq_wrf_ucan_c_v, freq_wrf_cima_c_v])
 
-data_int_c_i   = np.vstack([int_inmet_smn_c_i,   int_era5_c_i,   int_reg_usp_c_i,   int_reg_ictp_c_i,   int_reg_ictp_i_c_i,   int_reg_ictp_ii_c_i,   int_wrf_ncar_c_i,   int_wrf_ucan_c_i])
-data_int_c_ii  = np.vstack([int_inmet_smn_c_ii,  int_era5_c_ii,  int_reg_usp_c_ii,  int_reg_ictp_c_ii,  int_reg_ictp_i_c_ii,  int_reg_ictp_ii_c_ii,  int_wrf_ncar_c_ii,  int_wrf_ucan_c_ii])
-data_int_c_iii = np.vstack([int_inmet_smn_c_iii, int_era5_c_iii, int_reg_usp_c_iii, int_reg_ictp_c_iii, int_reg_ictp_i_c_iii, int_reg_ictp_ii_c_iii, int_wrf_ncar_c_iii, int_wrf_ucan_c_iii])
-data_int_c_iv  = np.vstack([int_inmet_smn_c_iv,  int_era5_c_iv,  int_reg_usp_c_iv,  int_reg_ictp_c_iv,  int_reg_ictp_i_c_iv,  int_reg_ictp_ii_c_iv,  int_wrf_ncar_c_iv,  int_wrf_ucan_c_iv])
-data_int_c_v   = np.vstack([int_inmet_smn_c_v,   int_era5_c_v,   int_reg_usp_c_v,   int_reg_ictp_c_v,	int_reg_ictp_i_c_v,   int_reg_ictp_ii_c_v,   int_wrf_ncar_c_v,   int_wrf_ucan_c_v])
+data_int_c_i   = np.vstack([int_inmet_smn_c_i,   int_era5_c_i,   int_reg_usp_c_i,   int_reg_ictp_c_i,   int_reg_ictp_i_c_i,   int_reg_ictp_ii_c_i,   int_wrf_ncar_c_i,   int_wrf_ucan_c_i,   int_wrf_cima_c_i])
+data_int_c_ii  = np.vstack([int_inmet_smn_c_ii,  int_era5_c_ii,  int_reg_usp_c_ii,  int_reg_ictp_c_ii,  int_reg_ictp_i_c_ii,  int_reg_ictp_ii_c_ii,  int_wrf_ncar_c_ii,  int_wrf_ucan_c_ii,  int_wrf_cima_c_ii])
+data_int_c_iii = np.vstack([int_inmet_smn_c_iii, int_era5_c_iii, int_reg_usp_c_iii, int_reg_ictp_c_iii, int_reg_ictp_i_c_iii, int_reg_ictp_ii_c_iii, int_wrf_ncar_c_iii, int_wrf_ucan_c_iii, int_wrf_cima_c_iii])
+data_int_c_iv  = np.vstack([int_inmet_smn_c_iv,  int_era5_c_iv,  int_reg_usp_c_iv,  int_reg_ictp_c_iv,  int_reg_ictp_i_c_iv,  int_reg_ictp_ii_c_iv,  int_wrf_ncar_c_iv,  int_wrf_ucan_c_iv,  int_wrf_cima_c_iv])
+data_int_c_v   = np.vstack([int_inmet_smn_c_v,   int_era5_c_v,   int_reg_usp_c_v,   int_reg_ictp_c_v,	int_reg_ictp_i_c_v,   int_reg_ictp_ii_c_v,   int_wrf_ncar_c_v,   int_wrf_ucan_c_v,   int_wrf_cima_c_v])
 
 # Plot figure
-fig = plt.figure(figsize=(12, 10))
-fig.subplots_adjust(wspace=0.04, hspace=0.04)
+fig = plt.figure(figsize=(12, 10.25))
+fig.subplots_adjust(wspace=0.08, hspace=0.04)
 
 font_size = 8
 
-labels = ['WS', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN']
+labels = ['WS', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR', 'WRF-UCAN', 'WRF-CIMA']
 	
 legend_i = 'mm h⁻¹'
-cmap_i = 'BuPu'
+cmap_i = 'terrain_r'
 mvmin = 0
 mvmax = 0.6
 pvmin = 0
 pvmax = 8
 fvmin = 0
-fvmax = 4
+fvmax = 20
 ivmin = 0
-ivmax = 10
+ivmax = 15
 
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
 ax.set_title('(a)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -527,6 +554,7 @@ cbar.ax.tick_params(labelsize=font_size)
 ax = fig.add_subplot(5, 4, 2)
 im = ax.imshow(data_perc_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
 ax.set_title('(b)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -543,6 +571,7 @@ cbar.ax.tick_params(labelsize=font_size)
 ax = fig.add_subplot(5, 4, 3)
 im = ax.imshow(data_freq_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
 ax.set_title('(c)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -559,6 +588,7 @@ cbar.ax.tick_params(labelsize=font_size)
 ax = fig.add_subplot(5, 4, 4)
 im = ax.imshow(data_int_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
 ax.set_title('(d)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -568,13 +598,14 @@ ax.set_xticks(np.arange(-.5, 24, 1), minor=True)
 ax.set_yticks(np.arange(-.5, len(labels), 1), minor=True)
 ax.grid(which='minor', linestyle='--', alpha=0.25)
 ax.tick_params(which='minor', bottom=False, left=False)
-cax = fig.add_axes([0.71, 0.08, 0.185, 0.015])  
+cax = fig.add_axes([0.72, 0.08, 0.185, 0.015])  
 cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
 cbar.ax.tick_params(labelsize=font_size)
 
 ax = fig.add_subplot(5, 4, 5)
 im = ax.imshow(data_mean_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
 ax.set_title('(e)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -588,6 +619,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 6)
 im = ax.imshow(data_perc_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
 ax.set_title('(f)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -600,6 +632,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 7)
 im = ax.imshow(data_freq_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
 ax.set_title('(g)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -612,6 +645,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 8)
 im = ax.imshow(data_int_c_ii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
 ax.set_title('(h)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -624,6 +658,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 9)
 im = ax.imshow(data_mean_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
 ax.set_title('(i)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -637,6 +672,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 10)
 im = ax.imshow(data_perc_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
 ax.set_title('(j)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -649,6 +685,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 11)
 im = ax.imshow(data_freq_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
 ax.set_title('(k)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -661,6 +698,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 12)
 im = ax.imshow(data_int_c_iii, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
 ax.set_title('(l)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -673,6 +711,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 13)
 im = ax.imshow(data_mean_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
 ax.set_title('(m)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -686,6 +725,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 14)
 im = ax.imshow(data_perc_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
 ax.set_title('(n)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -698,6 +738,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 15)
 im = ax.imshow(data_freq_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
 ax.set_title('(o)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -710,6 +751,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 16)
 im = ax.imshow(data_int_c_iv, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
 ax.set_title('(p)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -722,6 +764,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 17)
 im = ax.imshow(data_mean_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
 ax.set_title('(q)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -735,6 +778,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 18)
 im = ax.imshow(data_perc_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=pvmin, vmax=pvmax)
 ax.set_title('(r)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -747,6 +791,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 19)
 im = ax.imshow(data_freq_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=fvmin, vmax=fvmax)
 ax.set_title('(s)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -759,6 +804,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 ax = fig.add_subplot(5, 4, 20)
 im = ax.imshow(data_int_c_v, aspect='1.5', origin='lower', cmap=cmap_i, vmin=ivmin, vmax=ivmax)
 ax.set_title('(t)', loc='left', fontsize=font_size, fontweight='bold')
+ax.invert_yaxis()
 ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
@@ -770,6 +816,7 @@ ax.tick_params(which='minor', bottom=False, left=False)
 
 # Path out to save figure
 path_out = '{0}/figs/paper_cp'.format(path)
-name_out = 'pyplt_graph_diurnal_cycle_{0}_sesa.png'.format(var)
+name_out = 'pyplt_graph_diurnal_cycle_sesa_{0}.png'.format(var)
 plt.savefig(os.path.join(path_out, name_out), dpi=400, bbox_inches='tight')
+plt.show()
 exit()
