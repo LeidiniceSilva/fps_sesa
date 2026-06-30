@@ -160,13 +160,13 @@ def import_smn_i():
 		d_viii = d_viii.pr.sel(time=slice('2018-06-01','2021-05-31'))
 		d_viii = d_viii.values / 24
 		mean_viii.append(np.concatenate([d_viii[3:], d_viii[:3]]))
-
+		
 		# Reading wrf cima
 		d_ix = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_cima/pr/' + 'pr_{0}_{1}_H_2018-06-01-2021-05-31.nc'.format(station_code, station_name))
 		d_ix = d_ix.pr.sel(time=slice('2018-06-01','2021-05-31'))
-		d_ix = d_ix.values 
+		d_ix = d_ix.values
 		mean_ix.append(np.concatenate([d_ix[3:], d_ix[:3]]))
-			
+		
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix
 	
 
