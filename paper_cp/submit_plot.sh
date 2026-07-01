@@ -15,17 +15,6 @@
 {
 set -eo pipefail
 
-python3 plot_graph_pdf_stats_sim_obs_sesa_pr_mmd.py --var pr
-python3 plot_graph_pdf_stats_sim_obs_sesa_pr_mmh.py --var pr
-python3 plot_graph_pdf_stats_sim_obs_sesa_t2m_uv10.py --var tas
-python3 plot_graph_pdf_stats_sim_obs_sesa_t2m_uv10.py --var sfcWind
-
-python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_pr.py --var pr
-python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_pr_seas.py --var pr --seas 12 1 2
-python3 plot_heatmap_diurnal_cycle_sim_obs_sesa_pr_seas.py --var pr --seas 6 7 8
-
-exit
-
 python3 plot_maps_bias_sim_obs_sesa_pr_mmd.py --var pr
 python3 plot_maps_bias_sim_obs_sesa_pr_mmd_seas.py --var pr --seas 12 1 2
 python3 plot_maps_bias_sim_obs_sesa_pr_mmd_seas.py --var pr --seas 6 7 8

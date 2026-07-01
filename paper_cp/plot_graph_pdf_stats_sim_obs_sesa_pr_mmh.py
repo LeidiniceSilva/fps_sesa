@@ -96,7 +96,7 @@ def import_inmet():
 			# Reading wrf cima
 			d_ix = xr.open_dataset('/home/mda_silv/clima-archive2-b/FPS-SESA/rcm/wrf_cima/{0}/'.format(var) + '{0}_{1}_{2}_H_2018-06-01-2021-05-31.nc'.format(var, station_code, station_name))
 			d_ix = d_ix[var].sel(time=slice('2018-06-01','2021-05-31'))
-			mean_ix.append(d_ix.values*24)
+			mean_ix.append(d_ix.values)
 
 	return mean_i, mean_ii, mean_iii, mean_iv, mean_v, mean_vi, mean_vii, mean_viii, mean_ix
 
@@ -170,8 +170,9 @@ def mask_like(reference, target):
 def compute_pdf(value, min_val=vmin, max_val=vmax, step=step_):
 
 	valid = value[~np.isnan(value)]
+	valid = valid[(valid > 0) & (valid < 300)]
 	
-	perc = np.nanpercentile(valid, 99.99)
+	perc = np.nanpercentile(valid, 99.9)
 	max_ = np.nanmax(valid)
     
 	bins = np.arange(min_val, max_val + step, step)
@@ -502,7 +503,7 @@ plt.yticks(fontsize=font_size)
 ax.grid(True, which='major', axis='x', linestyle='--', linewidth=0.8)
 ax.grid(True, which='major', axis='y', linestyle='--', linewidth=0.8)
 ax.grid(True, which='minor', axis='y', linestyle='--', linewidth=0.4)
-plt.legend(loc=1, fontsize=font_size, frameon=True, framealpha=0.9)
+plt.legend(loc=1, ncol=2,  fontsize=font_size, frameon=True, framealpha=0.9)
 
 ax = fig.add_subplot(2, 3, 2)
 plt.plot(pdf_inmet_smn_c_ii,   bins_inmet_smn_c_ii,   marker='.', markersize=4, markerfacecolor='None', markeredgecolor='black',   markeredgewidth=0.5, linestyle='None', label='WS')

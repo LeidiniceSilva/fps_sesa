@@ -301,7 +301,7 @@ fig, axes = plt.subplots(8,3, figsize=(3.5, 10), subplot_kw={"projection": ccrs.
 cmap = cm.get_cmap('BrBG', 20)
 norm_i = BoundaryNorm(np.linspace(-20, 20, 20 + 1), cmap.N)
 norm_ii = BoundaryNorm(np.linspace(-10, 10, 20 + 1), cmap.N)
-norm_iii = BoundaryNorm(np.linspace(-10, 10, 20 + 1), cmap.N)
+norm_iii = BoundaryNorm(np.linspace(-5, 5, 20 + 1), cmap.N)
 legend = 'mm h⁻¹'
 
 ct1 = ax1.scatter(lon_xx, lat_yy, 20, bias_perc_era5, cmap=cmap, norm=norm_i, marker='o', edgecolor='black', linewidth=0.5)
@@ -413,7 +413,7 @@ configure_subplot(ax24)
 
 cbar = plt.colorbar(ct1, cax=fig.add_axes([0.92, 0.68, 0.02, 0.20]), extend='neither')
 cbar.ax.tick_params(labelsize=font_size)
-cbar.set_label('P99 ({0})'.format(legend), fontsize=font_size)
+cbar.set_label('P99.9 ({0})'.format(legend), fontsize=font_size)
 
 cbar = plt.colorbar(ct2, cax=fig.add_axes([0.92, 0.40, 0.02, 0.20]), extend='neither')
 cbar.ax.tick_params(labelsize=font_size)

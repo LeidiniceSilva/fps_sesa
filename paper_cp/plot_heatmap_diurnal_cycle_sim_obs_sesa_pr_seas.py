@@ -216,44 +216,48 @@ def compute_stats(dataset, perc=99):
 
     horas = np.arange(len(var_)) % 24
 
-    # Percentil global (usado apenas para extremos)
+    # Global percentile (used only for P99)
     perc_global = np.nanpercentile(var_, perc)
 
-    mean_hour = np.zeros(24)
-    perc_hour = np.zeros(24)
-    freq = np.zeros(24)
-    intens = np.zeros(24)
+    mean_hour = np.full(24, np.nan)
+    perc_hour = np.full(24, np.nan)
+    freq = np.full(24, np.nan)
+    intens = np.full(24, np.nan)
 
     for h in range(24):
 
         var_h = var_[horas == h]
 
-        # mean and p99
-        valid_all = ~np.isnan(var_h)
+        # Valid data
+        valid = ~np.isnan(var_h)
 
-        if np.any(valid_all):
-            data_all = var_h[valid_all]
-            mean_hour[h] = np.nanmean(data_all)
-            perc_hour[h] = np.nanpercentile(data_all, perc)
-        else:
-            mean_hour[h] = np.nan
-            perc_hour[h] = np.nan
+        if np.sum(valid) == 0:
+            continue
 
-        # freq and int
-        wet = var_h >= 0.1
-        data_wet = var_h[wet & ~np.isnan(var_h)]
+        data_valid = var_h[valid]
 
-        if len(data_wet) > 0:
-            extreme = data_wet[data_wet >= perc_global]
+        # Mean precipitation
+        mean_hour[h] = np.nanmean(data_valid)
 
-            freq[h] = 100.0 * len(extreme) / len(data_wet)
-            intens[h] = np.nanmean(extreme) if len(extreme) > 0 else np.nan
-        else:
-            freq[h] = np.nan
-            intens[h] = np.nan
+        # Hourly P99
+        perc_hour[h] = np.nanpercentile(data_valid, perc)
 
-    return mean_hour, perc_hour, freq, intens 
-    
+        # Wet hours (>= 0.1 mm h-1)
+        wet = data_valid >= 0.1
+
+        n_valid = len(data_valid)
+        n_wet = np.sum(wet)
+
+        # Frequency of wet hours
+        freq[h] = 100.0 * n_wet / n_valid
+
+        # Intensity of wet hours
+        if n_wet > 0:
+            intens[h] = np.nanmean(data_valid[wet])
+
+    return mean_hour, perc_hour, freq, intens
+
+   
 
 # Import dataset
 clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x, clim_viii_x, clim_ix_x = import_inmet()			

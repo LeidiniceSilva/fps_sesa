@@ -190,45 +190,48 @@ def compute_stats(dataset, perc=99):
 
     horas = np.arange(len(var_)) % 24
 
-    # Percentil global (usado apenas para extremos)
+    # Global percentile (used only for P99)
     perc_global = np.nanpercentile(var_, perc)
 
-    mean_hour = np.zeros(24)
-    perc_hour = np.zeros(24)
-    freq = np.zeros(24)
-    intens = np.zeros(24)
+    mean_hour = np.full(24, np.nan)
+    perc_hour = np.full(24, np.nan)
+    freq = np.full(24, np.nan)
+    intens = np.full(24, np.nan)
 
     for h in range(24):
 
         var_h = var_[horas == h]
 
-        # mean and p99
-        valid_all = ~np.isnan(var_h)
+        # Valid data
+        valid = ~np.isnan(var_h)
 
-        if np.any(valid_all):
-            data_all = var_h[valid_all]
-            mean_hour[h] = np.nanmean(data_all)
-            perc_hour[h] = np.nanpercentile(data_all, perc)
-        else:
-            mean_hour[h] = np.nan
-            perc_hour[h] = np.nan
+        if np.sum(valid) == 0:
+            continue
 
-        # freq and int
-        wet = var_h >= 0.1
-        data_wet = var_h[wet & ~np.isnan(var_h)]
+        data_valid = var_h[valid]
 
-        if len(data_wet) > 0:
-            extreme = data_wet[data_wet >= perc_global]
+        # Mean precipitation
+        mean_hour[h] = np.nanmean(data_valid)
 
-            freq[h] = 100.0 * len(extreme) / len(data_wet)
-            intens[h] = np.nanmean(extreme) if len(extreme) > 0 else np.nan
-        else:
-            freq[h] = np.nan
-            intens[h] = np.nan
+        # Hourly P99
+        perc_hour[h] = np.nanpercentile(data_valid, perc)
+
+        # Wet hours (>= 0.1 mm h-1)
+        wet = data_valid >= 0.1
+
+        n_valid = len(data_valid)
+        n_wet = np.sum(wet)
+
+        # Frequency of wet hours
+        freq[h] = 100.0 * n_wet / n_valid
+
+        # Intensity of wet hours
+        if n_wet > 0:
+            intens[h] = np.nanmean(data_valid[wet])
 
     return mean_hour, perc_hour, freq, intens
-    
-    
+
+
 # Import dataset
 clim_i_x, clim_ii_x, clim_iii_x, clim_iv_x, clim_v_x, clim_vi_x, clim_vii_x, clim_viii_x, clim_ix_x = import_inmet()			
 clim_i_y, clim_ii_y, clim_iii_y, clim_iv_y, clim_v_y, clim_vi_y, clim_vii_y, clim_viii_y, clim_ix_y = import_smn_i()
@@ -344,6 +347,15 @@ era5_c_ii  = mask_like(inmet_smn_c_ii, era5_c_ii_)
 era5_c_iii = mask_like(inmet_smn_c_iii, era5_c_iii_)
 era5_c_iv  = mask_like(inmet_smn_c_iv, era5_c_iv_)
 era5_c_v   = mask_like(inmet_smn_c_v, era5_c_v_)
+
+nan_count_i = np.isnan(inmet_smn_c_i).sum()
+nan_count_ii = np.isnan(era5_c_i_).sum()
+nan_count_iii = np.isnan(era5_c_i).sum()
+
+print(len(inmet_smn_c_i))
+print(nan_count_i)
+print(nan_count_ii)
+print(nan_count_iii)
 
 # Group III
 reg_usp_c_i_   = np.concatenate(reg_usp_i)
@@ -527,11 +539,11 @@ cmap_i = 'terrain_r'
 mvmin = 0
 mvmax = 0.6
 pvmin = 0
-pvmax = 8
+pvmax = 10
 fvmin = 0
-fvmax = 20
+fvmax = 15
 ivmin = 0
-ivmax = 15
+ivmax = 5
 
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
@@ -559,7 +571,7 @@ ax.set_xticks(np.arange(24))
 ax.set_xticklabels(('00', '', '02', '', '04', '', '06', '', '08', '', '10', '', '12', '', '14', '', '16', '', '18', '', '20', '', '22', ''), fontsize=font_size)
 ax.set_yticks(np.arange(len(labels)))
 ax.set_yticklabels([])
-ax.set_title(f'P99 ({legend_i})', fontsize=font_size)
+ax.set_title(f'P99.9 ({legend_i})', fontsize=font_size)
 ax.set_xticks(np.arange(-.5, 24, 1), minor=True)
 ax.set_yticks(np.arange(-.5, len(labels), 1), minor=True)
 ax.grid(which='minor', linestyle='--', alpha=0.25)

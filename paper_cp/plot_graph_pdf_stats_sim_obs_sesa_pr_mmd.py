@@ -24,7 +24,7 @@ var = args.var
 
 dict_var = {'pr': ['pre', 'tp']}
 
-vmin, vmax, step_ = 0.1, 500, 0.5
+vmin, vmax, step_ = 0.1, 500, 1
 
 path = '/home/mda_silv/users/FPS_SESA'
 
@@ -249,7 +249,7 @@ def mask_like(reference, target):
 def compute_pdf(value, min_val=vmin, max_val=vmax, step=step_):
 
 	valid = value[~np.isnan(value)]	
-	valid = valid[(valid > 0) & (valid < 500)]
+	valid = valid[(valid > 0.1) & (valid < 500)]
 	
 	perc = np.nanpercentile(valid, 99)
 	max_ = np.nanmax(valid)
@@ -532,6 +532,9 @@ perc_wrf_ncar_c_v,    max_wrf_ncar_c_v,    pdf_wrf_ncar_c_v,	bins_wrf_ncar_c_v  
 perc_wrf_ucan_c_v,    max_wrf_ucan_c_v,    pdf_wrf_ucan_c_v,	bins_wrf_ucan_c_v    = compute_pdf(wrf_ucan_c_v)
 perc_wrf_cima_c_v,    max_wrf_cima_c_v,    pdf_wrf_cima_c_v,    bins_wrf_cima_c_v    = compute_pdf(wrf_cima_c_v)
 
+print(pdf_inmet_smn_c_i)
+print(bins_inmet_smn_c_i)
+
 # Plot figure
 fig = plt.figure(figsize=(12, 8))
 font_size = 8
@@ -539,7 +542,7 @@ font_size = 8
 legend = 'mm d⁻¹'
 xvmin = 0
 xvmax = 300
-yvmin = 1e-4
+yvmin = 1e-5
 yvmax = 0
 text_ = 0.65
 text_1 = 0.45
