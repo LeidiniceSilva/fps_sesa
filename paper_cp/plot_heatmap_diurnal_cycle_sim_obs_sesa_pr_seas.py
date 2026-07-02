@@ -271,7 +271,7 @@ reg_ictp_i_  = clim_v_x    + clim_v_y
 reg_ictp_ii_ = clim_vi_x   + clim_vi_y
 wrf_ncar     = clim_vii_x  + clim_vii_y
 wrf_ucan     = clim_viii_x + clim_viii_y
-wrf_cima     = clim_ix_x + clim_ix_y
+wrf_cima     = clim_ix_x   + clim_ix_y
 
 list_hc = [1, 2, 3, 2, 0, 1, 1, 0, 2, 2, 0, 3, 0, 2, 3, 0, 1, 2, 0, 3, 0, 4, 2, 4, 3, 1, 4, 2, 4, 2, 2, 2, 1, 2, 4, 2, 2, 3, 2, 4, 4, 4, 0, 2, 4, 3, 2, 0, 0, 0, 3, 2, 2, 2, 1, 2, 4, 1, 4, 3, 4, 3, 0, 2, 0, 3, 2, 3, 2, 4, 0, 1, 4, 2, 4, 4, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 3, 2, 0, 0, 0, 4, 2, 3, 2, 2, 2, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 4, 0, 0, 4, 0, 4, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2, 4, 3, 1, 4, 1, 2, 1, 1, 1, 4, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 1, 1, 1, 4, 4, 4, 4, 2, 2, 4, 4, 2, 4, 2, 2, 2, 2, 2]
 list_hc = list_hc[:len(inmet_smn)]
@@ -363,11 +363,11 @@ inmet_smn_c_iv  = np.concatenate(inmet_smn_iv)
 inmet_smn_c_v   = np.concatenate(inmet_smn_v)
 
 # Group II
-era5_c_i   = np.concatenate(era5_i)
-era5_c_ii  = np.concatenate(era5_ii)
-era5_c_iii = np.concatenate(era5_iii)
-era5_c_iv  = np.concatenate(era5_iv)
-era5_c_v   = np.concatenate(era5_v)
+era5_c_i_   = np.concatenate(era5_i)
+era5_c_ii_  = np.concatenate(era5_ii)
+era5_c_iii_ = np.concatenate(era5_iii)
+era5_c_iv_  = np.concatenate(era5_iv)
+era5_c_v_   = np.concatenate(era5_v)
 
 era5_c_i   = mask_like(inmet_smn_c_i, era5_c_i_)
 era5_c_ii  = mask_like(inmet_smn_c_ii, era5_c_ii_)
@@ -544,48 +544,7 @@ data_int_c_iii = np.vstack([int_inmet_smn_c_iii, int_era5_c_iii, int_reg_usp_c_i
 data_int_c_iv  = np.vstack([int_inmet_smn_c_iv,  int_era5_c_iv,  int_reg_usp_c_iv,  int_reg_ictp_c_iv,  int_reg_ictp_i_c_iv,  int_reg_ictp_ii_c_iv,  int_wrf_ncar_c_iv,  int_wrf_ucan_c_iv,  int_wrf_cima_c_iv])
 data_int_c_v   = np.vstack([int_inmet_smn_c_v,   int_era5_c_v,   int_reg_usp_c_v,   int_reg_ictp_c_v,	int_reg_ictp_i_c_v,   int_reg_ictp_ii_c_v,   int_wrf_ncar_c_v,   int_wrf_ucan_c_v,   int_wrf_cima_c_v])
 
-print(int_inmet_smn_c_i)
-print()
-print(int_era5_c_i)
-print()
-print(int_reg_usp_c_i)
-print()
-print(int_reg_ictp_c_i)
-print()
-print(int_reg_ictp_i_c_i)
-print()
-print(int_reg_ictp_ii_c_i)
-print()
-print(int_wrf_ncar_c_i)
-print()
-print(int_wrf_ucan_c_i)
-
-data_mean_c_i   = np.vstack([mean_inmet_smn_c_i,   mean_era5_c_i,   mean_reg_usp_c_i,   mean_reg_ictp_c_i,   mean_reg_ictp_i_c_i,   mean_reg_ictp_ii_c_i,   mean_wrf_ncar_c_i,   mean_wrf_ucan_c_i])
-data_mean_c_ii  = np.vstack([mean_inmet_smn_c_ii,  mean_era5_c_ii,  mean_reg_usp_c_ii,  mean_reg_ictp_c_ii,  mean_reg_ictp_i_c_ii,  mean_reg_ictp_ii_c_ii,  mean_wrf_ncar_c_ii,  mean_wrf_ucan_c_ii])
-data_mean_c_iii = np.vstack([mean_inmet_smn_c_iii, mean_era5_c_iii, mean_reg_usp_c_iii, mean_reg_ictp_c_iii, mean_reg_ictp_i_c_iii, mean_reg_ictp_ii_c_iii, mean_wrf_ncar_c_iii, mean_wrf_ucan_c_iii])
-data_mean_c_iv  = np.vstack([mean_inmet_smn_c_iv,  mean_era5_c_iv,  mean_reg_usp_c_iv,  mean_reg_ictp_c_iv,  mean_reg_ictp_i_c_iv,  mean_reg_ictp_ii_c_iv,  mean_wrf_ncar_c_iv,  mean_wrf_ucan_c_iv])
-data_mean_c_v   = np.vstack([mean_inmet_smn_c_v,   mean_era5_c_v,   mean_reg_usp_c_v,   mean_reg_ictp_c_v,   mean_reg_ictp_i_c_v,   mean_reg_ictp_ii_c_v,   mean_wrf_ncar_c_v,   mean_wrf_ucan_c_v])
-
-data_perc_c_i   = np.vstack([perc_inmet_smn_c_i,   perc_era5_c_i,   perc_reg_usp_c_i,	perc_reg_ictp_c_i,   perc_reg_ictp_i_c_i,   perc_reg_ictp_ii_c_i,   perc_wrf_ncar_c_i,   perc_wrf_ucan_c_i])
-data_perc_c_ii  = np.vstack([perc_inmet_smn_c_ii,  perc_era5_c_ii,  perc_reg_usp_c_ii,  perc_reg_ictp_c_ii,  perc_reg_ictp_i_c_ii,  perc_reg_ictp_ii_c_ii,  perc_wrf_ncar_c_ii,  perc_wrf_ucan_c_ii])
-data_perc_c_iii = np.vstack([perc_inmet_smn_c_iii, perc_era5_c_iii, perc_reg_usp_c_iii, perc_reg_ictp_c_iii, perc_reg_ictp_i_c_iii, perc_reg_ictp_ii_c_iii, perc_wrf_ncar_c_iii, perc_wrf_ucan_c_iii])
-data_perc_c_iv  = np.vstack([perc_inmet_smn_c_iv,  perc_era5_c_iv,  perc_reg_usp_c_iv,  perc_reg_ictp_c_iv,  perc_reg_ictp_i_c_iv,  perc_reg_ictp_ii_c_iv,  perc_wrf_ncar_c_iv,  perc_wrf_ucan_c_iv])
-data_perc_c_v   = np.vstack([perc_inmet_smn_c_v,   perc_era5_c_v,   perc_reg_usp_c_v,	perc_reg_ictp_c_v,   perc_reg_ictp_i_c_v,   perc_reg_ictp_ii_c_v,   perc_wrf_ncar_c_v,   perc_wrf_ucan_c_v])
-
-data_freq_c_i   = np.vstack([freq_inmet_smn_c_i,   freq_era5_c_i,   freq_reg_usp_c_i,	freq_reg_ictp_c_i,   freq_reg_ictp_i_c_i,   freq_reg_ictp_ii_c_i,   freq_wrf_ncar_c_i,   freq_wrf_ucan_c_i])
-data_freq_c_ii  = np.vstack([freq_inmet_smn_c_ii,  freq_era5_c_ii,  freq_reg_usp_c_ii,  freq_reg_ictp_c_ii,  freq_reg_ictp_i_c_ii,  freq_reg_ictp_ii_c_ii,  freq_wrf_ncar_c_ii,  freq_wrf_ucan_c_ii])
-data_freq_c_iii = np.vstack([freq_inmet_smn_c_iii, freq_era5_c_iii, freq_reg_usp_c_iii, freq_reg_ictp_c_iii, freq_reg_ictp_i_c_iii, freq_reg_ictp_ii_c_iii, freq_wrf_ncar_c_iii, freq_wrf_ucan_c_iii])
-data_freq_c_iv  = np.vstack([freq_inmet_smn_c_iv,  freq_era5_c_iv,  freq_reg_usp_c_iv,  freq_reg_ictp_c_iv,  freq_reg_ictp_i_c_iv,  freq_reg_ictp_ii_c_iv,  freq_wrf_ncar_c_iv,  freq_wrf_ucan_c_iv])
-data_freq_c_v   = np.vstack([freq_inmet_smn_c_v,   freq_era5_c_v,   freq_reg_usp_c_v,	freq_reg_ictp_c_v,   freq_reg_ictp_i_c_v,   freq_reg_ictp_ii_c_v,   freq_wrf_ncar_c_v,   freq_wrf_ucan_c_v])
-
-data_int_c_i   = np.vstack([int_inmet_smn_c_i,   int_era5_c_i,   int_reg_usp_c_i,   int_reg_ictp_c_i,   int_reg_ictp_i_c_i,   int_reg_ictp_ii_c_i,   int_wrf_ncar_c_i,   int_wrf_ucan_c_i])
-data_int_c_ii  = np.vstack([int_inmet_smn_c_ii,  int_era5_c_ii,  int_reg_usp_c_ii,  int_reg_ictp_c_ii,  int_reg_ictp_i_c_ii,  int_reg_ictp_ii_c_ii,  int_wrf_ncar_c_ii,  int_wrf_ucan_c_ii])
-data_int_c_iii = np.vstack([int_inmet_smn_c_iii, int_era5_c_iii, int_reg_usp_c_iii, int_reg_ictp_c_iii, int_reg_ictp_i_c_iii, int_reg_ictp_ii_c_iii, int_wrf_ncar_c_iii, int_wrf_ucan_c_iii])
-data_int_c_iv  = np.vstack([int_inmet_smn_c_iv,  int_era5_c_iv,  int_reg_usp_c_iv,  int_reg_ictp_c_iv,  int_reg_ictp_i_c_iv,  int_reg_ictp_ii_c_iv,  int_wrf_ncar_c_iv,  int_wrf_ucan_c_iv])
-data_int_c_v   = np.vstack([int_inmet_smn_c_v,   int_era5_c_v,   int_reg_usp_c_v,   int_reg_ictp_c_v,	int_reg_ictp_i_c_v,   int_reg_ictp_ii_c_v,   int_wrf_ncar_c_v,   int_wrf_ucan_c_v])
-
 # Plot figure
-fig = plt.figure(figsize=(12, 10.25))
 fig.subplots_adjust(wspace=0.08, hspace=0.04)
 
 font_size = 8
@@ -595,13 +554,13 @@ labels = ['WS', 'ERA5', 'Reg4', 'Reg5-Holt3', 'Reg5-Holt', 'Reg5-UW', 'WRF-NCAR'
 legend_i = 'mm h⁻¹'
 cmap_i = 'terrain_r'
 mvmin = 0
-mvmax = 0.8
+mvmax = 0.6
 pvmin = 0
 pvmax = 10
 fvmin = 0
-fvmax = 6
+fvmax = 15
 ivmin = 0
-ivmax = 15
+ivmax = 5
 
 ax = fig.add_subplot(5, 4, 1)
 im = ax.imshow(data_mean_c_i, aspect='1.5', origin='lower', cmap=cmap_i, vmin=mvmin, vmax=mvmax)
